@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="img/logo/logo.png" rel="icon">
+  <title>RuangAdmin - Register</title>
+  <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="css/ruang-admin.min.css" rel="stylesheet">
+  <script src="js/ajoutfournisseur.js"></script>
+
+</head>
+
+<body class="bg-gradient-login">
+  <!-- Register Content -->
+  <div class="container-login">
+    <div class="row justify-content-center">
+      <div class="col-xl-10 col-lg-12 col-md-9">
+        <div class="card shadow-sm my-5">
+          <div class="card-body p-0">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="login-form">
+                  <div class="text-center">
+                    <h1 class="h4 text-gray-900 mb-4">Ajouter un founisseur</h1>
+                  </div>
+                  <form method="post">
+                    <div class="form-group">
+                      <label>CIN</label>
+                      <!-- required pattern="\d{8}" -->
+                      <input type="text" class="form-control"  id="cin" onblur="verification_cin('cin')"  placeholder="Saisir 8 chiffres exactement" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Prénom</label>
+                      <input type="text" class="form-control" id="prenom" onblur="verification_prenom('prenom')" placeholder="Exemple:Adam" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Nom</label>
+                      <input type="text" class="form-control" id="nom" placeholder="Exemple:Ouederni"  onblur="verification_nom('nom')"required>
+                    </div>
+                    <div class="form-group">
+                      <label>Date de naissance</label>
+                      <input type="date" class="form-control" id="date_naiss" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Adresse</label>
+                      <input  class="form-control" id="adresse" onblur="verification_adresse('adresse')" placeholder="Entrer votre adresse" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Numéro</label>
+                      <input type="text" class="form-control" id="numero" size="8"
+                        placeholder="Entrer votre numero" onblur="verification_numero('numero')" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Email</label>
+                      <input type="email" class="form-control" id="email" onblur="verification_email('email')" aria-describedby="emailHelp"
+                        placeholder="Entrer votre Email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                      <label>Date du contrat</label>
+                      <input type="date" class="form-control" id="date_contrat" required>
+                    </div>
+                    <div class="form-group">
+                      <button type="submit" class="btn btn-primary btn-block">Ajouter le fournisseur</button>
+                    </div>
+                    <hr>
+                    <a href="index.html" class="btn btn-google btn-block">
+                       Retour au Dashboard
+                    </a>
+                  </form>
+                  <hr>
+                  
+                  <div class="text-center">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Register Content -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="js/ruang-admin.min.js"></script>
+</body>
+
+</html>
