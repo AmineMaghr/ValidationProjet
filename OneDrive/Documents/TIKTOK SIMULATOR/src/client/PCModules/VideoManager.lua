@@ -1451,7 +1451,7 @@ function VideoManager.create(winFrame, contentFrame, env)
             end
         end)
         
-        lfTotalHealth = math.clamp(lfTotalHealth + 6, 0, 100)
+        lfTotalHealth = math.clamp(lfTotalHealth + 5, 0, 100)
         lfTotalViews = lfTotalViews + 10 -- plus 10 views per click directly
         lfViewsLbl.Text = lfFmt(lfTotalViews) .. " views"
         
@@ -1592,7 +1592,34 @@ function VideoManager.create(winFrame, contentFrame, env)
 
     -- Like Farm timer
     task.spawn(function()
-        while likeFarmMaster.Parent do
+        -- Fast smooth loop for meter drain (tug of war)
+          task.spawn(function()
+              while likeFarmMaster.Parent do
+                  task.wait(0.05)
+                  if not lfGameRunning then continue end
+                  if lfGameTime > 0 then
+                      -- Drain ~22.5 health per second (1.125 per tick)
+                      lfTotalHealth = math.clamp(lfTotalHealth - 1.125, 0, 100)
+                      
+                      local pct = lfTotalHealth / 100
+                      lfMeterFill.Size = UDim2.new(pct, 0, 1, 0)
+                      
+                      if pct > 0.6 then
+                          lfMeterFill.BackgroundColor3 = Color3.fromRGB(80, 220, 80)
+                          lfCPSLbl.TextColor3 = Color3.fromRGB(80, 220, 80)
+                      elseif pct > 0.3 then
+                          lfMeterFill.BackgroundColor3 = Color3.fromRGB(255, 170, 50)
+                          lfCPSLbl.TextColor3 = Color3.fromRGB(255, 170, 50)
+                      else
+                          lfMeterFill.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
+                          lfCPSLbl.TextColor3 = Color3.fromRGB(255, 60, 60)
+                      end
+                      lfCPSLbl.Text = "Meter: " .. math.floor(lfTotalHealth) .. "%"
+                  end
+              end
+          end)
+
+          while likeFarmMaster.Parent do
             task.wait(1)
             if not lfGameRunning then continue end
               if lfGameTime > 0 and lfGameRunning then
@@ -1603,23 +1630,6 @@ function VideoManager.create(winFrame, contentFrame, env)
                 elseif lfGameTime <= 10 then
                     lfTimerLbl.TextColor3 = Color3.fromRGB(255, 180, 50)
                 end
-                
-                -- Meter drain over time
-                lfTotalHealth = math.clamp(lfTotalHealth - 15, 0, 100)
-                
-                local pct = lfTotalHealth / 100
-                TweenService:Create(lfMeterFill, TweenInfo.new(0.2), {Size = UDim2.new(pct, 0, 1, 0)}):Play()
-                if pct > 0.6 then
-                    lfMeterFill.BackgroundColor3 = Color3.fromRGB(80, 220, 80)
-                    lfCPSLbl.TextColor3 = Color3.fromRGB(80, 220, 80)
-                elseif pct > 0.3 then
-                    lfMeterFill.BackgroundColor3 = Color3.fromRGB(255, 170, 50)
-                    lfCPSLbl.TextColor3 = Color3.fromRGB(255, 170, 50)
-                else
-                    lfMeterFill.BackgroundColor3 = Color3.fromRGB(255, 60, 60)
-                    lfCPSLbl.TextColor3 = Color3.fromRGB(255, 60, 60)
-                end
-                lfCPSLbl.Text = "Meter: " .. math.floor(lfTotalHealth) .. "%"
                 
                 -- Passive views gain based on meter
                 if lfTotalHealth > 0 then
