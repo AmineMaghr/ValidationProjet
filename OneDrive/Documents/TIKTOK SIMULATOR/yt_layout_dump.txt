@@ -1,0 +1,215 @@
+if appData.name == "Video Manager" then
+        print("[VideoManager] Layout loaded")
+
+        -- 1) MAIN CONTAINER (Black background, covering contentFrame)
+        local vmMaster = Instance.new("Frame")
+        vmMaster.Name = "YouTubeLayoutMaster"
+        vmMaster.Size = UDim2.new(1, 0, 1, 0)
+        vmMaster.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Very dark gray/black
+        vmMaster.BorderSizePixel = 0
+        vmMaster.ZIndex = 50
+        vmMaster.Parent = contentFrame
+
+        -- 2) TOP BAR (Like YouTube navigation)
+        local topBar = Instance.new("Frame")
+        topBar.Name = "TopNav"
+        topBar.Size = UDim2.new(1, 0, 0, 50)
+        topBar.Position = UDim2.new(0, 0, 0, 0)
+        topBar.BackgroundColor3 = Color3.fromRGB(32, 32, 32)
+        topBar.BorderSizePixel = 0
+        topBar.ZIndex = 51
+        topBar.Parent = vmMaster
+
+        -- Top Bar: Logo
+        local ytLogo = Instance.new("TextLabel")
+        ytLogo.Name = "LogoText"
+        ytLogo.Size = UDim2.new(0, 150, 1, 0)
+        ytLogo.Position = UDim2.new(0, 20, 0, 0)
+        ytLogo.BackgroundTransparency = 1
+        ytLogo.Text = "? GoingViral"
+        ytLogo.TextColor3 = Color3.fromRGB(255, 0, 0) -- YouTube Red
+        ytLogo.Font = Enum.Font.GothamBlack
+        ytLogo.TextSize = 20
+        ytLogo.TextXAlignment = Enum.TextXAlignment.Left
+        ytLogo.ZIndex = 52
+        ytLogo.Parent = topBar
+
+        -- Top Bar: Search Bar
+        local searchBar = Instance.new("Frame")
+        searchBar.Name = "SearchBar"
+        searchBar.Size = UDim2.new(0, 300, 0, 30)
+        searchBar.Position = UDim2.new(0.5, -150, 0.5, -15)
+        searchBar.BackgroundColor3 = Color3.fromRGB(18, 18, 18)
+        searchBar.BorderSizePixel = 1
+        searchBar.BorderColor3 = Color3.fromRGB(48, 48, 48)
+        searchBar.ZIndex = 52
+        searchBar.Parent = topBar
+        local searchCorner = Instance.new("UICorner")
+        searchCorner.CornerRadius = UDim.new(0, 15)
+        searchCorner.Parent = searchBar
+        
+        local searchText = Instance.new("TextLabel")
+        searchText.Size = UDim2.new(1, -20, 1, 0)
+        searchText.Position = UDim2.new(0, 10, 0, 0)
+        searchText.BackgroundTransparency = 1
+        searchText.Text = "Search"
+        searchText.TextColor3 = Color3.fromRGB(150, 150, 150)
+        searchText.Font = Enum.Font.Gotham
+        searchText.TextSize = 14
+        searchText.TextXAlignment = Enum.TextXAlignment.Left
+        searchText.ZIndex = 53
+        searchText.Parent = searchBar
+
+        -- Top Bar: Profile / Bell Right icons
+        local RightIcons = Instance.new("TextLabel")
+        RightIcons.Size = UDim2.new(0, 100, 1, 0)
+        RightIcons.Position = UDim2.new(1, -120, 0, 0)
+        RightIcons.BackgroundTransparency = 1
+        RightIcons.Text = "??  ??"
+        RightIcons.TextColor3 = Color3.fromRGB(255, 255, 255)
+        RightIcons.Font = Enum.Font.Gotham
+        RightIcons.TextSize = 18
+        RightIcons.TextXAlignment = Enum.TextXAlignment.Right
+        RightIcons.ZIndex = 52
+        RightIcons.Parent = topBar
+
+        -- 3) MAIN CONTENT LAYOUT (Split into Left and Right)
+        local mainBody = Instance.new("Frame")
+        mainBody.Name = "MainBody"
+        mainBody.Size = UDim2.new(1, 0, 1, -50)
+        mainBody.Position = UDim2.new(0, 0, 0, 50)
+        mainBody.BackgroundTransparency = 1
+        mainBody.ZIndex = 51
+        mainBody.Parent = vmMaster
+
+        -- ================= LEFT SIDE =================
+        local leftSide = Instance.new("Frame")
+        leftSide.Name = "LeftSideVideo"
+        leftSide.Size = UDim2.new(0.65, 0, 1, 0) -- 65% width
+        leftSide.Position = UDim2.new(0, 0, 0, 0)
+        leftSide.BackgroundTransparency = 1
+        leftSide.ZIndex = 52
+        leftSide.Parent = mainBody
+
+        -- Video Player Dark Rectangle
+        local vidPlayer = Instance.new("Frame")
+        vidPlayer.Name = "VideoPlayerRect"
+        vidPlayer.Size = UDim2.new(1, -40, 0, 320)
+        vidPlayer.Position = UDim2.new(0, 20, 0, 20)
+        vidPlayer.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        vidPlayer.BorderSizePixel = 0
+        vidPlayer.ZIndex = 53
+        vidPlayer.Parent = leftSide
+
+        -- Play Button Triangle
+        local playBtn = Instance.new("ImageLabel")
+        playBtn.Name = "PlayIcon"
+        playBtn.Size = UDim2.new(0, 50, 0, 50)
+        playBtn.Position = UDim2.new(0.5, -25, 0.5, -25)
+        playBtn.BackgroundTransparency = 1
+        -- Note: using a basic circle or fallback triangle if no asset exists, but here we can just use text for simplicity
+        playBtn.Parent = vidPlayer
+        local playText = Instance.new("TextLabel")
+        playText.Size = UDim2.new(1, 0, 1, 0)
+        playText.BackgroundTransparency = 1
+        playText.Text = "?"
+        playText.TextColor3 = Color3.fromRGB(220, 220, 220)
+        playText.Font = Enum.Font.GothamBlack
+        playText.TextSize = 40
+        playText.ZIndex = 54
+        playText.Parent = vidPlayer
+
+        -- Video Title
+        local vidTitle = Instance.new("TextLabel")
+        vidTitle.Name = "VideoTitle"
+        vidTitle.Size = UDim2.new(1, -40, 0, 30)
+        vidTitle.Position = UDim2.new(0, 20, 0, 350)
+        vidTitle.BackgroundTransparency = 1
+        vidTitle.Text = "My Video"
+        vidTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        vidTitle.Font = Enum.Font.GothamBold
+        vidTitle.TextSize = 22
+        vidTitle.TextXAlignment = Enum.TextXAlignment.Left
+        vidTitle.ZIndex = 53
+        vidTitle.Parent = leftSide
+
+        -- Views Counter
+        local vidViews = Instance.new("TextLabel")
+        vidViews.Name = "ViewsCounter"
+        vidViews.Size = UDim2.new(1, -40, 0, 20)
+        vidTitle.Position = UDim2.new(0, 20, 0, 385)
+        vidViews.Position = UDim2.new(0, 20, 0, 380)
+        vidViews.BackgroundTransparency = 1
+        vidViews.Text = "1,000 views"
+        vidViews.TextColor3 = Color3.fromRGB(160, 160, 160) -- Gray
+        vidViews.Font = Enum.Font.Gotham
+        vidViews.TextSize = 14
+        vidViews.TextXAlignment = Enum.TextXAlignment.Left
+        vidViews.ZIndex = 53
+        vidViews.Parent = leftSide
+
+        -- Red Health Bar (Looks like YT progress bar)
+        local hpBarBG = Instance.new("Frame")
+        hpBarBG.Name = "HealthBarBG"
+        hpBarBG.Size = UDim2.new(1, -40, 0, 4)
+        hpBarBG.Position = UDim2.new(0, 20, 0, 410)
+        hpBarBG.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+        hpBarBG.BorderSizePixel = 0
+        hpBarBG.ZIndex = 53
+        hpBarBG.Parent = leftSide
+
+        local hpBarFill = Instance.new("Frame")
+        hpBarFill.Name = "HealthBarFill"
+        hpBarFill.Size = UDim2.new(1, 0, 1, 0) -- 100% full
+        hpBarFill.Position = UDim2.new(0, 0, 0, 0)
+        hpBarFill.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+        hpBarFill.BorderSizePixel = 0
+        hpBarFill.ZIndex = 54
+        hpBarFill.Parent = hpBarBG
+
+        -- ================= RIGHT SIDE =================
+        local rightSide = Instance.new("Frame")
+        rightSide.Name = "RightSideComments"
+        rightSide.Size = UDim2.new(0.35, 0, 1, -20) -- 35% width
+        rightSide.Position = UDim2.new(0.65, 0, 0, 10)
+        rightSide.BackgroundColor3 = Color3.fromRGB(20, 20, 20) -- Slightly darker than content bg
+        rightSide.BorderSizePixel = 1
+        rightSide.BorderColor3 = Color3.fromRGB(35, 35, 35)
+        rightSide.ZIndex = 52
+        rightSide.Parent = mainBody
+
+        local rsCorner = Instance.new("UICorner")
+        rsCorner.CornerRadius = UDim.new(0, 8)
+        rsCorner.Parent = rightSide
+
+        -- Comment Section Title
+        local cmtsTitle = Instance.new("TextLabel")
+        cmtsTitle.Name = "CommentsTitle"
+        cmtsTitle.Size = UDim2.new(1, -20, 0, 40)
+        cmtsTitle.Position = UDim2.new(0, 10, 0, 0)
+        cmtsTitle.BackgroundTransparency = 1
+        cmtsTitle.Text = "Comments"
+        cmtsTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+        cmtsTitle.Font = Enum.Font.GothamBold
+        cmtsTitle.TextSize = 18
+        cmtsTitle.TextXAlignment = Enum.TextXAlignment.Left
+        cmtsTitle.ZIndex = 53
+        cmtsTitle.Parent = rightSide
+        
+        -- Comment Area ScrollFrame (Empty for now)
+        local cmtScroll = Instance.new("ScrollingFrame")
+        cmtScroll.Name = "CommentsContainer"
+        cmtScroll.Size = UDim2.new(1, -20, 1, -50)
+        cmtScroll.Position = UDim2.new(0, 10, 0, 40)
+        cmtScroll.BackgroundTransparency = 1
+        cmtScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+        cmtScroll.ScrollBarThickness = 4
+        cmtScroll.ZIndex = 53
+        cmtScroll.Parent = rightSide
+
+        local cmtListLayout = Instance.new("UIListLayout")
+        cmtListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+        cmtListLayout.Padding = UDim.new(0, 10)
+        cmtListLayout.Parent = cmtScroll
+
+    elseif appData.name == "Editing Suite" then

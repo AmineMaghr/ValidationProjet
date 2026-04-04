@@ -1,0 +1,72 @@
+local function updateScale()
+  local camera = workspace.CurrentCamera
+  if not camera then return end
+  local vp = camera.ViewportSize
+  if vp.Y > 0 and vp.X > 0 then
+    -- Increased viewport coverage from 85% to 94% making the phone physically larger on screen!
+    local sY = (vp.Y * 0.94) / SHELL_H
+    local sX = (vp.X * 0.94) / SHELL_W
+    phoneScale.Scale = math.clamp(math.min(sX, sY), 0.3, 2.5)
+  end
+end
+
+local function hookCamera()
+  local camera = workspace.CurrentCamera
+  if camera then
+    if camera:FindFirstChild("ViewportSizeObj") then return end
+    camera:GetPropertyChangedSignal("ViewportSize"):Connect(updateScale)
+    updateScale()
+  end
+end
+
+workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(hookCamera)
+hookCamera()
+
+local statusBar = makeFrame(phoneScreen, C.bg, UDim2.new(1, 0, 0, STATUS_HEIGHT), UDim2.new(0, 0, 0, 0), 1)
+statusBar.Name = "StatusBar"
+
+local statusTime = makeLabel(statusBar, "00:00", 13, C.white, FONT_BOLD, UDim2.new(0, 120, 1, 0), UDim2.new(0, 16, 0, 0))
+statusTime.TextXAlignment = Enum.TextXAlignment.Left
+statusTime.TextYAlignment = Enum.TextYAlignment.Center
+
+local statusRight = makeLabel(statusBar, "●●● WiFi 100%", 10, C.muted, FONT_MAIN, UDim2.new(0, 150, 1, 0), UDim2.new(1, -166, 0, 0))
+statusRight.TextXAlignment = Enum.TextXAlignment.Right
+statusRight.TextYAlignment = Enum.TextYAlignment.Center
+
+local homeScreen = makeFrame(phoneScreen, C.bg, UDim2.new(1, 0, 1, -STATUS_HEIGHT), UDim2.new(0, 0, 0, STATUS_HEIGHT), 1)
+homeScreen.Name = "HomeScreen"
+
+-- The beautiful background blobs for the Dark "Old Sleek Modern" Layout
+local blobsWrapper = Instance.new("CanvasGroup") -- CanvasGroup enforces rounded clipping for child shapes!
+blobsWrapper.Name = "BlobsWrapper"
+blobsWrapper.Size = UDim2.new(1, 0, 1, STATUS_HEIGHT)
+blobsWrapper.Position = UDim2.new(0, 0, 0, -STATUS_HEIGHT)
+blobsWrapper.BackgroundTransparency = 1
+makeCorner(blobsWrapper, 38) -- Perfectly matches the phone corner safely
+blobsWrapper.Parent = homeScreen
+blobsWrapper.Visible = getIsDarkMode() -- Only visible in Dark Mode
+
+local decoration1 = makeFrame(blobsWrapper, C_DARK.indigo, UDim2.new(0, 320, 0, 320), UDim2.new(0, -60, 0, -80), 0.45)
+makeCorner(decoration1, 999) 
+local decoration2 = makeFrame(blobsWrapper, C_DARK.pink, UDim2.new(0, 260, 0, 260), UDim2.new(1, -160, 1, -120), 0.55)
+makeCorner(decoration2, 999)
+local decoration3 = makeFrame(blobsWrapper, C_DARK.cyan, UDim2.new(0, 180, 0, 180), UDim2.new(1, -60, 0, 100), 0.65)
+makeCorner(decoration3, 999)
+
+local heroTime = makeLabel(homeScreen, "00:00", 48, C.white, FONT_BOLD, UDim2.new(1, 0, 0, 56), UDim2.new(0, 0, 0, 40))
+heroTime.TextXAlignment = Enum.TextXAlignment.Center
+
+local heroDate = makeLabel(homeScreen, "", 14, C.muted, FONT_MAIN, UDim2.new(1, 0, 0, 22), UDim2.new(0, 0, 0, 100))
+heroDate.TextXAlignment = Enum.TextXAlignment.Center
+
+local heroGreeting = makeLabel(homeScreen, "", 13, C.muted, FONT_MAIN, UDim2.new(1, 0, 0, 22), UDim2.new(0, 0, 0, 126))
+heroGreeting.TextXAlignment = Enum.TextXAlignment.Center
+
+local homeIndicator = makeFrame(phoneScreen, C.white, UDim2.new(0, 120, 0, 4), UDim2.new(0.5, -60, 1, -14), 0.6)
+homeIndicator.Name = "HomeIndicator"
+makeCorner(homeIndicator, 999)
+
+local appScreens = {}
+local currentAppName = nil
+local phoneOpen = false
+local phoneAnimating = false

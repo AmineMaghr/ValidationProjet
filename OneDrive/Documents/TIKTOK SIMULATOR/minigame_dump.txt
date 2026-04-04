@@ -1,0 +1,139 @@
+local function triggerRhythmAction()
+    if isWaitingToStart then return end
+    if isOnCooldown then return end
+
+    if isRhythmActive then
+      processTap(false)
+      return
+    end
+
+    tween(postBtn, TweenInfo.new(0.08), { 
+      Size = UDim2.new(0, 114, 0, 114), 
+      Position = UDim2.new(0.5, -57, 0, 118) 
+    })
+    task.delay(0.08, function()
+      tween(postBtn, TweenInfo.new(0.12), { 
+        Size = UDim2.new(0, 130, 0, 130), 
+        Position = UDim2.new(0.5, -65, 0, 110) 
+      })
+    end)
+
+    isWaitingToStart = true
+    rhythmWindow.Visible = true
+    rhythmWindow.BackgroundColor3 = Color3.fromRGB(12, 12, 18)
+    tween(rhythmWindow, TweenInfo.new(0.3), { BackgroundTransparency = 0.4 })
+    
+    scoreText.Text = ""
+    speedHint.Visible = false
+    comboDisplay.Visible = (currentCombo > 0)
+    
+    local rnd = math.random(1, 100)
+    local hintText, hintColor = "", C.white
+    local doShake = false
+    
+    if rnd <= 5 then
+      rhythmDuration = 2.2
+      hintText = "EASY"
+      hintColor = Color3.fromRGB(52, 211, 153)
+    elseif rnd <= 30 then
+      rhythmDuration = 1.5
+    elseif rnd <= 80 then
+      rhythmDuration = 0.9
+      hintText = "FAST!"
+      hintColor = Color3.fromRGB(245, 158, 11)
+    else
+      rhythmDuration = 0.5
+      hintText = "CHAOTIC!!"
+      hintColor = Color3.fromRGB(239, 68, 68)
+      doShake = true
+    end
+    
+    if hintText ~= "" then
+      speedHint.Text = hintText
+      speedHint.TextColor3 = hintColor
+      speedHint.Visible = true
+      speedHint.Position = UDim2.new(0.5, 0, 0.5, -140)
+      if doShake then
+        task.spawn(function()
+          for i = 1, 16 do
+            if not isWaitingToStart and not isRhythmActive then break end
+            speedHint.Position = UDim2.new(0.5, math.random(-6, 6), 0.5, -140 + math.random(-6, 6))
+            task.wait(0.05)
+          end
+          speedHint.Position = UDim2.new(0.5, 0, 0.5, -140)
+        end)
+      end
+    end
+
+    local colorType = activeChoice and activeChoice.color or C.indigo
+    local colorType = activeChoice and activeChoice.color or C.indigo
+    shrinkingCircle.BackgroundColor3 = colorType
+    shrinkingCircle.BackgroundTransparency = 0.5
+    shrinkingCircle.Size = UDim2.new(maxCircleScale, 0, maxCircleScale, 0)
+    
+    if inputConnection then inputConnection:Disconnect() end
+    inputConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, processed)
+      if not processed then
+        if input.KeyCode == Enum.KeyCode.Space or input.UserInputType == Enum.UserInputType.MouseButton1 then
+          if isRhythmActive then
+            triggerRhythmAction()
+          end
+        end
+      end
+    end)
+    
+    task.delay(0.8, function()
+      isWaitingToStart = false
+      isRhythmActive = true
+      speedHint.Visible = false
+      rhythmStartTime = tick()
+      
+      local playedPerfectSound = false
+      local playedUltraSound = false
+
+      if rhythmConnection then rhythmConnection:Disconnect() end
+      rhythmConnection = game:GetService("RunService").RenderStepped:Connect(function()
+        if not isRhythmActive then return end
+        local el = tick() - rhythmStartTime
+        
+        -- Interpolate scale down to 0, matching bullseyeScale at el = rhythmDuration
+        -- We calculate the velocity required to pass through maxCircleScale to bullseyeScale in rhythmDuration.
+        local shrinkRate = (maxCircleScale - bullseyeScale) / rhythmDuration
+        local currentScale = maxCircleScale - (shrinkRate * el)
+        
+        shrinkingCircle.Size = UDim2.new(currentScale, 0, currentScale, 0)
+        
+        local currentSizeX = shrinkingCircle.AbsoluteSize.X
+        local bSizeX = bullseye.AbsoluteSize.X
+        if bSizeX == 0 then bSizeX = 1 end
+        local sizeDiff = bSizeX > 0 and (math.abs(currentSizeX - bSizeX) / bSizeX) or 1
+        
+        if sizeDiff <= 0.18 and not playedPerfectSound then
+          playedPerfectSound = true
+          local sound = Instance.new("Sound")
+          sound.SoundId = "rbxassetid://6026984224"
+          sound.Volume = 0.4
+          sound.Parent = game.SoundService
+          sound:Play()
+          game.Debris:AddItem(sound, 2)
+        end
+        if sizeDiff <= 0.08 and not playedUltraSound then
+          playedUltraSound = true
+          local sound = Instance.new("Sound")
+          sound.SoundId = "rbxassetid://6026984224"
+          sound.Volume = 0.4
+          sound.PlaybackSpeed = 1.5
+          sound.Parent = game.SoundService
+          sound:Play()
+          game.Debris:AddItem(sound, 2)
+        end
+        
+        -- Let it shrink past bullseye slighly to allow late hits, auto miss at 0 or very far past
+        if el >= rhythmDuration * 1.5 or currentScale <= 0 then
+          processTap(true)
+        end
+      end)
+    end)
+  end
+
+  postBtn.MouseButton1Click:Connect(triggerRhythmAction)
