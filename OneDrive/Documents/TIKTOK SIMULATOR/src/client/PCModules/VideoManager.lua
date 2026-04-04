@@ -1451,7 +1451,7 @@ function VideoManager.create(winFrame, contentFrame, env)
             end
         end)
         
-        lfTotalHealth = math.clamp(lfTotalHealth + 3, 0, 100)
+        lfTotalHealth = math.clamp(lfTotalHealth + 6, 0, 100)
         lfTotalViews = lfTotalViews + 10 -- plus 10 views per click directly
         lfViewsLbl.Text = lfFmt(lfTotalViews) .. " views"
         
@@ -1605,7 +1605,7 @@ function VideoManager.create(winFrame, contentFrame, env)
                 end
                 
                 -- Meter drain over time
-                lfTotalHealth = math.clamp(lfTotalHealth - 20, 0, 100)
+                lfTotalHealth = math.clamp(lfTotalHealth - 15, 0, 100)
                 
                 local pct = lfTotalHealth / 100
                 TweenService:Create(lfMeterFill, TweenInfo.new(0.2), {Size = UDim2.new(pct, 0, 1, 0)}):Play()
