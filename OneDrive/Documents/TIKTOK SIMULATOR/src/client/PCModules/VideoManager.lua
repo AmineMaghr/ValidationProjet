@@ -1177,8 +1177,8 @@ function VideoManager.create(winFrame, contentFrame, env)
                 task.spawn(function()
                     while contentFrame.Parent do
                         task.wait(1)
-                        if not minigameStarted or not gameRunning then end
-                        if gameTime > 0 then
+                        if not minigameStarted or not gameRunning then continue end
+                          if gameTime > 0 then
                             gameTime = gameTime - 1
                             timerLbl.Text = string.format("00:%02d", gameTime)
                         end
@@ -1193,7 +1193,8 @@ function VideoManager.create(winFrame, contentFrame, env)
                     while contentFrame.Parent do
                         if not minigameStarted or not gameRunning then 
                             task.wait(0.5)
-                        end
+                        continue
+                          end
                         local spawnDelay = math.random(12, 18) / 10 -- 1.2 to 1.8 seconds 
                         if gameTime <= 10 then
                             spawnDelay = math.random(7, 10) / 10 -- 0.7 to 1.0 seconds (Dialed back the chaos for the finale)
@@ -1593,8 +1594,8 @@ function VideoManager.create(winFrame, contentFrame, env)
     task.spawn(function()
         while likeFarmMaster.Parent do
             task.wait(1)
-            if not lfGameRunning then end
-            if lfGameTime > 0 and lfGameRunning then
+            if not lfGameRunning then continue end
+              if lfGameTime > 0 and lfGameRunning then
                 lfGameTime = lfGameTime - 1
                 lfTimerLbl.Text = lfGameTime .. "s"
                 if lfGameTime <= 5 then

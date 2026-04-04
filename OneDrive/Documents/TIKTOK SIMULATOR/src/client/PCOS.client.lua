@@ -37,6 +37,15 @@ task.spawn(function()
             elseif sData[i] then
                 vmSlotsData[i] = sData[i]
             end
+            
+            -- RESET ACTIVE VIDEOS
+            if vmSlotsData[i] and vmSlotsData[i].state == "filled" then
+                vmSlotsData[i].state = "empty"
+                vmSlotsData[i].timeLeft = 0
+                vmSlotsData[i].cpm = 0
+                vmSlotsData[i].rank = ""
+                pcall(function() Remotes:WaitForChild("SyncSlotData"):FireServer(i, vmSlotsData[i]) end)
+            end
         end
     else
         -- Fallback
