@@ -734,7 +734,7 @@ local function openWindow(appData)
             TweenService = TweenService, HasPC = HasPC, updateViewsUI = updateViewsUI,
             BuyPC = BuyPC, SlotIncome = SlotIncome, BuySlot = BuySlot
         })
-    elseif appData.name == "PC Settings" then
+    elseif appData.name == "PC Shop Channel" then
         local scroll = Instance.new("ScrollingFrame")
         scroll.Size = UDim2.new(1, -16, 1, -16)
         scroll.Position = UDim2.new(0, 8, 0, 8)
@@ -1009,7 +1009,7 @@ local function openWindow(appData)
                     buyBtn.Active = false
                     local result = PurchasePCUpgrade:InvokeServer(upg.id)
                     if result then
-                        local newLevel = pcUpgrades[upg.id] + 1
+                        local newLevel = (pcUpgrades[upg.id] or 0) + 1
                         pcUpgrades[upg.id] = newLevel
                         currentLevel = newLevel
                         maxLevel = maxLevelBase + prestigeCount
@@ -1180,7 +1180,7 @@ end
 -- Desktop Icons Setup
 local apps = {
     {name = "Video Manager", icon = "🎬"},
-    {name = "PC Settings",   icon = "⚙️"},
+    {name = "PC Shop Channel",   icon = "🛒"},
     {name = "My Computer",   icon = "💻"},
 }
 
