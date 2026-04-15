@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.RegisterController" stylesheets="/com/example/app/css/style.css">
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40;">
+            <!-- Logo -->
+            <Label text="🐉 Midgar" alignment="CENTER" textFill="#18E3A4">
+                <font>
+                    <Font size="36" />
+                </font>
+            </Label>
+
+            <!-- Title -->
+            <Label text="Créer un compte" alignment="CENTER" textFill="#B0B9B6" style="-fx-font-size: 14;">
+            </Label>
+
+            <!-- Register Form -->
+            <VBox spacing="15" style="-fx-border-color: #18E3A4; -fx-border-width: 1; -fx-padding: 30; -fx-border-radius: 12;" maxWidth="400">
+                <Label text="Inscription" textFill="#18E3A4" style="-fx-font-size: 18; -fx-font-weight: bold;" />
+
+                <!-- Username Field -->
+                <VBox spacing="5">
+                    <Label text="Nom d'utilisateur" textFill="#E6FFF6" />
+                    <TextField fx:id="usernameField" promptText="Entrez votre nom d'utilisateur" style="-fx-control-inner-background: #1A1F1E; -fx-text-fill: #E6FFF6; -fx-font-size: 12;" />
+                </VBox>
+
+                <!-- Email Field -->
+                <VBox spacing="5">
+                    <Label text="Email" textFill="#E6FFF6" />
+                    <TextField fx:id="emailField" promptText="Entrez votre email" style="-fx-control-inner-background: #1A1F1E; -fx-text-fill: #E6FFF6; -fx-font-size: 12;" />
+                </VBox>
+
+                <!-- Password Field -->
+                <VBox spacing="5">
+                    <Label text="Mot de passe" textFill="#E6FFF6" />
+                    <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" style="-fx-control-inner-background: #1A1F1E; -fx-text-fill: #E6FFF6; -fx-font-size: 12;" />
+                </VBox>
+
+                <!-- Confirm Password Field -->
+                <VBox spacing="5">
+                    <Label text="Confirmer le mot de passe" textFill="#E6FFF6" />
+                    <PasswordField fx:id="confirmPasswordField" promptText="Confirmez votre mot de passe" style="-fx-control-inner-background: #1A1F1E; -fx-text-fill: #E6FFF6; -fx-font-size: 12;" />
+                </VBox>
+
+                <!-- Error Message -->
+                <Label fx:id="errorLabel" textFill="#FF6B6B" wrapText="true" />
+
+                <!-- Register Button -->
+                <Button fx:id="registerButton" text="S'inscrire" style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-font-weight: bold; -fx-font-size: 14; -fx-padding: 10 20;" onAction="#handleRegister" />
+
+                <!-- Login Link -->
+                <HBox spacing="5" alignment="CENTER">
+                    <Label text="Déjà un compte ?" textFill="#B0B9B6" />
+                    <Hyperlink text="Se connecter" textFill="#18E3A4" onAction="#handleLoginRedirect" style="-fx-font-size: 12;" />
+                </HBox>
+            </VBox>
+        </VBox>
+    </center>
+</BorderPane>
+

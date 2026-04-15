@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.CreateUniverseController" stylesheets="/com/example/app/css/style.css">
+    <top>
+        <HBox spacing="15" style="-fx-padding: 15; -fx-background-color: #0b0f10; -fx-border-color: #18E3A4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-font-weight: bold;" onAction="#goBack" />
+            <Label text="Créer un Univers" style="-fx-text-fill: #18E3A4; -fx-font-size: 18; -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane style="-fx-background-color: #1A1F1E; -fx-padding: 0;" fitToWidth="true">
+            <VBox spacing="20" style="-fx-padding: 30;">
+                <!-- Form Title -->
+                <Label text="Remplissez les informations de votre univers" style="-fx-text-fill: #18E3A4; -fx-font-size: 16; -fx-font-weight: bold;" />
+
+                <!-- Name Field -->
+                <VBox spacing="8">
+                    <Label text="Nom de l'univers" textFill="#E6FFF6" />
+                    <TextField fx:id="nameField" promptText="Entrez le nom de votre univers" style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" />
+                </VBox>
+
+                <!-- Short Description -->
+                <VBox spacing="8">
+                    <Label text="Description courte" textFill="#E6FFF6" />
+                    <TextArea fx:id="shortDescField" promptText="Une brève description..." wrapTextProperty="true" style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" prefHeight="60" />
+                </VBox>
+
+                <!-- Full Description -->
+                <VBox spacing="8">
+                    <Label text="Description complète" textFill="#E6FFF6" />
+                    <TextArea fx:id="descriptionField" promptText="Description détaillée de votre univers..." wrapTextProperty="true" style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" prefHeight="150" />
+                </VBox>
+
+                <!-- Themes -->
+                <VBox spacing="8">
+                    <Label text="Thèmes (séparés par des virgules)" textFill="#E6FFF6" />
+                    <TextField fx:id="themesField" promptText="Ex: Fantasy, Mystique, Aventure" style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" />
+                </VBox>
+
+                <!-- Error Message -->
+                <Label fx:id="errorLabel" textFill="#FF6B6B" wrapText="true" />
+
+                <!-- Buttons -->
+                <HBox spacing="15" alignment="CENTER" style="-fx-padding: 20 0 0 0;">
+                    <Button text="Annuler" style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-font-weight: bold; -fx-padding: 10 30;" onAction="#goBack" />
+                    <Button text="Créer" style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 10 30;" onAction="#handleCreate" />
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
+

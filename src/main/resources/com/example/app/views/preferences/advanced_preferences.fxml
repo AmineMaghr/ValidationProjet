@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.AdvancedPreferencesController" stylesheets="/com/example/app/css/style.css">
+    <top>
+        <HBox spacing="15" style="-fx-padding: 15; -fx-background-color: #0b0f10; -fx-border-color: #18E3A4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-font-weight: bold;" onAction="#goBack" />
+            <Label text="Préférences Avancées" style="-fx-text-fill: #18E3A4; -fx-font-size: 18; -fx-font-weight: bold;" />
+        </HBox>
+    </top>
+
+    <center>
+        <ScrollPane style="-fx-background-color: #1A1F1E; -fx-padding: 0;" fitToWidth="true">
+            <VBox spacing="20" style="-fx-padding: 30;">
+                <!-- Title -->
+                <Label text="Configurez vos préférences de création" style="-fx-text-fill: #18E3A4; -fx-font-size: 16; -fx-font-weight: bold;" />
+
+                <!-- Free Description -->
+                <VBox spacing="8">
+                    <Label text="Description libre" textFill="#E6FFF6" />
+                    <TextArea fx:id="descriptionField" promptText="Décrivez vos goûts en matière de fantasy..." wrapTextProperty="true" style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" prefHeight="100" />
+                </VBox>
+
+                <!-- Favorite Genre -->
+                <VBox spacing="8">
+                    <Label text="Genre préféré" textFill="#E6FFF6" />
+                    <TextField fx:id="genreField" promptText="Ex: Fantasy épique, Dark fantasy, High fantasy..." style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" />
+                </VBox>
+
+                <!-- Affinity Level -->
+                <VBox spacing="8">
+                    <Label text="Niveau d'affinité (1-10)" textFill="#E6FFF6" />
+                    <VBox spacing="5">
+                        <Slider fx:id="affinitySlider" min="1" max="10" value="5" showTickLabels="true" showTickMarks="true" majorTickUnit="1" minorTickCount="0" blockIncrement="1" style="-fx-accent: #18E3A4;" />
+                        <Label fx:id="affinityLabel" text="5" textFill="#18E3A4" style="-fx-font-weight: bold;" />
+                    </VBox>
+                </VBox>
+
+                <!-- Favorite Themes -->
+                <VBox spacing="8">
+                    <Label text="Thèmes préférés (séparés par des virgules)" textFill="#E6FFF6" />
+                    <TextField fx:id="themesField" promptText="Ex: Magie, Dragons, Chevaliers, Quêtes..." style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" />
+                </VBox>
+
+                <!-- Custom Tags -->
+                <VBox spacing="8">
+                    <Label text="Tags personnalisés (séparés par des virgules)" textFill="#E6FFF6" />
+                    <TextField fx:id="tagsField" promptText="Ex: Épique, Mystérieux, Aventure..." style="-fx-control-inner-background: #0D0F0F; -fx-text-fill: #E6FFF6; -fx-padding: 10;" />
+                </VBox>
+
+                <!-- Error Message -->
+                <Label fx:id="errorLabel" textFill="#FF6B6B" wrapText="true" />
+
+                <!-- Success Message -->
+                <Label fx:id="successLabel" textFill="#4CAF50" wrapText="true" />
+
+                <!-- Buttons -->
+                <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-padding: 20 0 0 0;">
+                    <Button text="Sauvegarder" style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-font-weight: bold; -fx-padding: 10 30;" onAction="#handleSave" />
+                    <Button text="Réinitialiser" style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-font-weight: bold; -fx-padding: 10 30;" onAction="#handleReset" />
+                    <Button text="Supprimer" style="-fx-background-color: #FF6B6B; -fx-text-fill: #FFF; -fx-font-weight: bold; -fx-padding: 10 30;" onAction="#handleDelete" />
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
+

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.MainController" spacing="10" alignment="CENTER" stylesheets="/com/example/app/css/style.css">
+    <Label fx:id="label" text="Bienvenue dans l'application" />
+    <Button text="Cliquez ici" onAction="#handleButtonAction" />
+</VBox>
