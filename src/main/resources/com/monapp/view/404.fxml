@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<StackPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.ErrorController" style="-fx-background-color: #0d1117;">
+
+    <VBox alignment="CENTER" spacing="20">
+        <Label text="404" style="-fx-text-fill: #18E3A4; -fx-font-size: 72; -fx-font-weight: bold;"/>
+        <Label text="Page non trouvée" style="-fx-text-fill: #fff; -fx-font-size: 28;"/>
+        <Label text="La page que vous recherchez n'existe pas." style="-fx-text-fill: #888;"/>
+        <Button text="Retour à l'accueil" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 25;"/>
+    </VBox>
+
+</StackPane>
