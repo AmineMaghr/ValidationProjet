@@ -1,0 +1,103 @@
+/* modern-style.css - Style global pour l'interface moderne */
+
+.root {
+    -fx-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar personnalisée */
+.scroll-bar:vertical .track {
+    -fx-background-color: #1a2530;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #18E3A4;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #13c891;
+}
+
+/* Animation pour les cartes */
+.card {
+    -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Boutons */
+.button {
+    -fx-transition: all 0.2s ease;
+}
+
+.button:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Champs de texte */
+.text-field, .text-area, .combo-box {
+    -fx-focus-color: #18E3A4;
+    -fx-faint-focus-color: rgba(24,227,164,0.2);
+}
+
+/* TilePane */
+.tile-pane {
+    -fx-padding: 10;
+}
+
+/* Animation pour les champs de texte */
+.text-field:focused, .text-area:focused, .combo-box:focused {
+    -fx-border-color: #18E3A4;
+    -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.3), 8, 0, 0, 0);
+}
+
+/* Animation pour le bouton créer */
+.button {
+    -fx-transition: all 0.25s ease-in-out;
+}
+
+.button:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Style pour le bouton créer au survol */
+.button:default {
+    -fx-background-color: #13c891;
+}
+
+/* ScrollPane transparent */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Style pour les labels d'erreur */
+.error-label {
+    -fx-background-color: rgba(255,107,107,0.1);
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius: 8;
+}
+
+/* ComboBox popup styling */
+.combo-box-popup .list-view {
+    -fx-background-color: #1a2530;
+    -fx-border-color: #2a3540;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #fff;
+    -fx-background-color: transparent;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #2a3540;
+}
