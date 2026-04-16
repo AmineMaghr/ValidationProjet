@@ -64,6 +64,28 @@
     -fx-background-color: rgba(24, 227, 164, 0.1);
 }
 
+/* ===== SIDEBAR BUTTONS ===== */
+.sidebar-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #B0B9B6;
+    -fx-padding: 12 20;
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-font-size: 14;
+}
+
+.sidebar-btn:hover {
+    -fx-background-color: rgba(24, 227, 164, 0.15);
+    -fx-text-fill: #18E3A4;
+}
+
+.sidebar-btn:pressed {
+    -fx-background-color: rgba(24, 227, 164, 0.25);
+    -fx-text-fill: #18E3A4;
+}
+
 /* ===== BOUTONS PRINCIPAUX ===== */
 .btn-primary {
     -fx-background-color: #18E3A4;

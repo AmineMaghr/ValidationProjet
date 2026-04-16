@@ -50,7 +50,7 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
 
     @Override
     public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM oeuvres WHERE id = ?";
+        String sql = "DELETE FROM oeuvre WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -59,7 +59,7 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
     @Override
     public List<Oeuvre> select() throws SQLException {
         List<Oeuvre> list = new ArrayList<>();
-        String sql = "SELECT * FROM oeuvres ORDER BY created_at DESC";
+        String sql = "SELECT * FROM oeuvre ORDER BY created_at DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -70,7 +70,7 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
 
     public List<Oeuvre> findByType(String type) throws SQLException {
         List<Oeuvre> list = new ArrayList<>();
-        String sql = "SELECT * FROM oeuvres WHERE type = ? ORDER BY created_at DESC";
+        String sql = "SELECT * FROM oeuvre WHERE type = ? ORDER BY created_at DESC";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, type);
         ResultSet rs = ps.executeQuery();
@@ -82,7 +82,7 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
 
     public List<Oeuvre> findByAuthor(String author) throws SQLException {
         List<Oeuvre> list = new ArrayList<>();
-        String sql = "SELECT * FROM oeuvres WHERE author = ? ORDER BY created_at DESC";
+        String sql = "SELECT * FROM oeuvre WHERE author = ? ORDER BY created_at DESC";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, author);
         ResultSet rs = ps.executeQuery();

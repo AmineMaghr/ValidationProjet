@@ -17,7 +17,7 @@ public class UserService implements IService<User> {
 
     @Override
     public void add(User user) throws SQLException {
-        String sql = "INSERT INTO user (username, email, password, role, nom, prenom) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO app_user (username, email, password, role, nom, prenom) VALUES (?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, user.getUsername());
         ps.setString(2, user.getEmail());
@@ -43,7 +43,7 @@ public class UserService implements IService<User> {
 
     @Override
     public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM app_user WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -52,7 +52,7 @@ public class UserService implements IService<User> {
     @Override
     public List<User> select() throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM user";
+        String sql = "SELECT * FROM app_user";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -71,7 +71,7 @@ public class UserService implements IService<User> {
     }
 
     public User authenticate(String username, String password) throws SQLException {
-        String sql = "SELECT * FROM user WHERE username = ? AND password = ?";
+        String sql = "SELECT * FROM app_user WHERE username = ? AND password = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, username);
         ps.setString(2, password);
@@ -90,12 +90,13 @@ public class UserService implements IService<User> {
     }
 
     public boolean changePassword(int userId, String oldPassword, String newPassword) throws SQLException {
-        String checkSql = "SELECT * FROM user WHERE id = ? AND password = ?";
+        String checkSql = "SELECT * FROM app_user WHERE id = ? AND password = ?";
         PreparedStatement checkPs = connection.prepareStatement(checkSql);
         checkPs.setInt(1, userId);
         checkPs.setString(2, oldPassword);
         ResultSet rs = checkPs.executeQuery();
-        if (!rs.next()) return false;
+        if (!rs.next())
+            return false;
 
         String updateSql = "UPDATE user SET password = ? WHERE id = ?";
         PreparedStatement updatePs = connection.prepareStatement(updateSql);
@@ -105,12 +106,14 @@ public class UserService implements IService<User> {
         return true;
     }
 
-    public List<User> searchUsersAdmin(String search, Object start, Object end, String sort, String direction) throws SQLException {
+    public List<User> searchUsersAdmin(String search, Object start, Object end, String sort, String direction)
+            throws SQLException {
         return select();
     }
+
     public List<User> searchUsers(String query) throws SQLException {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM user WHERE username LIKE ? OR prenom LIKE ? OR nom LIKE ?";
+        String sql = "SELECT * FROM app_user WHERE username LIKE ? OR prenom LIKE ? OR nom LIKE ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         String searchPattern = "%" + query + "%";
         ps.setString(1, searchPattern);
@@ -129,9 +132,11 @@ public class UserService implements IService<User> {
         }
         return users;
     }
-    public List<User> searchUsersAdmin(String search, LocalDate start, LocalDate end, String sort, String direction) throws SQLException {
+
+    public List<User> searchUsersAdmin(String search, LocalDate start, LocalDate end, String sort, String direction)
+            throws SQLException {
         List<User> users = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM user WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT * FROM app_user WHERE 1=1");
         List<Object> params = new ArrayList<>();
 
         if (search != null && !search.isEmpty()) {

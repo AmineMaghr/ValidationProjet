@@ -53,7 +53,7 @@ public class DefiService implements IService<Defi> {
 
     @Override
     public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM defi WHERE id = ?";
+        String sql = "DELETE FROM challenge WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -62,7 +62,7 @@ public class DefiService implements IService<Defi> {
     @Override
     public List<Defi> select() throws SQLException {
         List<Defi> list = new ArrayList<>();
-        String sql = "SELECT * FROM defi";
+        String sql = "SELECT * FROM challenge";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -98,12 +98,12 @@ public class DefiService implements IService<Defi> {
         String sql;
         PreparedStatement ps;
         if (search != null && !search.isEmpty()) {
-            sql = "SELECT * FROM defi WHERE titre LIKE ? OR theme LIKE ? " + orderBy;
+            sql = "SELECT * FROM challenge WHERE titre LIKE ? OR theme LIKE ? " + orderBy;
             ps = connection.prepareStatement(sql);
             ps.setString(1, "%" + search + "%");
             ps.setString(2, "%" + search + "%");
         } else {
-            sql = "SELECT * FROM defi " + orderBy;
+            sql = "SELECT * FROM challenge " + orderBy;
             ps = connection.prepareStatement(sql);
         }
         ResultSet rs = ps.executeQuery();

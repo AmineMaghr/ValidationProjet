@@ -32,93 +32,97 @@ public class MyDatabase {
         try {
             // Créer les tables
             String createTables = """
-                CREATE TABLE IF NOT EXISTS user (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    username VARCHAR(255) NOT NULL UNIQUE,
-                    email VARCHAR(255) NOT NULL UNIQUE,
-                    password VARCHAR(255) NOT NULL,
-                    role VARCHAR(50) DEFAULT 'user',
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                    CREATE TABLE IF NOT EXISTS app_user (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        username VARCHAR(255) NOT NULL UNIQUE,
+                        email VARCHAR(255) NOT NULL UNIQUE,
+                        password VARCHAR(255) NOT NULL,
+                        role VARCHAR(50) DEFAULT 'user',
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
-                CREATE TABLE IF NOT EXISTS universe (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    short_description TEXT,
-                    description TEXT,
-                    themes VARCHAR(500),
-                    image_url VARCHAR(500),
-                    creator_id INT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                    CREATE TABLE IF NOT EXISTS universe (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        short_description TEXT,
+                        description TEXT,
+                        themes VARCHAR(500),
+                        image_url VARCHAR(500),
+                        creator_id INT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
-                CREATE TABLE IF NOT EXISTS oeuvre (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    title VARCHAR(255) NOT NULL,
-                    description TEXT,
-                    image_url VARCHAR(500),
-                    universe_id INT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                    CREATE TABLE IF NOT EXISTS oeuvres (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        type VARCHAR(100),
+                        description TEXT,
+                        date_publication DATE,
+                        image_url VARCHAR(500),
+                        author VARCHAR(255),
+                        created_by_id INT,
+                        universe_id INT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
-                CREATE TABLE IF NOT EXISTS personnage (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    description TEXT,
-                    image_url VARCHAR(500),
-                    universe_id INT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                    CREATE TABLE IF NOT EXISTS personnage (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        image_url VARCHAR(500),
+                        universe_id INT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
-                CREATE TABLE IF NOT EXISTS challenge (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    title VARCHAR(255) NOT NULL,
-                    description TEXT,
-                    difficulty VARCHAR(50),
-                    points INT DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
+                    CREATE TABLE IF NOT EXISTS challenge (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        title VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        difficulty VARCHAR(50),
+                        points INT DEFAULT 0,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
 
-                CREATE TABLE IF NOT EXISTS artefact (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    name VARCHAR(255) NOT NULL,
-                    description TEXT,
-                    price DECIMAL(10,2),
-                    image_url VARCHAR(500),
-                    type VARCHAR(100),
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                );
-                """;
+                    CREATE TABLE IF NOT EXISTS artefact (
+                        id INT AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(255) NOT NULL,
+                        description TEXT,
+                        price DECIMAL(10,2),
+                        image_url VARCHAR(500),
+                        type VARCHAR(100),
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    );
+                    """;
 
             connection.createStatement().execute(createTables);
 
             // Insérer des données de test
             String insertData = """
-                INSERT INTO user (username, email, password, role) VALUES
-                ('admin', 'admin@midgar.com', '123456', 'admin'),
-                ('user', 'user@midgar.com', 'password', 'user');
+                    INSERT INTO app_user (username, email, password, role) VALUES
+                    ('admin', 'admin@midgar.com', '123456', 'admin'),
+                    ('user', 'user@midgar.com', 'password', 'user');
 
-                INSERT INTO universe (name, short_description, description, themes, creator_id) VALUES
-                ('Univers Test', 'Un univers de démonstration', 'Cet univers sert à tester l''application Midgar.', 'Fantasy, Aventure', 1);
+                    INSERT INTO universe (name, short_description, description, themes, creator_id) VALUES
+                    ('Univers Test', 'Un univers de démonstration', 'Cet univers sert à tester l''application Midgar.', 'Fantasy, Aventure', 1);
 
-                INSERT INTO oeuvre (title, description, universe_id) VALUES
-                ('Oeuvre Test', 'Une oeuvre de démonstration dans l''univers test.', 1);
+                    INSERT INTO oeuvres (title, type, description, date_publication, image_url, author, created_by_id, universe_id) VALUES
+                    ('Oeuvre Test', 'Peinture', 'Une oeuvre de démonstration dans l''univers test.', CURRENT_DATE, NULL, 'Auteur Test', 1, 1);
 
-                INSERT INTO personnage (name, description, universe_id) VALUES
-                ('Personnage Test', 'Un personnage de démonstration.', 1);
+                    INSERT INTO personnage (name, description, universe_id) VALUES
+                    ('Personnage Test', 'Un personnage de démonstration.', 1);
 
-                INSERT INTO challenge (title, description, difficulty, points) VALUES
-                ('Défi Test', 'Un défi de démonstration pour tester l''application.', 'Facile', 10);
+                    INSERT INTO challenge (title, description, difficulty, points) VALUES
+                    ('Défi Test', 'Un défi de démonstration pour tester l''application.', 'Facile', 10);
 
-                INSERT INTO artefact (name, description, price, type) VALUES
-                ('Artefact Test', 'Un artefact de démonstration pour la boutique.', 99.99, 'Arme');
-                """;
+                    INSERT INTO artefact (name, description, price, type) VALUES
+                    ('Artefact Test', 'Un artefact de démonstration pour la boutique.', 99.99, 'Arme');
+                    """;
 
             connection.createStatement().execute(insertData);
             System.out.println("✅ Base de données initialisée avec des données de test !");

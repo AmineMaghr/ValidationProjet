@@ -54,7 +54,7 @@ public class DefiDAO implements IDAO<Defi> {
 
     @Override
     public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM defi WHERE id = ?";
+        String sql = "DELETE FROM challenge WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -63,7 +63,7 @@ public class DefiDAO implements IDAO<Defi> {
     @Override
     public List<Defi> select() throws SQLException {
         List<Defi> list = new ArrayList<>();
-        String sql = "SELECT * FROM defi ORDER BY date_debut DESC";
+        String sql = "SELECT * FROM challenge ORDER BY date_debut DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -74,7 +74,7 @@ public class DefiDAO implements IDAO<Defi> {
 
     public List<Defi> findOuverts() throws SQLException {
         List<Defi> list = new ArrayList<>();
-        String sql = "SELECT * FROM defi WHERE statut = 'OUVERT' ORDER BY date_debut DESC";
+        String sql = "SELECT * FROM challenge WHERE statut = 'OUVERT' ORDER BY date_debut DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -85,7 +85,7 @@ public class DefiDAO implements IDAO<Defi> {
 
     public List<Defi> findByTheme(String theme) throws SQLException {
         List<Defi> list = new ArrayList<>();
-        String sql = "SELECT * FROM defi WHERE theme = ? ORDER BY date_debut DESC";
+        String sql = "SELECT * FROM challenge WHERE theme = ? ORDER BY date_debut DESC";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, theme);
         ResultSet rs = ps.executeQuery();
@@ -97,7 +97,7 @@ public class DefiDAO implements IDAO<Defi> {
 
     public List<Defi> findActifs() throws SQLException {
         List<Defi> list = new ArrayList<>();
-        String sql = "SELECT * FROM defi WHERE date_fin >= CURDATE() ORDER BY date_debut DESC";
+        String sql = "SELECT * FROM challenge WHERE date_fin >= CURDATE() ORDER BY date_debut DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -107,7 +107,7 @@ public class DefiDAO implements IDAO<Defi> {
     }
 
     public Defi findWithParticipations(int id) throws SQLException {
-        String sql = "SELECT * FROM defi WHERE id = ?";
+        String sql = "SELECT * FROM challenge WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ResultSet rs = ps.executeQuery();
@@ -118,7 +118,7 @@ public class DefiDAO implements IDAO<Defi> {
     }
 
     public int countByStatut(String statut) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM defi WHERE statut = ?";
+        String sql = "SELECT COUNT(*) FROM challenge WHERE statut = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, statut);
         ResultSet rs = ps.executeQuery();
@@ -130,7 +130,7 @@ public class DefiDAO implements IDAO<Defi> {
 
     public List<Defi> searchDefis(String search, String sortBy) throws SQLException {
         List<Defi> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM defi WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT * FROM challenge WHERE 1=1");
 
         if (search != null && !search.isEmpty()) {
             sql.append(" AND (titre LIKE ? OR theme LIKE ?)");

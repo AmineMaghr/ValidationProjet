@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<!-- Navigation Sidebar - Réutilisable sur toutes les pages -->
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.SidebarController"
+      style="-fx-background-color: #1a1f1e; -fx-border-width: 0 1 0 0; -fx-border-color: #2a3139;"
+      prefWidth="220">
+
+    <padding>
+        <Insets top="20" right="0" bottom="20" left="0"/>
+    </padding>
+
+    <!-- Logo/Branding -->
+    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 15 20;">
+        <Label text="⚔️" style="-fx-font-size: 24px;"/>
+        <Label text="Midgar" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+    </HBox>
+
+    <Separator style="-fx-padding: 0 10;"/>
+
+    <!-- Navigation Menu -->
+    <VBox spacing="5" style="-fx-padding: 10;">
+        <Button fx:id="homeBtn" text="🏠 Accueil" styleClass="sidebar-btn" onAction="#goAccueil" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="discoverBtn" text="🔍 Découvrir" styleClass="sidebar-btn" onAction="#goDiscover" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="universesBtn" text="🌍 Univers" styleClass="sidebar-btn" onAction="#goUniverses" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="personnagesBtn" text="👥 Personnages" styleClass="sidebar-btn" onAction="#goPersonnages" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="oeuvresBtn" text="🎨 Œuvre" styleClass="sidebar-btn" onAction="#goOeuvres" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="artefactsBtn" text="✨ Artefacts" styleClass="sidebar-btn" onAction="#goArtefacts" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="shopBtn" text="🛍️ Boutique" styleClass="sidebar-btn" onAction="#goShop" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="challengesBtn" text="⚡ Défis" styleClass="sidebar-btn" onAction="#goChallenges" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+    </VBox>
+
+    <Separator style="-fx-padding: 10;"/>
+
+    <!-- User Menu (bottom) -->
+    <VBox spacing="5" style="-fx-padding: 10;" VBox.vgrow="ALWAYS" alignment="BOTTOM">
+        <Button fx:id="userMenuBtn" text="👤 Mon Profil" styleClass="sidebar-btn" onAction="#goProfile" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20;"/>
+        <Button fx:id="adminMenuBtn" text="⚙️ Admin" styleClass="sidebar-btn" onAction="#goAdmin" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20; -fx-text-fill: #ff9800;" visible="false"/>
+        <Button fx:id="logoutBtn" text="🚪 Déconnexion" styleClass="sidebar-btn" onAction="#goLogin" style="-fx-alignment: CENTER_LEFT; -fx-text-alignment: LEFT; -fx-padding: 12 20; -fx-text-fill: #ff6b6b;" visible="false"/>
+    </VBox>
+
+</VBox>

@@ -23,50 +23,105 @@ import java.util.List;
 
 public class ArtefactController extends BaseController {
 
+    // ==================== SIDEBAR BUTTONS ====================
+    @FXML
+    private Button homeBtn;
+    @FXML
+    private Button discoverBtn;
+    @FXML
+    private Button universesBtn;
+    @FXML
+    private Button personnagesBtn;
+    @FXML
+    private Button oeuvresBtn;
+    @FXML
+    private Button artefactsBtn;
+    @FXML
+    private Button shopBtn;
+    @FXML
+    private Button challengesBtn;
+
     // ==================== ÉLÉMENTS COMMUNS ====================
-    @FXML private StackPane contentArea;
+    @FXML
+    private StackPane contentArea;
 
     // ==================== VUE LISTE (index) ====================
-    @FXML private VBox listView;
-    @FXML private TextField searchField;
-    @FXML private ComboBox<String> typeFilter;
-    @FXML private FlowPane artefactsGrid;
-    @FXML private Label resultCount;
-    @FXML private Button createBtn;
-    @FXML private CheckBox myItemsCheckbox;
-    @FXML private VBox emptyState;
-    @FXML private Button allBtn;
-    @FXML private Button myItemsBtn;
+    @FXML
+    private VBox listView;
+    @FXML
+    private TextField searchField;
+    @FXML
+    private ComboBox<String> typeFilter;
+    @FXML
+    private FlowPane artefactsGrid;
+    @FXML
+    private Label resultCount;
+    @FXML
+    private Button createBtn;
+    @FXML
+    private CheckBox myItemsCheckbox;
+    @FXML
+    private VBox emptyState;
+    @FXML
+    private Button allBtn;
+    @FXML
+    private Button myItemsBtn;
 
     // ==================== VUE FORMULAIRE (create/edit) ====================
-    @FXML private VBox formView;
-    @FXML private TextField nameField;
-    @FXML private ComboBox<String> typeCombo;
-    @FXML private TextField universeField;
-    @FXML private TextArea originsArea;
-    @FXML private TextArea powersArea;
-    @FXML private ComboBox<String> rarityCombo;
-    @FXML private ImageView formImageView;
-    @FXML private Button selectImageBtn;
-    @FXML private Button submitBtn;
-    @FXML private Button cancelBtn;
-    @FXML private Label formTitle;
-    @FXML private Label formError;
+    @FXML
+    private VBox formView;
+    @FXML
+    private TextField nameField;
+    @FXML
+    private ComboBox<String> typeCombo;
+    @FXML
+    private TextField universeField;
+    @FXML
+    private TextArea originsArea;
+    @FXML
+    private TextArea powersArea;
+    @FXML
+    private ComboBox<String> rarityCombo;
+    @FXML
+    private ImageView formImageView;
+    @FXML
+    private Button selectImageBtn;
+    @FXML
+    private Button submitBtn;
+    @FXML
+    private Button cancelBtn;
+    @FXML
+    private Label formTitle;
+    @FXML
+    private Label formError;
 
     // ==================== VUE DÉTAIL (show) ====================
-    @FXML private VBox detailView;
-    @FXML private Label nameLabel;
-    @FXML private Label typeLabel;
-    @FXML private Label universeLabel;
-    @FXML private Label rarityLabel;
-    @FXML private TextArea originsDetailArea;
-    @FXML private TextArea powersDetailArea;
-    @FXML private ImageView detailImageView;
-    @FXML private Button editBtn;
-    @FXML private Button deleteBtn;
-    @FXML private TextArea commentArea;
-    @FXML private Button addCommentBtn;
-    @FXML private ListView<Commentaire> commentList;
+    @FXML
+    private VBox detailView;
+    @FXML
+    private Label nameLabel;
+    @FXML
+    private Label typeLabel;
+    @FXML
+    private Label universeLabel;
+    @FXML
+    private Label rarityLabel;
+    @FXML
+    private TextArea originsDetailArea;
+    @FXML
+    private TextArea powersDetailArea;
+    @FXML
+    private ImageView detailImageView;
+    @FXML
+    private Button editBtn;
+    @FXML
+    private Button deleteBtn;
+    @FXML
+    private TextArea commentArea;
+    @FXML
+    private Button addCommentBtn;
+    @FXML
+    private ListView<Commentaire> commentList;
 
     // ==================== SERVICES ====================
     private ArtefactService artefactService = new ArtefactService();
@@ -86,10 +141,12 @@ public class ArtefactController extends BaseController {
             typeFilter.setValue("Tous les types");
         }
         if (typeCombo != null) {
-            typeCombo.setItems(FXCollections.observableArrayList("Arme", "Armure", "Bijoux", "Relique", "Outil Magique"));
+            typeCombo.setItems(
+                    FXCollections.observableArrayList("Arme", "Armure", "Bijoux", "Relique", "Outil Magique"));
         }
         if (rarityCombo != null) {
-            rarityCombo.setItems(FXCollections.observableArrayList("Commune", "Rare", "Épique", "Légendaire", "Mythique"));
+            rarityCombo
+                    .setItems(FXCollections.observableArrayList("Commune", "Rare", "Épique", "Légendaire", "Mythique"));
         }
 
         // Écouteurs pour la liste
@@ -109,8 +166,10 @@ public class ArtefactController extends BaseController {
         loadArtefacts();
 
         if (!UserSession.isLoggedIn()) {
-            if (myItemsCheckbox != null) myItemsCheckbox.setVisible(false);
-            if (myItemsBtn != null) myItemsBtn.setVisible(false);
+            if (myItemsCheckbox != null)
+                myItemsCheckbox.setVisible(false);
+            if (myItemsBtn != null)
+                myItemsBtn.setVisible(false);
         }
     }
 
@@ -183,7 +242,8 @@ public class ArtefactController extends BaseController {
             @Override
             protected List<Artefact> call() throws SQLException {
                 String search = searchField != null ? searchField.getText() : "";
-                String type = (typeFilter != null && "Tous les types".equals(typeFilter.getValue())) ? null : (typeFilter != null ? typeFilter.getValue() : null);
+                String type = (typeFilter != null && "Tous les types".equals(typeFilter.getValue())) ? null
+                        : (typeFilter != null ? typeFilter.getValue() : null);
                 Integer userId = null;
                 if ("my".equals(currentFilter) && UserSession.isLoggedIn()) {
                     userId = UserSession.getCurrentUser().getId();
@@ -197,13 +257,15 @@ public class ArtefactController extends BaseController {
             if (resultCount != null) {
                 resultCount.setText(artefacts.size() + " artefact(s) trouvé(s)");
             }
-            if (emptyState != null) emptyState.setVisible(artefacts.isEmpty());
+            if (emptyState != null)
+                emptyState.setVisible(artefacts.isEmpty());
         });
         new Thread(task).start();
     }
 
     private void updateGrid() {
-        if (artefactsGrid == null) return;
+        if (artefactsGrid == null)
+            return;
         artefactsGrid.getChildren().clear();
         for (Artefact artefact : artefacts) {
             artefactsGrid.getChildren().add(createArtefactCard(artefact));
@@ -212,12 +274,14 @@ public class ArtefactController extends BaseController {
 
     private VBox createArtefactCard(Artefact artefact) {
         VBox card = new VBox();
-        card.setStyle("-fx-background-color: #1a1f1e; -fx-background-radius: 12; -fx-padding: 0; -fx-pref-width: 280; -fx-cursor: hand;");
+        card.setStyle(
+                "-fx-background-color: #1a1f1e; -fx-background-radius: 12; -fx-padding: 0; -fx-pref-width: 280; -fx-cursor: hand;");
         card.setOnMouseClicked(e -> showArtefactDetail(artefact.getId()));
 
         // Bannière
         StackPane banner = new StackPane();
-        banner.setStyle("-fx-pref-height: 160; -fx-background-color: linear-gradient(to bottom, #FF6B6B, #FF8E7F); -fx-alignment: center;");
+        banner.setStyle(
+                "-fx-pref-height: 160; -fx-background-color: linear-gradient(to bottom, #FF6B6B, #FF8E7F); -fx-alignment: center;");
 
         if (artefact.getImageUrl() != null && !artefact.getImageUrl().isEmpty()) {
             try {
@@ -246,9 +310,11 @@ public class ArtefactController extends BaseController {
 
         HBox tags = new HBox(5);
         Label typeTag = new Label(artefact.getType());
-        typeTag.setStyle("-fx-background-color: rgba(255,107,107,0.1); -fx-text-fill: #FF6B6B; -fx-border-color: #FF6B6B; -fx-border-radius: 12; -fx-padding: 4 10; -fx-font-size: 11px;");
+        typeTag.setStyle(
+                "-fx-background-color: rgba(255,107,107,0.1); -fx-text-fill: #FF6B6B; -fx-border-color: #FF6B6B; -fx-border-radius: 12; -fx-padding: 4 10; -fx-font-size: 11px;");
         Label rarityTag = new Label(artefact.getRarity());
-        rarityTag.setStyle("-fx-background-color: rgba(255,107,107,0.1); -fx-text-fill: #FF6B6B; -fx-border-color: #FF6B6B; -fx-border-radius: 12; -fx-padding: 4 10; -fx-font-size: 11px;");
+        rarityTag.setStyle(
+                "-fx-background-color: rgba(255,107,107,0.1); -fx-text-fill: #FF6B6B; -fx-border-color: #FF6B6B; -fx-border-radius: 12; -fx-padding: 4 10; -fx-font-size: 11px;");
         tags.getChildren().addAll(typeTag, rarityTag);
 
         Text description = new Text(artefact.getOrigins());
@@ -273,9 +339,12 @@ public class ArtefactController extends BaseController {
 
     @FXML
     private void resetFilters() {
-        if (searchField != null) searchField.clear();
-        if (typeFilter != null) typeFilter.setValue("Tous les types");
-        if (myItemsCheckbox != null) myItemsCheckbox.setSelected(false);
+        if (searchField != null)
+            searchField.clear();
+        if (typeFilter != null)
+            typeFilter.setValue("Tous les types");
+        if (myItemsCheckbox != null)
+            myItemsCheckbox.setSelected(false);
         currentFilter = "all";
         loadArtefacts();
     }
@@ -285,8 +354,10 @@ public class ArtefactController extends BaseController {
         isEditMode = false;
         currentArtefact = null;
         selectedImageFile = null;
-        if (formTitle != null) formTitle.setText("Créer un Artefact");
-        if (submitBtn != null) submitBtn.setText("Créer");
+        if (formTitle != null)
+            formTitle.setText("Créer un Artefact");
+        if (submitBtn != null)
+            submitBtn.setText("Créer");
         clearForm();
         showFormView();
     }
@@ -314,9 +385,12 @@ public class ArtefactController extends BaseController {
         String activeStyle = "-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-padding: 8 16; -fx-background-radius: 15;";
         String inactiveStyle = "-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;";
 
-        if (allBtn != null) allBtn.setStyle(inactiveStyle);
-        if (myItemsBtn != null) myItemsBtn.setStyle(inactiveStyle);
-        if (activeButton != null) activeButton.setStyle(activeStyle);
+        if (allBtn != null)
+            allBtn.setStyle(inactiveStyle);
+        if (myItemsBtn != null)
+            myItemsBtn.setStyle(inactiveStyle);
+        if (activeButton != null)
+            activeButton.setStyle(activeStyle);
     }
 
     // ==================== VUE FORMULAIRE (create/edit) ====================
@@ -325,8 +399,7 @@ public class ArtefactController extends BaseController {
     private void selectImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif")
-        );
+                new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif"));
         selectedImageFile = fileChooser.showOpenDialog(null);
         if (selectedImageFile != null && formImageView != null) {
             formImageView.setImage(new Image(selectedImageFile.toURI().toString()));
@@ -336,13 +409,34 @@ public class ArtefactController extends BaseController {
 
     @FXML
     private void submitForm() {
-        if (nameField == null || nameField.getText().isEmpty()) { showFormError("Le nom est requis"); return; }
-        if (typeCombo == null || typeCombo.getValue() == null) { showFormError("Le type est requis"); return; }
-        if (universeField == null || universeField.getText().isEmpty()) { showFormError("L'univers est requis"); return; }
-        if (originsArea == null || originsArea.getText().isEmpty()) { showFormError("Les origines sont requises"); return; }
-        if (powersArea == null || powersArea.getText().isEmpty()) { showFormError("Les pouvoirs sont requis"); return; }
-        if (rarityCombo == null || rarityCombo.getValue() == null) { showFormError("La rareté est requise"); return; }
-        if (selectedImageFile == null && !isEditMode) { showFormError("L'image est requise"); return; }
+        if (nameField == null || nameField.getText().isEmpty()) {
+            showFormError("Le nom est requis");
+            return;
+        }
+        if (typeCombo == null || typeCombo.getValue() == null) {
+            showFormError("Le type est requis");
+            return;
+        }
+        if (universeField == null || universeField.getText().isEmpty()) {
+            showFormError("L'univers est requis");
+            return;
+        }
+        if (originsArea == null || originsArea.getText().isEmpty()) {
+            showFormError("Les origines sont requises");
+            return;
+        }
+        if (powersArea == null || powersArea.getText().isEmpty()) {
+            showFormError("Les pouvoirs sont requis");
+            return;
+        }
+        if (rarityCombo == null || rarityCombo.getValue() == null) {
+            showFormError("La rareté est requise");
+            return;
+        }
+        if (selectedImageFile == null && !isEditMode) {
+            showFormError("L'image est requise");
+            return;
+        }
 
         Artefact artefact = isEditMode ? currentArtefact : new Artefact();
         artefact.setName(nameField.getText());
@@ -391,18 +485,25 @@ public class ArtefactController extends BaseController {
     }
 
     private void clearForm() {
-        if (nameField != null) nameField.clear();
-        if (typeCombo != null) typeCombo.setValue(null);
-        if (universeField != null) universeField.clear();
-        if (originsArea != null) originsArea.clear();
-        if (powersArea != null) powersArea.clear();
-        if (rarityCombo != null) rarityCombo.setValue(null);
+        if (nameField != null)
+            nameField.clear();
+        if (typeCombo != null)
+            typeCombo.setValue(null);
+        if (universeField != null)
+            universeField.clear();
+        if (originsArea != null)
+            originsArea.clear();
+        if (powersArea != null)
+            powersArea.clear();
+        if (rarityCombo != null)
+            rarityCombo.setValue(null);
         if (formImageView != null) {
             formImageView.setImage(null);
             formImageView.setVisible(false);
         }
         selectedImageFile = null;
-        if (formError != null) formError.setVisible(false);
+        if (formError != null)
+            formError.setVisible(false);
     }
 
     // ==================== VUE DÉTAIL (show) ====================
@@ -420,25 +521,36 @@ public class ArtefactController extends BaseController {
         task.setOnSucceeded(e -> {
             if (task.getValue() != null) {
                 currentArtefact = task.getValue();
-                if (nameLabel != null) nameLabel.setText(currentArtefact.getName());
-                if (typeLabel != null) typeLabel.setText(currentArtefact.getType());
-                if (universeLabel != null) universeLabel.setText(currentArtefact.getUniverse());
-                if (rarityLabel != null) rarityLabel.setText(currentArtefact.getRarity());
-                if (originsDetailArea != null) originsDetailArea.setText(currentArtefact.getOrigins());
-                if (powersDetailArea != null) powersDetailArea.setText(currentArtefact.getPowers());
+                if (nameLabel != null)
+                    nameLabel.setText(currentArtefact.getName());
+                if (typeLabel != null)
+                    typeLabel.setText(currentArtefact.getType());
+                if (universeLabel != null)
+                    universeLabel.setText(currentArtefact.getUniverse());
+                if (rarityLabel != null)
+                    rarityLabel.setText(currentArtefact.getRarity());
+                if (originsDetailArea != null)
+                    originsDetailArea.setText(currentArtefact.getOrigins());
+                if (powersDetailArea != null)
+                    powersDetailArea.setText(currentArtefact.getPowers());
 
-                if (currentArtefact.getImageUrl() != null && !currentArtefact.getImageUrl().isEmpty() && detailImageView != null) {
+                if (currentArtefact.getImageUrl() != null && !currentArtefact.getImageUrl().isEmpty()
+                        && detailImageView != null) {
                     try {
                         detailImageView.setImage(new Image(currentArtefact.getImageUrl()));
-                    } catch (Exception ex) {}
+                    } catch (Exception ex) {
+                    }
                 }
 
                 boolean canEdit = UserSession.isLoggedIn() &&
                         (UserSession.getCurrentUser().isAdmin() ||
                                 (currentArtefact.getCreatedBy() != null &&
-                                        currentArtefact.getCreatedBy().getId() == UserSession.getCurrentUser().getId()));
-                if (editBtn != null) editBtn.setVisible(canEdit);
-                if (deleteBtn != null) deleteBtn.setVisible(canEdit);
+                                        currentArtefact.getCreatedBy().getId() == UserSession.getCurrentUser()
+                                                .getId()));
+                if (editBtn != null)
+                    editBtn.setVisible(canEdit);
+                if (deleteBtn != null)
+                    deleteBtn.setVisible(canEdit);
 
                 loadComments();
                 showDetailView();
@@ -448,7 +560,8 @@ public class ArtefactController extends BaseController {
     }
 
     private void loadComments() {
-        if (currentArtefact == null || commentList == null) return;
+        if (currentArtefact == null || commentList == null)
+            return;
         Task<List<Commentaire>> task = new Task<>() {
             @Override
             protected List<Commentaire> call() throws SQLException {
@@ -463,22 +576,33 @@ public class ArtefactController extends BaseController {
     private void editArtefact() {
         isEditMode = true;
         selectedImageFile = null;
-        if (formTitle != null) formTitle.setText("Modifier l'Artefact");
-        if (submitBtn != null) submitBtn.setText("Mettre à jour");
-        if (nameField != null) nameField.setText(currentArtefact.getName());
-        if (typeCombo != null) typeCombo.setValue(currentArtefact.getType());
-        if (universeField != null) universeField.setText(currentArtefact.getUniverse());
-        if (originsArea != null) originsArea.setText(currentArtefact.getOrigins());
-        if (powersArea != null) powersArea.setText(currentArtefact.getPowers());
-        if (rarityCombo != null) rarityCombo.setValue(currentArtefact.getRarity());
+        if (formTitle != null)
+            formTitle.setText("Modifier l'Artefact");
+        if (submitBtn != null)
+            submitBtn.setText("Mettre à jour");
+        if (nameField != null)
+            nameField.setText(currentArtefact.getName());
+        if (typeCombo != null)
+            typeCombo.setValue(currentArtefact.getType());
+        if (universeField != null)
+            universeField.setText(currentArtefact.getUniverse());
+        if (originsArea != null)
+            originsArea.setText(currentArtefact.getOrigins());
+        if (powersArea != null)
+            powersArea.setText(currentArtefact.getPowers());
+        if (rarityCombo != null)
+            rarityCombo.setValue(currentArtefact.getRarity());
 
-        if (currentArtefact.getImageUrl() != null && !currentArtefact.getImageUrl().isEmpty() && formImageView != null) {
+        if (currentArtefact.getImageUrl() != null && !currentArtefact.getImageUrl().isEmpty()
+                && formImageView != null) {
             try {
                 formImageView.setImage(new Image(currentArtefact.getImageUrl()));
                 formImageView.setVisible(true);
-            } catch (Exception ex) {}
+            } catch (Exception ex) {
+            }
         }
-        if (formError != null) formError.setVisible(false);
+        if (formError != null)
+            formError.setVisible(false);
         showFormView();
     }
 
@@ -509,7 +633,8 @@ public class ArtefactController extends BaseController {
 
     @FXML
     private void addComment() {
-        if (commentArea == null || commentArea.getText().isEmpty()) return;
+        if (commentArea == null || commentArea.getText().isEmpty())
+            return;
 
         Commentaire comment = new Commentaire();
         comment.setContenu(commentArea.getText());

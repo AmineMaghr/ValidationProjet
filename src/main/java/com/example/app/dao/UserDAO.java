@@ -16,7 +16,7 @@ public class UserDAO implements IDAO<User> {
 
     @Override
     public void add(User user) throws SQLException {
-        String sql = "INSERT INTO user (email, password, role, nom, prenom, username, avatar, bio, is_blocked, is_verified, phone_number, auth_provider, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO app_user (email, password, role, nom, prenom, username, avatar, bio, is_blocked, is_verified, phone_number, auth_provider, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, user.getEmail());
         ps.setString(2, user.getPassword());
@@ -59,7 +59,7 @@ public class UserDAO implements IDAO<User> {
 
     @Override
     public void delete(int id) throws SQLException {
-        String sql = "DELETE FROM user WHERE id = ?";
+        String sql = "DELETE FROM app_user WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, id);
         ps.executeUpdate();
@@ -68,7 +68,7 @@ public class UserDAO implements IDAO<User> {
     @Override
     public List<User> select() throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM user ORDER BY created_at DESC";
+        String sql = "SELECT * FROM app_user ORDER BY created_at DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -78,7 +78,7 @@ public class UserDAO implements IDAO<User> {
     }
 
     public User findActiveByEmail(String email) throws SQLException {
-        String sql = "SELECT * FROM user WHERE email = ? AND is_blocked = false";
+        String sql = "SELECT * FROM app_user WHERE email = ? AND is_blocked = false";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, email);
         ResultSet rs = ps.executeQuery();
@@ -90,7 +90,7 @@ public class UserDAO implements IDAO<User> {
 
     public List<User> findAdmins() throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM user WHERE role = 'admin'";
+        String sql = "SELECT * FROM app_user WHERE role = 'admin'";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -101,7 +101,7 @@ public class UserDAO implements IDAO<User> {
 
     public List<User> searchPublicUsers(String query) throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT * FROM user WHERE username LIKE ? AND is_blocked = false LIMIT 10";
+        String sql = "SELECT * FROM app_user WHERE username LIKE ? AND is_blocked = false LIMIT 10";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, "%" + query + "%");
         ResultSet rs = ps.executeQuery();
@@ -113,7 +113,7 @@ public class UserDAO implements IDAO<User> {
 
     public List<User> searchUsersApi(String query) throws SQLException {
         List<User> list = new ArrayList<>();
-        String sql = "SELECT id, username, prenom, nom, avatar, created_at FROM user WHERE (username LIKE ? OR prenom LIKE ? OR nom LIKE ?) AND is_blocked = false ORDER BY username ASC LIMIT 10";
+        String sql = "SELECT id, username, prenom, nom, avatar, created_at FROM app_user WHERE (username LIKE ? OR prenom LIKE ? OR nom LIKE ?) AND is_blocked = false ORDER BY username ASC LIMIT 10";
         PreparedStatement ps = connection.prepareStatement(sql);
         String searchPattern = "%" + query + "%";
         ps.setString(1, searchPattern);
@@ -133,7 +133,7 @@ public class UserDAO implements IDAO<User> {
     }
 
     public User findByUsername(String username) throws SQLException {
-        String sql = "SELECT * FROM user WHERE username = ?";
+        String sql = "SELECT * FROM app_user WHERE username = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, username);
         ResultSet rs = ps.executeQuery();
