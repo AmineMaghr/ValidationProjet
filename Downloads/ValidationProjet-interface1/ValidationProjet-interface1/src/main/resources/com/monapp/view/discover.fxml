@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.DiscoverController" style="-fx-background-color: #0d1117;">
+
+    <fx:include source="partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
+
+        <!-- Hero Banner -->
+        <StackPane style="-fx-background-color: linear-gradient(to bottom, #1a1f1e, #0d1117); -fx-min-height: 400;">
+            <VBox alignment="CENTER" spacing="25">
+                <Label text="DÉCOUVRIR" style="-fx-text-fill: #fff; -fx-font-size: 56; -fx-font-weight: bold;"/>
+                <Label text="Explorez, inspirez-vous et laissez-vous transporter dans des univers extraordinaires" style="-fx-text-fill: #888; -fx-font-size: 20;" textAlignment="CENTER"/>
+                
+                <!-- Search Bar -->
+                <HBox alignment="CENTER" spacing="10">
+                    <TextField promptText="Rechercher..." style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 25; -fx-pref-width: 500; -fx-padding: 12;"/>
+                    <Button text="🔍" style="-fx-background-color: #18E3A4; -fx-background-radius: 25; -fx-padding: 12 20;"/>
+                </HBox>
+                
+                <!-- Quick Links -->
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="Univers Populaires" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 10 20; -fx-background-radius: 20;"/>
+                    <Button text="Nouveautés" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 10 20; -fx-background-radius: 20;"/>
+                    <Button text="Tendances" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 10 20; -fx-background-radius: 20;"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+
+        <!-- Featured Section -->
+        <VBox style="-fx-padding: 50 100;" spacing="30">
+            <Label text="En vedette cette semaine" style="-fx-text-fill: #fff; -fx-font-size: 28; -fx-font-weight: bold;"/>
+            
+            <HBox spacing="25">
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 300;" spacing="10">
+                    <ImageView fitWidth="300" fitHeight="200" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;" spacing="8">
+                        <Label text="Univers en vedette" style="-fx-text-fill: #fff; -fx-font-weight: bold; -fx-font-size: 16;"/>
+                        <Label text="Créateur: Username" style="-fx-text-fill: #888;"/>
+                        <HBox spacing="5">
+                            <Label text="★" style="-fx-text-fill: #ffd700;"/>
+                            <Label text="4.8" style="-fx-text-fill: #ffd700;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+                
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 300;" spacing="10">
+                    <ImageView fitWidth="300" fitHeight="200" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;" spacing="8">
+                        <Label text="Personnage en vedette" style="-fx-text-fill: #fff; -fx-font-weight: bold; -fx-font-size: 16;"/>
+                        <Label text="Univers: Nom" style="-fx-text-fill: #18E3A4;"/>
+                    </VBox>
+                </VBox>
+                
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 300;" spacing="10">
+                    <ImageView fitWidth="300" fitHeight="200" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;" spacing="8">
+                        <Label text="Œuvre en vedette" style="-fx-text-fill: #fff; -fx-font-weight: bold; -fx-font-size: 16;"/>
+                        <Label text="Type: Illustration" style="-fx-text-fill: #888;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>
