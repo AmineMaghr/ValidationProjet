@@ -61,12 +61,45 @@ public class PersonnageController extends BaseController {
     @FXML
     public void initialize() {
         personnageList.setItems(personnages);
+        
+        personnageList.setCellFactory(param -> new ListCell<Personnage>() {
+            @Override
+            protected void updateItem(Personnage p, boolean empty) {
+                super.updateItem(p, empty);
+                if (empty || p == null || p.getNom() == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    javafx.scene.layout.VBox card = new javafx.scene.layout.VBox(5);
+                    card.setStyle("-fx-background-color: #2a3139; -fx-padding: 10; -fx-background-radius: 10; -fx-border-color: #3b424b; -fx-border-radius: 10;");
+                    
+                    javafx.scene.control.Label nameLbl = new javafx.scene.control.Label(p.getNom());
+                    nameLbl.setStyle("-fx-text-fill: #18E3A4; -fx-font-size: 16px; -fx-font-weight: bold;");
+                    
+                    javafx.scene.control.Label classLbl = new javafx.scene.control.Label("Classe: " + (p.getClassRole() != null ? p.getClassRole() : "N/A"));
+                    classLbl.setStyle("-fx-text-fill: #aaa; -fx-font-size: 12px;");
+                    
+                    javafx.scene.control.Label univLbl = new javafx.scene.control.Label("Univers: " + (p.getUnivers() != null ? p.getUnivers() : "N/A"));
+                    univLbl.setStyle("-fx-text-fill: #aaa; -fx-font-size: 12px;");
+                    
+                    card.getChildren().addAll(nameLbl, classLbl, univLbl);
+                    setGraphic(card);
+                    setStyle("-fx-background-color: transparent; -fx-padding: 5;");
+                }
+            }
+        });
+
         classRoleFilter.setItems(classRoles);
         universeFilter.setItems(universes);
         classRoleCombo.setItems(classRoles);
         universeCombo.setItems(universes);
-        sortCombo.setItems(FXCollections.observableArrayList("name", "createdAt"));
-        sortCombo.setValue("createdAt");
+        sortCombo.setItems(FXCollections.observableArrayList("Nom", "Récents"));
+        sortCombo.setValue("Récents");
+        
+        sortCombo.setOnAction(e -> loadPersonnages());
+        classRoleFilter.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> loadPersonnages());
+        universeFilter.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> loadPersonnages());
 
         personnageList.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
@@ -85,7 +118,8 @@ public class PersonnageController extends BaseController {
                 String search = searchField.getText();
                 List<String> selectedClassRoles = classRoleFilter.getSelectionModel().getSelectedItems();
                 List<String> selectedUniverses = universeFilter.getSelectionModel().getSelectedItems();
-                String sort = sortCombo.getValue();
+                String sortVal = sortCombo.getValue();
+                String sort = "Nom".equals(sortVal) ? "name" : "createdAt";
                 return personnageService.searchPersonnages(search, selectedClassRoles, selectedUniverses, sort);
             }
         };
@@ -265,3 +299,4 @@ public class PersonnageController extends BaseController {
         selectedImageFile = null;
     }
 }
+

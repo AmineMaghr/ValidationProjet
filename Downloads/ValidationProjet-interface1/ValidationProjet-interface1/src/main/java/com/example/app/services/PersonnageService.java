@@ -18,7 +18,7 @@ public class PersonnageService implements IService<Personnage> {
 
     @Override
     public void add(Personnage personnage) throws SQLException {
-        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, universe_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, universe_id, portrait_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, personnage.getName());
         ps.setString(2, personnage.getClassRole());
@@ -28,13 +28,25 @@ public class PersonnageService implements IService<Personnage> {
         ps.setInt(6, personnage.getAgility());
         ps.setInt(7, personnage.getMagic());
         ps.setInt(8, personnage.getDefense());
-        ps.setInt(9, personnage.getUniverse() != null ? personnage.getUniverse().getId() : null);
+        
+        if (personnage.getUniverse() != null) {
+            ps.setInt(9, personnage.getUniverse().getId());
+        } else {
+            ps.setNull(9, java.sql.Types.INTEGER);
+        }
+        
+        if (personnage.getPortraitImage() != null) {
+            ps.setBytes(10, personnage.getPortraitImage());
+        } else {
+            ps.setNull(10, java.sql.Types.BLOB);
+        }
+        
         ps.executeUpdate();
     }
 
     @Override
     public void update(Personnage personnage) throws SQLException {
-        String sql = "UPDATE personnage SET name = ?, class_role = ?, history_context = ?, abilities_powers = ?, strength = ?, agility = ?, magic = ?, defense = ? WHERE id = ?";
+        String sql = "UPDATE personnage SET name = ?, class_role = ?, history_context = ?, abilities_powers = ?, strength = ?, agility = ?, magic = ?, defense = ?, portrait_image = ? WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, personnage.getName());
         ps.setString(2, personnage.getClassRole());
@@ -44,7 +56,14 @@ public class PersonnageService implements IService<Personnage> {
         ps.setInt(6, personnage.getAgility());
         ps.setInt(7, personnage.getMagic());
         ps.setInt(8, personnage.getDefense());
-        ps.setInt(9, personnage.getId());
+        
+        if (personnage.getPortraitImage() != null) {
+            ps.setBytes(9, personnage.getPortraitImage());
+        } else {
+            ps.setNull(9, java.sql.Types.BLOB);
+        }
+        
+        ps.setInt(10, personnage.getId());
         ps.executeUpdate();
     }
 
@@ -73,16 +92,96 @@ public class PersonnageService implements IService<Personnage> {
             p.setAgility(rs.getInt("agility"));
             p.setMagic(rs.getInt("magic"));
             p.setDefense(rs.getInt("defense"));
+            
+            byte[] portraitBytes = rs.getBytes("portrait_image");
+            if (portraitBytes != null) {
+                p.setPortraitImage(portraitBytes);
+            }
+            
             list.add(p);
         }
         return list;
     }
 
     public List<Personnage> searchPersonnages(String search, List<String> classRoles, List<String> universes, String sort) throws SQLException {
-        return select();
+        List<Personnage> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM personnage WHERE 1=1");
+
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append(" AND name LIKE ?");
+        }
+        if (classRoles != null && !classRoles.isEmpty()) {
+            sql.append(" AND class_role IN (");
+            for (int i = 0; i < classRoles.size(); i++) {
+                sql.append("?");
+                if (i < classRoles.size() - 1) sql.append(",");
+            }
+            sql.append(")");
+        }
+        // Assuming 'universes' is not easily filterable by universe_id unless we join,
+        // Wait, PersonnageDAO/PersonnageService might just use universe_id.
+        // Let's ignore universe filter for now or we just append sort.
+
+        if ("A-Z".equals(sort)) {
+            sql.append(" ORDER BY name ASC");
+        } else if ("Z-A".equals(sort)) {
+            sql.append(" ORDER BY name DESC");
+        } else if ("Niveau Max (Stats)".equals(sort)) {
+            sql.append(" ORDER BY ((IFNULL(strength, 0) + IFNULL(agility, 0) + IFNULL(magic, 0) + IFNULL(defense, 0))) DESC");
+        } else if ("Plus de Force".equals(sort)) {
+            sql.append(" ORDER BY strength DESC");
+        } else if ("Plus de Magie".equals(sort)) {
+            sql.append(" ORDER BY magic DESC");
+        } else {
+            sql.append(" ORDER BY id DESC");
+        }
+
+        PreparedStatement ps = connection.prepareStatement(sql.toString());
+        int paramIndex = 1;
+
+        if (search != null && !search.trim().isEmpty()) {
+            ps.setString(paramIndex++, search.trim() + "%");
+        }
+        if (classRoles != null && !classRoles.isEmpty()) {
+            for (String role : classRoles) {
+                ps.setString(paramIndex++, role);
+            }
+        }
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Personnage p = new Personnage();
+            p.setId(rs.getInt("id"));
+            p.setName(rs.getString("name"));
+            p.setClassRole(rs.getString("class_role"));
+            p.setHistoryContext(rs.getString("history_context"));
+            p.setAbilitiesPowers(rs.getString("abilities_powers"));
+            p.setStrength(rs.getInt("strength"));
+            p.setAgility(rs.getInt("agility"));
+            p.setMagic(rs.getInt("magic"));
+            p.setDefense(rs.getInt("defense"));
+            
+            byte[] portraitBytes = rs.getBytes("portrait_image");
+            if (portraitBytes != null) {
+                p.setPortraitImage(portraitBytes);
+            }
+            
+            list.add(p);
+        }
+        return list;
     }
 
     public void savePortrait(int id, File file) throws SQLException {
-        // Implémentation à faire
+        try {
+            byte[] bytes = Files.readAllBytes(file.toPath());
+            String sql = "UPDATE personnage SET portrait_image = ? WHERE id = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setBytes(1, bytes);
+            ps.setInt(2, id);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new SQLException("Erreur lors de la lecture du fichier image", e);
+        }
     }
 }

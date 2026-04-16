@@ -45,6 +45,8 @@
                     style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
             <Button onAction="#filterMedieval" text="Médiéval"
                     style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Region HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="sortCombo" promptText="Trier par..." style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 10;" onAction="#handleSort" />
         </HBox>
 
         <!-- Univers Grid -->

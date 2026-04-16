@@ -16,9 +16,14 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.file.Files;
 
@@ -43,8 +48,8 @@ public class PersonnageCreateView extends VBox {
         container.setStyle("-fx-background-color: " + BG_MAIN + ";");
         formPanel = new VBox(20);
         formPanel.setMaxWidth(600);
-        formPanel.setPadding(new Insets(30));
-        formPanel.setStyle("-fx-background-color: " + FORM_PANEL_BG + "; -fx-background-radius: 12px;");
+        formPanel.setPadding(new Insets(40));
+        formPanel.setStyle("-fx-background-color: " + FORM_PANEL_BG + "; -fx-background-radius: 16px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);");
         setupForm();
         container.getChildren().add(formPanel);
         ScrollPane scrollPane = new ScrollPane(container);
@@ -55,9 +60,15 @@ public class PersonnageCreateView extends VBox {
     }
     private void setupForm() {
         Label title = new Label(editingPersonnage == null ? "Créer un Personnage" : "Modifier le Personnage");
-        title.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-size: 24px; -fx-font-weight: bold;");
+        title.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-size: 28px; -fx-font-weight: bold;");
+        
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.web("#e74c3c"));
+        errorLabel.setManaged(false);
+        errorLabel.setVisible(false);
+
         ComboBox<Universe> universeCombo = new ComboBox<>();
-        universeCombo.setPromptText("Sélectionnez l'Univers");
+        universeCombo.setPromptText("Sélectionnez l'Univers (Requis)");
         universeCombo.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px;");
         universeCombo.setPrefWidth(Double.MAX_VALUE);
         try {
@@ -66,36 +77,60 @@ public class PersonnageCreateView extends VBox {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        TextField nameField = createTextField("Nom du personnage");
-        TextField classRoleField = createTextField("Classe ou Rôle (ex: Guerrier)");
+        
+        TextField nameField = createTextField("Nom du personnage (Requis)");
+        
+        ComboBox<String> classRoleCombo = new ComboBox<>(FXCollections.observableArrayList("Guerrier", "Mage", "Voleur", "Prêtre", "Druide", "Paladin", "Chasseur"));
+        classRoleCombo.setPromptText("Sélectionnez la Classe/Rôle");
+        classRoleCombo.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px;");
+        classRoleCombo.setPrefWidth(Double.MAX_VALUE);
+
         TextArea historyContext = createTextArea("Contexte Historique", 80);
         TextArea abilitiesPowers = createTextArea("Capacités et Pouvoirs", 80);
-        Label lblStats = new Label("Statistiques");
-        lblStats.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-weight: bold;");
+        
+        Label lblStats = new Label("Statistiques (Max: 100)");
+        lblStats.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-weight: bold; -fx-font-size: 16px;");
+        
         GridPane statsGrid = new GridPane();
         statsGrid.setHgap(20);
         statsGrid.setVgap(15);
+        
         Spinner<Integer> strengthSpin = createSpinner();
         Spinner<Integer> agilitySpin = createSpinner();
         Spinner<Integer> magicSpin = createSpinner();
         Spinner<Integer> defenseSpin = createSpinner();
+        
         addStatToGrid(statsGrid, "Force", strengthSpin, 0, 0);
         addStatToGrid(statsGrid, "Agilité", agilitySpin, 0, 1);
         addStatToGrid(statsGrid, "Magie", magicSpin, 1, 0);
         addStatToGrid(statsGrid, "Défense", defenseSpin, 1, 1);
         
+        Label imgLabel = new Label("Image du Personnage");
+        imgLabel.setStyle("-fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-weight: bold;");
+        ImageView imagePreview = new ImageView();
+        imagePreview.setFitWidth(150);
+        imagePreview.setFitHeight(150);
+        imagePreview.setPreserveRatio(false);
+        imagePreview.setStyle("-fx-opacity: 0.5;");
+        
         final byte[][] selectedImage = new byte[1][];
 
         if(editingPersonnage != null) {
             nameField.setText(editingPersonnage.getName());
-            classRoleField.setText(editingPersonnage.getClassRole());
+            classRoleCombo.setValue(editingPersonnage.getClassRole());
             historyContext.setText(editingPersonnage.getHistoryContext());
             abilitiesPowers.setText(editingPersonnage.getAbilitiesPowers());
             strengthSpin.getValueFactory().setValue(editingPersonnage.getStrength());
             agilitySpin.getValueFactory().setValue(editingPersonnage.getAgility());
             magicSpin.getValueFactory().setValue(editingPersonnage.getMagic());
             defenseSpin.getValueFactory().setValue(editingPersonnage.getDefense());
-            selectedImage[0] = editingPersonnage.getPortraitImage();
+            if (editingPersonnage.getPortraitImage() != null) {
+                selectedImage[0] = editingPersonnage.getPortraitImage();
+                try {
+                    imagePreview.setImage(new Image(new ByteArrayInputStream(selectedImage[0])));
+                    imagePreview.setStyle("-fx-opacity: 1;");
+                } catch (Exception ignored) {}
+            }
             
             if(editingPersonnage.getUniverse() != null) {
                 // Match universe by ID
@@ -107,8 +142,9 @@ public class PersonnageCreateView extends VBox {
                 }
             }
         }
+        
         Button btnImage = new Button("Choisir portrait...");
-        btnImage.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px;");
+        btnImage.setStyle("-fx-background-color: transparent; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-padding: 8 20; -fx-cursor: hand;");
         btnImage.setOnAction(e -> {
             FileChooser chooser = new FileChooser();
             chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif"));
@@ -117,29 +153,76 @@ public class PersonnageCreateView extends VBox {
                 try {
                     selectedImage[0] = Files.readAllBytes(file.toPath());
                     btnImage.setText("Portrait: " + file.getName());
+                    imagePreview.setImage(new Image(file.toURI().toString()));
+                    imagePreview.setStyle("-fx-opacity: 1.0;");
                 } catch (Exception ex) {
-                    ex.printStackTrace();
-                    Alert a = new Alert(Alert.AlertType.ERROR, "Erreur lors de la lecture de l'image.");
-                    a.show();
+                    errorLabel.setText("Erreur lors de la lecture de l'image.");
+                    errorLabel.setManaged(true); errorLabel.setVisible(true);
                 }
             }
         });
+        
+        VBox imageBox = new VBox(10, imgLabel, imagePreview, btnImage);
+        imageBox.setAlignment(Pos.CENTER_LEFT);
+
         Button btnSubmit = new Button(editingPersonnage == null ? "Créer le Personnage" : "Sauvegarder");
-        btnSubmit.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_DARK + "; -fx-font-weight: bold; -fx-background-radius: 12px; -fx-padding: 10 20;");
+        btnSubmit.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_DARK + "; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 12px; -fx-padding: 15 20; -fx-cursor: hand;");
         btnSubmit.setPrefWidth(Double.MAX_VALUE);
         btnSubmit.setOnAction(e -> {
-            if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le nom est requis.");
-                a.show();
+            errorLabel.setManaged(false);
+            errorLabel.setVisible(false);
+            
+            String nameVal = nameField.getText() == null ? "" : nameField.getText().trim();
+            if (nameVal.isEmpty()) {
+                errorLabel.setText("Le nom est requis.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
                 return;
             }
+            if (nameVal.length() > 255) {
+                errorLabel.setText("Le nom est trop long (Max: 255).");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            if (nameVal.length() < 3) {
+                errorLabel.setText("Le nom doit comporter au moins 3 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            
+            if (universeCombo.getValue() == null) {
+                errorLabel.setText("Veuillez sélectionner un univers.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            
+            if (classRoleCombo.getValue() == null) {
+                errorLabel.setText("Veuillez sélectionner une classe/rôle.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            String roleVal = classRoleCombo.getValue();
+            
+            String historyVal = historyContext.getText() == null ? "" : historyContext.getText().trim();
+            if (historyVal.isEmpty() || historyVal.length() < 10) {
+                errorLabel.setText("Le contexte historique doit comporter au moins 10 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            
+            String abilitiesVal = abilitiesPowers.getText() == null ? "" : abilitiesPowers.getText().trim();
+            if (abilitiesVal.isEmpty() || abilitiesVal.length() < 10) {
+                errorLabel.setText("Les capacités et pouvoirs doivent comporter au moins 10 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+
             try {
                 Personnage p = editingPersonnage == null ? new Personnage() : editingPersonnage;
-                p.setName(nameField.getText());
+                p.setName(nameVal);
                 p.setUniverse(universeCombo.getValue());
-                p.setClassRole(classRoleField.getText());
-                p.setHistoryContext(historyContext.getText());
-                p.setAbilitiesPowers(abilitiesPowers.getText());
+                p.setClassRole(roleVal);
+                p.setHistoryContext(historyVal);
+                p.setAbilitiesPowers(abilitiesVal);
                 p.setStrength(strengthSpin.getValue());
                 p.setAgility(agilitySpin.getValue());
                 p.setMagic(magicSpin.getValue());
@@ -151,17 +234,15 @@ public class PersonnageCreateView extends VBox {
                 } else {
                     service.update(p);
                 }
-                Alert a = new Alert(Alert.AlertType.INFORMATION, editingPersonnage == null ? "Personnage créé !" : "Personnage modifié !");
-                a.showAndWait();
                 SceneManager.getInstance().loadScene("/personnages");
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Alert a = new Alert(Alert.AlertType.ERROR, "Erreur : " + ex.getMessage());
-                a.show();
+                errorLabel.setText("Erreur serveur : " + ex.getMessage());
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
             }
         });
         applyMagicEffect(btnSubmit);
-        formPanel.getChildren().addAll(title, universeCombo, nameField, classRoleField, historyContext, abilitiesPowers, lblStats, statsGrid, btnImage, btnSubmit);
+        formPanel.getChildren().addAll(title, errorLabel, universeCombo, nameField, classRoleCombo, historyContext, abilitiesPowers, lblStats, statsGrid, imageBox, btnSubmit);
     }
     private void addStatToGrid(GridPane grid, String labelText, Spinner<Integer> spinner, int col, int row) {
         VBox v = new VBox(5);

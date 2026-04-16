@@ -8,6 +8,7 @@ import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import java.sql.SQLException;
 import java.util.List;
@@ -16,6 +17,7 @@ public class UniversesController extends BaseController {
 
     @FXML private TextField searchField;
     @FXML private ListView<Universe> universeList;
+    @FXML private ComboBox<String> sortCombo;
     @FXML private Label detailName;
     @FXML private Label detailGenre;
     @FXML private Label detailDescription;
@@ -25,10 +27,46 @@ public class UniversesController extends BaseController {
     private UniverseService universeService = new UniverseService();
     private ObservableList<Universe> universes = FXCollections.observableArrayList();
     private String currentGenre = null;  // Pour suivre le filtre actuel
+    private String currentSort = "Récents";
 
     @FXML
     public void initialize() {
+        if (sortCombo != null) {
+            sortCombo.setItems(FXCollections.observableArrayList("Récents", "A-Z", "Z-A"));
+            sortCombo.setValue("Récents");
+        }
+
         universeList.setItems(universes);
+        
+        // Amélioration de l'aspect visuel de la liste
+        universeList.setCellFactory(param -> new ListCell<Universe>() {
+            @Override
+            protected void updateItem(Universe u, boolean empty) {
+                super.updateItem(u, empty);
+                if (empty || u == null || u.getName() == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setStyle("-fx-background-color: transparent;");
+                } else {
+                    VBox card = new VBox(5);
+                    card.setStyle("-fx-background-color: #1a1f1e; -fx-padding: 15; -fx-background-radius: 10; -fx-border-color: #2a3139; -fx-border-radius: 10;");
+                    
+                    Label nameLbl = new Label(u.getName());
+                    nameLbl.setStyle("-fx-text-fill: #18E3A4; -fx-font-size: 18px; -fx-font-weight: bold;");
+                    
+                    Label genreLbl = new Label(u.getGenre() != null ? u.getGenre() : "");
+                    genreLbl.setStyle("-fx-text-fill: #888; -fx-font-size: 12px;");
+                    
+                    Label descLbl = new Label(u.getShortDescription() != null ? u.getShortDescription() : "");
+                    descLbl.setStyle("-fx-text-fill: #fff; -fx-font-size: 14px;");
+                    descLbl.setWrapText(true);
+                    
+                    card.getChildren().addAll(nameLbl, genreLbl, descLbl);
+                    setGraphic(card);
+                    setStyle("-fx-background-color: transparent; -fx-padding: 5;");
+                }
+            }
+        });
 
         universeList.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
@@ -47,7 +85,10 @@ public class UniversesController extends BaseController {
         Task<List<Universe>> task = new Task<>() {
             @Override
             protected List<Universe> call() throws SQLException {
-                return universeService.searchUniverses(search, genre, "newest");
+                String sortParam = "newest";
+                if ("A-Z".equals(currentSort)) sortParam = "a-z";
+                if ("Z-A".equals(currentSort)) sortParam = "z-a";
+                return universeService.searchUniverses(search, genre, sortParam);
             }
         };
         task.setOnSucceeded(e -> {
@@ -130,6 +171,14 @@ public class UniversesController extends BaseController {
     @FXML
     private void handleSearch() {
         loadUniversesWithFilters(searchField.getText(), currentGenre);
+    }
+
+    @FXML
+    private void handleSort() {
+        if (sortCombo != null && sortCombo.getValue() != null) {
+            currentSort = sortCombo.getValue();
+            loadUniversesWithFilters(searchField.getText(), currentGenre);
+        }
     }
 
     // ===== MÉTHODES DE CRÉATION =====

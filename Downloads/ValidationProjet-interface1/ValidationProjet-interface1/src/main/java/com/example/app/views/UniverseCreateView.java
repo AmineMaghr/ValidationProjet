@@ -12,8 +12,16 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.nio.file.Files;
+
 public class UniverseCreateView extends VBox {
     private static final String PRIMARY_COLOR = "#18E3A4";
     private static final String BG_MAIN = "#1A1F1E";
@@ -35,8 +43,8 @@ public class UniverseCreateView extends VBox {
         container.setStyle("-fx-background-color: " + BG_MAIN + ";");
         formPanel = new VBox(20);
         formPanel.setMaxWidth(600);
-        formPanel.setPadding(new Insets(30));
-        formPanel.setStyle("-fx-background-color: " + FORM_PANEL_BG + "; -fx-background-radius: 12px;");
+        formPanel.setPadding(new Insets(40));
+        formPanel.setStyle("-fx-background-color: " + FORM_PANEL_BG + "; -fx-background-radius: 16px; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 15, 0, 0, 5);");
         setupForm();
         container.getChildren().add(formPanel);
         ScrollPane scrollPane = new ScrollPane(container);
@@ -47,61 +55,134 @@ public class UniverseCreateView extends VBox {
     }
     private void setupForm() {
         Label title = new Label(editingUniverse == null ? "Créer un Univers" : "Modifier l'Univers");
-        title.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-size: 24px; -fx-font-weight: bold;");
-        TextField nameField = createTextField("Nom de l'univers");
+        title.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-size: 28px; -fx-font-weight: bold;");
+        
+        Label errorLabel = new Label();
+        errorLabel.setTextFill(Color.web("#e74c3c"));
+        errorLabel.setManaged(false);
+        errorLabel.setVisible(false);
+
+        TextField nameField = createTextField("Nom de l'univers (Requis)");
+        
         ComboBox<String> genreCombo = new ComboBox<>(FXCollections.observableArrayList("Fantasy", "Sci-Fi", "Medieval", "Cyberpunk", "Horror"));
-        genreCombo.setPromptText("Genre");
+        genreCombo.setPromptText("Sélectionnez le Genre (Requis)");
         genreCombo.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px;");
         genreCombo.setPrefWidth(Double.MAX_VALUE);
-        TextArea shortDescription = createTextArea("Courte description", 60);
+        
+        TextArea shortDescription = createTextArea("Courte description", 80);
         TextArea storyContext = createTextArea("Contexte narratif", 120);
         TextField tagsField = createTextField("Tags (séparés par virgules)");
+        
+        Label imgLabel = new Label("Image de la Bannière");
+        imgLabel.setStyle("-fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-weight: bold;");
+        ImageView imagePreview = new ImageView();
+        imagePreview.setFitWidth(520);
+        imagePreview.setFitHeight(150);
+        imagePreview.setPreserveRatio(false);
+        imagePreview.setStyle("-fx-opacity: 0.5;"); // Default empty look
+        
+        final byte[][] selectedImage = new byte[1][];
+
         if (editingUniverse != null) {
             nameField.setText(editingUniverse.getName());
             genreCombo.setValue(editingUniverse.getGenre());
             shortDescription.setText(editingUniverse.getShortDescription());
             storyContext.setText(editingUniverse.getStoryContext());
             tagsField.setText(editingUniverse.getThemesAsString());
+            if (editingUniverse.getBannerImage() != null) {
+                selectedImage[0] = editingUniverse.getBannerImage();
+                try {
+                    imagePreview.setImage(new Image(new ByteArrayInputStream(selectedImage[0])));
+                    imagePreview.setStyle("-fx-opacity: 1;");
+                } catch (Exception ignored) {}
+            }
         }
-        Button btnImage = new Button("Choisir une image de bannière");
-        btnImage.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px;");
+        
+        Button btnImage = new Button("Choisir une image...");
+        btnImage.setStyle("-fx-background-color: transparent; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-padding: 8 20; -fx-cursor: hand;");
         btnImage.setOnAction(e -> {
             FileChooser chooser = new FileChooser();
-            chooser.showOpenDialog(null);
+            chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif"));
+            File file = chooser.showOpenDialog(null);
+            if (file != null) {
+                try {
+                    selectedImage[0] = Files.readAllBytes(file.toPath());
+                    btnImage.setText("Bannière: " + file.getName());
+                    imagePreview.setImage(new Image(file.toURI().toString()));
+                    imagePreview.setStyle("-fx-opacity: 1.0;");
+                } catch (Exception ex) {
+                    errorLabel.setText("Erreur lors de la lecture de l'image.");
+                    errorLabel.setManaged(true);
+                    errorLabel.setVisible(true);
+                }
+            }
         });
+        
+        VBox imageBox = new VBox(10, imgLabel, imagePreview, btnImage);
+        imageBox.setAlignment(Pos.CENTER_LEFT);
+
         Button btnSubmit = new Button(editingUniverse == null ? "Créer l'Univers" : "Mettre à jour");
-        btnSubmit.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_DARK + "; -fx-font-weight: bold; -fx-background-radius: 12px; -fx-padding: 10 20;");
+        btnSubmit.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_DARK + "; -fx-font-size: 16px; -fx-font-weight: bold; -fx-background-radius: 12px; -fx-padding: 15 20; -fx-cursor: hand;");
         btnSubmit.setPrefWidth(Double.MAX_VALUE);
         btnSubmit.setOnAction(e -> {
-            if (nameField.getText() == null || nameField.getText().trim().isEmpty()) {
-                Alert a = new Alert(Alert.AlertType.ERROR, "Le nom est requis.");
-                a.show();
+            // Validation (Contrôle de saisie)
+            errorLabel.setManaged(false);
+            errorLabel.setVisible(false);
+            
+            String nameVal = nameField.getText() == null ? "" : nameField.getText().trim();
+            if (nameVal.isEmpty()) {
+                errorLabel.setText("Le nom est requis.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
                 return;
             }
+            if (nameVal.length() < 3 || nameVal.length() > 255) {
+                errorLabel.setText("Le nom doit comporter entre 3 et 255 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            if (genreCombo.getValue() == null || genreCombo.getValue().toString().trim().isEmpty()) {
+                errorLabel.setText("Veuillez sélectionner un genre.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            
+            String shortDescVal = shortDescription.getText() == null ? "" : shortDescription.getText().trim();
+            if (shortDescVal.isEmpty() || shortDescVal.length() < 10) {
+                errorLabel.setText("La courte description doit comporter au moins 10 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+
+            String storyContextVal = storyContext.getText() == null ? "" : storyContext.getText().trim();
+            if (storyContextVal.isEmpty() || storyContextVal.length() < 10) {
+                errorLabel.setText("Le contexte narratif doit comporter au moins 10 caractères.");
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
+                return;
+            }
+            
             try {
                 Universe u = editingUniverse == null ? new Universe() : editingUniverse;
-                u.setName(nameField.getText());
+                u.setName(nameVal);
                 u.setGenre(genreCombo.getValue());
-                u.setShortDescription(shortDescription.getText());
-                u.setStoryContext(storyContext.getText());
-                u.setThemesFromString(tagsField.getText());
+                u.setShortDescription(shortDescVal);
+                u.setStoryContext(storyContextVal);
+                u.setThemesFromString(tagsField.getText() == null ? "" : tagsField.getText().trim());
+                u.setBannerImage(selectedImage[0]);
                 UniverseService service = new UniverseService();
                 if (editingUniverse == null) {
                     service.add(u);
                 } else {
                     service.update(u);
                 }
-                Alert a = new Alert(Alert.AlertType.INFORMATION, editingUniverse == null ? "Univers créé !" : "Univers modifié !");
-                a.showAndWait();
                 SceneManager.getInstance().loadScene("/universes");
             } catch (Exception ex) {
                 ex.printStackTrace();
-                Alert a = new Alert(Alert.AlertType.ERROR, "Erreur : " + ex.getMessage());
-                a.show();
+                errorLabel.setText("Erreur serveur : " + ex.getMessage());
+                errorLabel.setManaged(true); errorLabel.setVisible(true);
             }
         });
         applyMagicEffect(btnSubmit);
-        formPanel.getChildren().addAll(title, nameField, genreCombo, shortDescription, storyContext, tagsField, btnImage, btnSubmit);
+        formPanel.getChildren().addAll(title, errorLabel, nameField, genreCombo, shortDescription, storyContext, tagsField, imageBox, btnSubmit);
     }
     private TextField createTextField(String prompt) {
         TextField tf = new TextField();

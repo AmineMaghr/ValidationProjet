@@ -15,6 +15,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import java.util.List;
+import java.util.ArrayList;
+import com.example.app.services.PersonnageService;
+import javafx.scene.control.ComboBox;
+import javafx.collections.FXCollections;
 
 public class PersonnageListView extends BorderPane {
 
@@ -27,6 +31,9 @@ public class PersonnageListView extends BorderPane {
 
     private FlowPane flowPane;
     private TextField searchField;
+    private ComboBox<String> sortCombo;
+    private ComboBox<String> roleCombo;
+    private PersonnageService personnageService = new PersonnageService();
 
     public PersonnageListView() {
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
@@ -35,12 +42,7 @@ public class PersonnageListView extends BorderPane {
         setupLeft();
         setupCenter();
 
-        try {
-            com.example.app.services.PersonnageService ps = new com.example.app.services.PersonnageService();
-            setPersonnages(ps.select());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        loadPersonnages();
     }
 
     private void setupHeader() {
@@ -60,8 +62,23 @@ public class PersonnageListView extends BorderPane {
         searchField = new TextField();
         searchField.setPromptText("Rechercher un personnage...");
         searchField.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-background-radius: 12px; -fx-padding: 8;");
+        searchField.textProperty().addListener((obs, oldV, newV) -> loadPersonnages());
 
-        leftBox.getChildren().addAll(lblSearch, searchField);
+        Label lblRole = new Label("Classe / Rôle");
+        lblRole.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-weight: bold;");
+        roleCombo = new ComboBox<>(FXCollections.observableArrayList("Tout", "Guerrier", "Mage", "Voleur", "Prêtre", "Druide", "Paladin", "Chasseur"));
+        roleCombo.setValue("Tout");
+        roleCombo.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + ";");
+        roleCombo.setOnAction(e -> loadPersonnages());
+
+        Label lblSort = new Label("Trier par");
+        lblSort.setStyle("-fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-weight: bold;");
+        sortCombo = new ComboBox<>(FXCollections.observableArrayList("Récents", "A-Z", "Z-A", "Niveau Max (Stats)", "Plus de Force", "Plus de Magie"));
+        sortCombo.setValue("Récents");
+        sortCombo.setStyle("-fx-background-color: " + BG_DARK + "; -fx-text-fill: " + TEXT_PRIMARY + ";");
+        sortCombo.setOnAction(e -> loadPersonnages());
+
+        leftBox.getChildren().addAll(lblSearch, searchField, lblRole, roleCombo, lblSort, sortCombo);
         this.setLeft(leftBox);
     }
 
@@ -111,6 +128,23 @@ public class PersonnageListView extends BorderPane {
         }
     }
 
+    private void loadPersonnages() {
+        try {
+            String search = searchField != null ? searchField.getText() : "";
+            String role = roleCombo != null ? roleCombo.getValue() : "Tout";
+            String sort = sortCombo != null ? sortCombo.getValue() : "Récents";
+            
+            List<String> roles = new ArrayList<>();
+            if (!"Tout".equals(role)) {
+                roles.add(role);
+            }
+            
+            setPersonnages(personnageService.searchPersonnages(search, roles, null, sort));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     private VBox createCard(Personnage personnage) {
         VBox card = new VBox();
         card.setSpacing(10);
@@ -122,11 +156,20 @@ public class PersonnageListView extends BorderPane {
         ImageView imgView = new ImageView();
         imgView.setFitWidth(190);
         imgView.setFitHeight(190);
-        imgView.setPreserveRatio(true);
+        imgView.setPreserveRatio(false);
         javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(190, 190);
         clip.setArcWidth(24);
         clip.setArcHeight(24);
         imgView.setClip(clip);
+        
+        if (personnage.getPortraitImage() != null && personnage.getPortraitImage().length > 0) {
+            try {
+                java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(personnage.getPortraitImage());
+                imgView.setImage(new javafx.scene.image.Image(bis));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
         Label name = new Label(personnage.getName() != null ? personnage.getName() : "Unknown");
         name.setStyle("-fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-weight: bold; -fx-font-size: 16px;");
@@ -163,4 +206,3 @@ public class PersonnageListView extends BorderPane {
         });
     }
 }
-
