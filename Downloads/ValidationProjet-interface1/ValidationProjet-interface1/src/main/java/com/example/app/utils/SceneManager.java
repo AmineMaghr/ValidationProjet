@@ -44,6 +44,14 @@ public class SceneManager {
                 primaryStage.getScene().setRoot(new com.example.app.views.PersonnageCreateView());
                 return;
             }
+            if ("/admin/universes".equals(path)) {
+                primaryStage.getScene().setRoot(new com.example.app.views.AdminDashboardView());
+                return;
+            }
+            if ("/admin/personnages".equals(path)) {
+                primaryStage.getScene().setRoot(new com.example.app.views.AdminPersonnageDashboardView());
+                return;
+            }
 
             String fxmlFile = getFxmlPath(path);
             System.out.println("Chargement FXML: " + fxmlFile);

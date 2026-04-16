@@ -25,36 +25,53 @@ public class HeaderView extends HBox {
         this.setSpacing(20);
 
         // Left: Logo
+        HBox logoBox = new HBox(10);
+        logoBox.setAlignment(Pos.CENTER_LEFT);
+        logoBox.setStyle("-fx-cursor: hand;");
+        logoBox.setOnMouseClicked(e -> SceneManager.getInstance().loadScene("/"));
+        
+        Label icon = new Label("⚔️");
+        icon.setStyle("-fx-font-size: 24px;");
+        
         Label logo = new Label("Midgar");
-        logo.setFont(Font.font("System", FontWeight.BOLD, 24));
+        logo.setFont(Font.font("System", FontWeight.BOLD, 20));
         logo.setStyle("-fx-text-fill: " + PRIMARY_COLOR + ";");
-
-        // Spacer
-        Region spacer1 = new Region();
-        HBox.setHgrow(spacer1, Priority.ALWAYS);
+        
+        logoBox.getChildren().addAll(icon, logo);
 
         // Center: Magic Buttons Navigation
-        HBox navBox = new HBox(15);
-        navBox.setAlignment(Pos.CENTER);
+        HBox navBox = new HBox(5);
+        navBox.setAlignment(Pos.CENTER_LEFT);
+        
         Button btnAccueil = createMagicButton("Accueil", "/");
+        Button btnDiscover = createMagicButton("Découvrir", "/discover");
         Button btnUnivers = createMagicButton("Univers", "/universes");
         Button btnPersonnages = createMagicButton("Personnages", "/personnages");
+        Button btnOeuvre = createMagicButton("Œuvre", "/oeuvre");
+        Button btnArtefacts = createMagicButton("Artefacts", "/artefact");
         Button btnBoutique = createMagicButton("Boutique", "/shop");
-        navBox.getChildren().addAll(btnAccueil, btnUnivers, btnPersonnages, btnBoutique);
+        Button btnDefis = createMagicButton("Défis", "/challenges");
+        
+        navBox.getChildren().addAll(btnAccueil, btnDiscover, btnUnivers, btnPersonnages, btnOeuvre, btnArtefacts, btnBoutique, btnDefis);
 
-        // Spacer
-        Region spacer2 = new Region();
-        HBox.setHgrow(spacer2, Priority.ALWAYS);
+        // Spacer pushes Auth Buttons to the right
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox.setHgrow(navBox, Priority.ALWAYS);
 
         // Right: Auth Buttons
         HBox authBox = new HBox(10);
         authBox.setAlignment(Pos.CENTER_RIGHT);
+        
+        Button btnAdmin = createMagicButton("Back-Office", "/admin/universes");
+        btnAdmin.setStyle("-fx-background-color: transparent; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-padding: 8 20; -fx-font-weight: bold;");
+        
         Button btnLogin = createMagicButton("Connexion", "/login");
         Button btnRegister = createMagicButton("S'inscrire", "/register");
         btnRegister.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_MAIN + "; -fx-background-radius: 12px; -fx-padding: 8 20; -fx-font-weight: bold;");
-        authBox.getChildren().addAll(btnLogin, btnRegister);
+        authBox.getChildren().addAll(btnAdmin, btnLogin, btnRegister);
 
-        this.getChildren().addAll(logo, spacer1, navBox, spacer2, authBox);
+        this.getChildren().addAll(logoBox, navBox, spacer, authBox);
     }
 
     private Button createMagicButton(String text, String route) {
@@ -81,6 +98,3 @@ public class HeaderView extends HBox {
         return btn;
     }
 }
-
-
-

@@ -30,11 +30,17 @@ public class UniverseCreateView extends VBox {
     private static final String TEXT_PRIMARY = "#E6FFF6";
     private final VBox formPanel;
     private Universe editingUniverse;
+    private boolean isAdminOrigin = false;
+
     public UniverseCreateView() {
-        this(null);
+        this(null, false);
     }
     public UniverseCreateView(Universe universe) {
+        this(universe, false);
+    }
+    public UniverseCreateView(Universe universe, boolean isAdminOrigin) {
         this.editingUniverse = universe;
+        this.isAdminOrigin = isAdminOrigin;
         this.setStyle("-fx-background-color: " + BG_MAIN + ";");
         this.getChildren().add(new HeaderView());
         VBox container = new VBox();
@@ -146,15 +152,15 @@ public class UniverseCreateView extends VBox {
                 return;
             }
             
-            String shortDescVal = shortDescription.getText() == null ? "" : shortDescription.getText().trim();
-            if (shortDescVal.isEmpty() || shortDescVal.length() < 10) {
+            String shortVal = shortDescription.getText() == null ? "" : shortDescription.getText().trim();
+            if (shortVal.isEmpty() || shortVal.length() < 10) {
                 errorLabel.setText("La courte description doit comporter au moins 10 caractères.");
                 errorLabel.setManaged(true); errorLabel.setVisible(true);
                 return;
             }
 
-            String storyContextVal = storyContext.getText() == null ? "" : storyContext.getText().trim();
-            if (storyContextVal.isEmpty() || storyContextVal.length() < 10) {
+            String storyVal = storyContext.getText() == null ? "" : storyContext.getText().trim();
+            if (storyVal.isEmpty() || storyVal.length() < 10) {
                 errorLabel.setText("Le contexte narratif doit comporter au moins 10 caractères.");
                 errorLabel.setManaged(true); errorLabel.setVisible(true);
                 return;
@@ -164,17 +170,17 @@ public class UniverseCreateView extends VBox {
                 Universe u = editingUniverse == null ? new Universe() : editingUniverse;
                 u.setName(nameVal);
                 u.setGenre(genreCombo.getValue());
-                u.setShortDescription(shortDescVal);
-                u.setStoryContext(storyContextVal);
+                u.setShortDescription(shortVal);
+                u.setStoryContext(storyVal);
                 u.setThemesFromString(tagsField.getText() == null ? "" : tagsField.getText().trim());
                 u.setBannerImage(selectedImage[0]);
                 UniverseService service = new UniverseService();
-                if (editingUniverse == null) {
+                if(editingUniverse == null) {
                     service.add(u);
                 } else {
                     service.update(u);
                 }
-                SceneManager.getInstance().loadScene("/universes");
+                SceneManager.getInstance().loadScene(isAdminOrigin ? "/admin/universes" : "/universes");
             } catch (Exception ex) {
                 ex.printStackTrace();
                 errorLabel.setText("Erreur serveur : " + ex.getMessage());

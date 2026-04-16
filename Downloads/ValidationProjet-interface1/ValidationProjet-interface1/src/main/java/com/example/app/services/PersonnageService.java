@@ -1,6 +1,7 @@
 package com.example.app.services;
 
 import com.example.app.entities.Personnage;
+import com.example.app.entities.Universe;
 import com.example.app.utils.MyDatabase;
 import java.io.File;
 import java.nio.file.Files;
@@ -78,7 +79,7 @@ public class PersonnageService implements IService<Personnage> {
     @Override
     public List<Personnage> select() throws SQLException {
         List<Personnage> list = new ArrayList<>();
-        String sql = "SELECT * FROM personnage";
+        String sql = "SELECT p.*, u.name as universe_name, u.id as u_id FROM personnage p LEFT JOIN universe u ON p.universe_id = u.id";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -93,6 +94,14 @@ public class PersonnageService implements IService<Personnage> {
             p.setMagic(rs.getInt("magic"));
             p.setDefense(rs.getInt("defense"));
             
+            String uname = rs.getString("universe_name");
+            if (uname != null) {
+                Universe u = new Universe();
+                u.setId(rs.getInt("u_id"));
+                u.setName(uname);
+                p.setUniverse(u);
+            }
+            
             byte[] portraitBytes = rs.getBytes("portrait_image");
             if (portraitBytes != null) {
                 p.setPortraitImage(portraitBytes);
@@ -105,35 +114,32 @@ public class PersonnageService implements IService<Personnage> {
 
     public List<Personnage> searchPersonnages(String search, List<String> classRoles, List<String> universes, String sort) throws SQLException {
         List<Personnage> list = new ArrayList<>();
-        StringBuilder sql = new StringBuilder("SELECT * FROM personnage WHERE 1=1");
+        StringBuilder sql = new StringBuilder("SELECT p.*, u.name as universe_name, u.id as u_id FROM personnage p LEFT JOIN universe u ON p.universe_id = u.id WHERE 1=1");
 
         if (search != null && !search.trim().isEmpty()) {
-            sql.append(" AND name LIKE ?");
+            sql.append(" AND p.name LIKE ?");
         }
         if (classRoles != null && !classRoles.isEmpty()) {
-            sql.append(" AND class_role IN (");
+            sql.append(" AND p.class_role IN (");
             for (int i = 0; i < classRoles.size(); i++) {
                 sql.append("?");
                 if (i < classRoles.size() - 1) sql.append(",");
             }
             sql.append(")");
         }
-        // Assuming 'universes' is not easily filterable by universe_id unless we join,
-        // Wait, PersonnageDAO/PersonnageService might just use universe_id.
-        // Let's ignore universe filter for now or we just append sort.
 
         if ("A-Z".equals(sort)) {
-            sql.append(" ORDER BY name ASC");
+            sql.append(" ORDER BY p.name ASC");
         } else if ("Z-A".equals(sort)) {
-            sql.append(" ORDER BY name DESC");
+            sql.append(" ORDER BY p.name DESC");
         } else if ("Niveau Max (Stats)".equals(sort)) {
-            sql.append(" ORDER BY ((IFNULL(strength, 0) + IFNULL(agility, 0) + IFNULL(magic, 0) + IFNULL(defense, 0))) DESC");
+            sql.append(" ORDER BY ((IFNULL(p.strength, 0) + IFNULL(p.agility, 0) + IFNULL(p.magic, 0) + IFNULL(p.defense, 0))) DESC");
         } else if ("Plus de Force".equals(sort)) {
-            sql.append(" ORDER BY strength DESC");
+            sql.append(" ORDER BY p.strength DESC");
         } else if ("Plus de Magie".equals(sort)) {
-            sql.append(" ORDER BY magic DESC");
+            sql.append(" ORDER BY p.magic DESC");
         } else {
-            sql.append(" ORDER BY id DESC");
+            sql.append(" ORDER BY p.id DESC");
         }
 
         PreparedStatement ps = connection.prepareStatement(sql.toString());
@@ -160,6 +166,14 @@ public class PersonnageService implements IService<Personnage> {
             p.setAgility(rs.getInt("agility"));
             p.setMagic(rs.getInt("magic"));
             p.setDefense(rs.getInt("defense"));
+            
+            String uname = rs.getString("universe_name");
+            if (uname != null) {
+                Universe u = new Universe();
+                u.setId(rs.getInt("u_id"));
+                u.setName(uname);
+                p.setUniverse(u);
+            }
             
             byte[] portraitBytes = rs.getBytes("portrait_image");
             if (portraitBytes != null) {

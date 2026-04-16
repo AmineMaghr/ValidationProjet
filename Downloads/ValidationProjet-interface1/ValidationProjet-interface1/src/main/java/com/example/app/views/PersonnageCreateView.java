@@ -35,11 +35,17 @@ public class PersonnageCreateView extends VBox {
     private static final String TEXT_PRIMARY = "#E6FFF6";
     private final VBox formPanel;
     private Personnage editingPersonnage;
+    private boolean isAdminOrigin = false;
+
     public PersonnageCreateView() {
-        this(null);
+        this(null, false);
     }
     public PersonnageCreateView(Personnage personnage) {
+        this(personnage, false);
+    }
+    public PersonnageCreateView(Personnage personnage, boolean isAdminOrigin) {
         this.editingPersonnage = personnage;
+        this.isAdminOrigin = isAdminOrigin;
         this.setStyle("-fx-background-color: " + BG_MAIN + ";");
         this.getChildren().add(new HeaderView());
         VBox container = new VBox();
@@ -234,7 +240,7 @@ public class PersonnageCreateView extends VBox {
                 } else {
                     service.update(p);
                 }
-                SceneManager.getInstance().loadScene("/personnages");
+                SceneManager.getInstance().loadScene(isAdminOrigin ? "/admin/personnages" : "/personnages");
             } catch (Exception ex) {
                 ex.printStackTrace();
                 errorLabel.setText("Erreur serveur : " + ex.getMessage());
