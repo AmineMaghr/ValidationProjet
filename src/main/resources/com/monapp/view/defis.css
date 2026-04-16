@@ -1,0 +1,142 @@
+/* ===== VARIABLES ===== */
+.root {
+    -fx-primary-color: #18E3A4;
+    -fx-primary-dark: #13c891;
+    -fx-text-color: #E6FFF6;
+    -fx-text-secondary: #B0B9B6;
+    -fx-bg-primary: #1A1F1E;
+    -fx-bg-dark: #0D0F0F;
+    -fx-card-bg: rgba(26, 31, 30, 0.7);
+}
+
+/* ===== HEADER ===== */
+.header {
+    -fx-background-color: rgba(26, 31, 30, 0.9);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 2);
+}
+
+.header-content {
+    -fx-background-color: transparent;
+}
+
+.logo {
+    -fx-cursor: hand;
+}
+
+.logo:hover {
+    -fx-effect: dropshadow(gaussian, #18E3A4, 15, 0, 0, 0);
+}
+
+/* ===== MAGIC BUTTONS ===== */
+.magic-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E6FFF6;
+    -fx-padding: 8 15 8 15;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+}
+
+.magic-btn:hover {
+    -fx-scale-x: 1.05;
+    -fx-scale-y: 1.05;
+    -fx-effect: dropshadow(gaussian, #18E3A4, 15, 0, 0, 0);
+    -fx-border-color: #18E3A4;
+    -fx-text-fill: #18E3A4;
+}
+
+.magic-btn.active {
+    -fx-border-color: #18E3A4;
+    -fx-text-fill: #18E3A4;
+    -fx-background-color: rgba(24, 227, 164, 0.1);
+}
+
+/* ===== BOUTONS ===== */
+.btn-primary {
+    -fx-background-color: #18E3A4;
+    -fx-text-fill: #0b0f10;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-primary:hover {
+    -fx-background-color: #13c891;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-text-fill: #18E3A4;
+    -fx-border-color: #18E3A4;
+    -fx-border-width: 2;
+    -fx-padding: 8 18;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: #18E3A4;
+    -fx-text-fill: #0b0f10;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+.btn-sm {
+    -fx-padding: 6 12;
+    -fx-font-size: 12px;
+}
+
+/* ===== CARTES ===== */
+.defi-card {
+    -fx-background-color: rgba(26, 31, 30, 0.7);
+    -fx-border-radius: 12;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 10, 0, 0, 5);
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+    -fx-border-width: 1;
+}
+
+.defi-card:hover {
+    -fx-translate-y: -5;
+    -fx-effect: dropshadow(gaussian, rgba(24, 227, 164, 0.3), 20, 0, 0, 0);
+    -fx-border-color: rgba(24, 227, 164, 0.2);
+}
+
+.card-image {
+    -fx-pref-height: 140;
+    -fx-alignment: center;
+    -fx-background-color: linear-gradient(to bottom, #18E3A4, #13c891);
+    -fx-border-radius: 12 12 0 0;
+}
+
+.card-body {
+    -fx-padding: 15;
+    -fx-spacing: 8;
+}
+
+.card-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #18E3A4;
+}
+
+.card-text {
+    -fx-text-fill: #B0B9B6;
+    -fx-wrap-text: true;
+    -fx-font-size: 12px;
+}
+
+.tag {
+    -fx-background-color: rgba(24, 227, 164, 0.1);
+    -fx-text-fill: #18E3A4;
+    -fx-border-color: #18E3A4;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 4 12 4 12;
+    -fx-font-size: 11px;
+}

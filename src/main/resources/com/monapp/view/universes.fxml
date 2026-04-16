@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.UniversesController"
+            style="-fx-background-color: #0d1117;">
+
+    <fx:include source="partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
+
+        <!-- Hero Banner -->
+        <StackPane style="-fx-background-color: linear-gradient(to bottom, #1a1f1e, #0d1117); -fx-min-height: 300;">
+            <VBox alignment="CENTER" spacing="20">
+                <Label text="NOS UNIVERS" style="-fx-text-fill: #fff; -fx-font-size: 48; -fx-font-weight: bold;"/>
+                <Label text="Explorez des centaines d'univers fantastiques créés par notre communauté"
+                       style="-fx-text-fill: #888; -fx-font-size: 18;" textAlignment="CENTER"/>
+
+                <!-- Search -->
+                <HBox alignment="CENTER" spacing="10">
+                    <TextField fx:id="searchField" promptText="Rechercher un univers..."
+                               style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 20; -fx-pref-width: 400;"/>
+                    <Button onAction="#search" text="🔍"
+                            style="-fx-background-color: #18E3A4; -fx-background-radius: 20; -fx-padding: 10;"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+
+        <!-- Filters -->
+        <HBox style="-fx-padding: 20 100;" alignment="CENTER" spacing="15">
+            <Button onAction="#filterAll" text="Tous"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Button onAction="#filterFantasy" text="Fantasy"
+                    style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Button onAction="#filterSciFi" text="Science-Fiction"
+                    style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Button onAction="#filterHorror" text="Horreur"
+                    style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Button onAction="#filterSteampunk" text="Steampunk"
+                    style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+            <Button onAction="#filterMedieval" text="Médiéval"
+                    style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 8 16; -fx-background-radius: 15;"/>
+        </HBox>
+
+        <!-- Univers Grid -->
+        <VBox style="-fx-padding: 20 100;" spacing="30">
+            <ListView fx:id="universeList" style="-fx-background-color: transparent;" prefHeight="400"/>
+
+            <!-- Create New Universe -->
+            <HBox alignment="CENTER">
+                <Button onAction="#createUniverse"
+                        style="-fx-background-color: #2a3139; -fx-background-radius: 10; -fx-min-width: 280; -fx-min-height: 300; -fx-padding: 0;">
+                    <VBox alignment="CENTER" spacing="15">
+                        <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 48;"/>
+                        <Label text="Créer un univers" style="-fx-text-fill: #18E3A4; -fx-font-size: 16;"/>
+                    </VBox>
+                </Button>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

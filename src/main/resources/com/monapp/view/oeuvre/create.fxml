@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.CreateOeuvreController"
+            style="-fx-background-color: #0a0c10;">
+
+    <!-- Header avec gradient -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <HBox spacing="30" style="-fx-padding: 15 30;" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil" style="-fx-cursor: hand;">
+                <Label text="⚡" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="← Retour" onAction="#handleBack"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Contenu avec ScrollPane -->
+    <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent; -fx-background: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox spacing="30" style="-fx-padding: 30;">
+
+            <!-- Titre principal -->
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="✨ Créer une nouvelle œuvre"
+                       style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="Partagez votre création avec la communauté Midgar"
+                       style="-fx-text-fill: #6a7a8a; -fx-font-size: 14px;"/>
+            </VBox>
+
+            <!-- Séparateur -->
+            <Separator style="-fx-background-color: rgba(24,227,164,0.3);"/>
+
+            <!-- Corps du formulaire -->
+            <VBox spacing="25" maxWidth="800">
+
+                <!-- Titre -->
+                <VBox spacing="8">
+                    <Label text="📝 Titre de l'œuvre" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <TextField fx:id="titleField" promptText="Ex: Le Secret des Anciens, La Prophétie..."
+                               style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 12; -fx-padding: 14 15; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                </VBox>
+
+                <!-- Type et Auteur (2 colonnes) -->
+                <HBox spacing="20">
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="🏷️ Type d'œuvre" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <ComboBox fx:id="typeCombo" promptText="Sélectionner un type"
+                                  style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 12; -fx-padding: 8 15; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                    </VBox>
+
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="✍️ Auteur" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="authorField" promptText="Votre nom ou pseudonyme"
+                                   style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 12; -fx-padding: 14 15; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Description -->
+                <VBox spacing="8">
+                    <Label text="📖 Description" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="descriptionArea" promptText="Décrivez votre œuvre, son contexte, ses inspirations..."
+                              prefHeight="140" wrapText="true"
+                              style="-fx-background-color: #fff; -fx-text-fill: #000; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 12; -fx-padding: 14; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                </VBox>
+
+                <!-- Image -->
+                <VBox spacing="8">
+                    <Label text="🖼️ Image" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Button fx:id="selectImageBtn" text="📁 Parcourir" onAction="#handleChooseImage"
+                                style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-background-radius: 25; -fx-padding: 10 25; -fx-cursor: hand; -fx-font-weight: bold;"/>
+                        <Label fx:id="imageStatus" text="Aucune image" style="-fx-text-fill: #6a7a8a; -fx-font-size: 12px;"/>
+                    </HBox>
+                    <ImageView fx:id="imagePreview" fitWidth="200" fitHeight="150" preserveRatio="true"
+                               style="-fx-background-color: #1a2530; -fx-background-radius: 12; -fx-border-color: #2a3540; -fx-border-radius: 12; -fx-padding: 5;"/>
+                </VBox>
+
+                <!-- Date automatique -->
+                <VBox spacing="8">
+                    <Label text="📅 Date de publication" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label fx:id="dateLabel" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold; -fx-background-color: #1a2530; -fx-padding: 8 15; -fx-background-radius: 8;"/>
+                        <Label text="(Automatique - Date du jour)" style="-fx-text-fill: #6a7a8a; -fx-font-size: 11px;"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Message d'erreur -->
+                <Label fx:id="errorLabel" wrapText="true" style="-fx-text-fill: #ff6b6b; -fx-font-size: 12px; -fx-background-color: rgba(255,107,107,0.1); -fx-padding: 10; -fx-background-radius: 8;"/>
+
+                <!-- Boutons -->
+                <HBox spacing="20" alignment="CENTER" style="-fx-padding: 30 0;">
+                    <Button text="Annuler" onAction="#handleCancel"
+                            style="-fx-background-color: transparent; -fx-border-color: #6a7a8a; -fx-text-fill: #6a7a8a; -fx-border-radius: 30; -fx-padding: 12 40; -fx-cursor: hand; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <Button text="✅ Créer l'œuvre" onAction="#handleCreate"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12 40; -fx-cursor: hand; -fx-font-size: 14px; -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.3), 10, 0, 0, 2);"/>
+                </HBox>
+
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</AnchorPane>

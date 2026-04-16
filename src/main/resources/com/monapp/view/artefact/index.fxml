@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17" 
+            xmlns:fx="http://javafx.com/fxml" 
+            fx:controller="com.example.app.controllers.ArtefactController"
+            style="-fx-background-color: #0a0c10;">
+
+    <!-- Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10);"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        
+        <HBox spacing="30" style="-fx-padding: 15 30;" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil" style="-fx-cursor: hand;">
+                <Label text="⚡" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <HBox spacing="25" style="-fx-padding: 0 20;">
+                <Button text="ACCUEIL" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;" onAction="#goAccueil"/>
+                <Button text="DÉCOUVRIR" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                <Button text="UNIVERS" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                <Button text="PERSONNAGES" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                <Button text="BOUTIQUE" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;"/>
+                <Button text="DÉFIS" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 13px; -fx-cursor: hand;"/>
+            </HBox>
+            
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <HBox spacing="15" alignment="CENTER_RIGHT">
+                <Button text="🔔" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-font-size: 16px; -fx-cursor: hand;"/>
+                <HBox spacing="8" alignment="CENTER" style="-fx-cursor: hand;">
+                    <Circle radius="16" fill="#18E3A4"/>
+                    <Label text="Admin" style="-fx-text-fill: #fff; -fx-font-size: 13px;"/>
+                </HBox>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    <!-- Contenu principal -->
+    <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox spacing="25" style="-fx-padding: 25 30;">
+            
+            <!-- Bannière -->
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 30; -fx-background-color: #0f212e; -fx-background-radius: 15; -fx-border-color: rgba(24,227,164,0.2); -fx-border-radius: 15;">
+                <VBox spacing="10">
+                    <Label text="Gestion des Artefacts" style="-fx-text-fill: #fff; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label text="Créez, modifiez et gérez tous les artefacts de la plateforme" style="-fx-text-fill: #b0b9b6; -fx-font-size: 14px;"/>
+                    <HBox spacing="15" style="-fx-padding: 15 0 0 0;">
+                        <Button text="+ Créer un artefact" onAction="#goToCreateArtefact" 
+                                style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="⚡" style="-fx-font-size: 80px; -fx-opacity: 0.3;"/>
+            </HBox>
+            
+            <!-- Statistiques -->
+            <HBox spacing="20">
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="⚡" style="-fx-font-size: 28px;"/>
+                    <Label text="Total Artefacts" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalArtefactsLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="🌌" style="-fx-font-size: 28px;"/>
+                    <Label text="Univers" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalUniversLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="⭐" style="-fx-font-size: 28px;"/>
+                    <Label text="Types" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalTypesLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+            
+            <!-- Filtres -->
+            <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;">
+                <Label text="🔍 Filtrer les artefacts" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <HBox spacing="15">
+                    <TextField fx:id="searchField" promptText="Chercher par nom, univers ou origines..." 
+                               style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 25; -fx-padding: 12 20; -fx-border-color: #2a3540; -fx-border-radius: 25;"
+                               HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="typeFilter" promptText="Type" 
+                              style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 25; -fx-padding: 5 15; -fx-min-width: 150;"/>
+                    <Button text="Rechercher" onAction="#search" 
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 10 25; -fx-cursor: hand;"/>
+                    <Button text="Réinitialiser" onAction="#resetFilters" 
+                            style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 25; -fx-border-radius: 25; -fx-padding: 10 25; -fx-cursor: hand;"/>
+                    <CheckBox fx:id="myItemsCheckbox" text="Mes artefacts" style="-fx-text-fill: #fff;" onAction="#toggleMyItems"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Grille des artefacts -->
+            <VBox spacing="15">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="⚡ Tous les artefacts" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="resultCountLabel" text="0 artefact(s)" style="-fx-text-fill: #6a7a8a; -fx-font-size: 12px;"/>
+                </HBox>
+                
+                <TilePane fx:id="artefactGrid"
+                          prefColumns="3"
+                          hgap="20"
+                          vgap="20"
+                          style="-fx-background-color: transparent;"/>
+            </VBox>
+            
+        </VBox>
+    </ScrollPane>
+    
+</AnchorPane>
