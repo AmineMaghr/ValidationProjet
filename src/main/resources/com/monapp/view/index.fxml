@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.media.MediaView?>
+<?import javafx.scene.media.Media?>
+<?import javafx.scene.effect.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.AccueilController"
+            stylesheets="@accueil.css">
+
+    <!-- VIDEO BACKGROUND -->
+    <MediaView fx:id="mediaView" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+               AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" styleClass="video-background"/>
+    <StackPane styleClass="video-overlay" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+               AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0"/>
+
+    <!-- HEADER FIXE -->
+    <VBox styleClass="header" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+
+        <!-- Barre de navigation -->
+        <HBox styleClass="header-content" spacing="20" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
+
+            <!-- Logo -->
+            <HBox styleClass="logo" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 24px;" styleClass="float"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+            </HBox>
+
+            <!-- Navigation -->
+            <HBox styleClass="nav-menu" spacing="5" HBox.hgrow="ALWAYS">
+                <Button text="Accueil" styleClass="magic-btn, active" onAction="#goAccueil"/>
+                <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                <Button text="Œuvre" styleClass="magic-btn" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                <Button text="Défis" styleClass="magic-btn" onAction="#goChallenges"/>
+            </HBox>
+
+            <!-- Auth buttons -->
+            <HBox fx:id="authContainer" spacing="10" alignment="CENTER_RIGHT"/>
+        </HBox>
+
+        <!-- Barre de recherche -->
+        <VBox fx:id="searchBarContainer" styleClass="search-bar-container" visible="false">
+            <HBox styleClass="search-bar-wrapper" spacing="10" alignment="CENTER_LEFT">
+                <Label text="🔍" styleClass="search-icon"/>
+                <TextField fx:id="searchInput" promptText="Nom d'utilisateur, prénom ou nom..."
+                           styleClass="search-bar-input" HBox.hgrow="ALWAYS"/>
+                <Button text="✕" styleClass="search-close-btn" onAction="#toggleSearchBar"/>
+            </HBox>
+            <ListView fx:id="searchResults" styleClass="search-bar-results" visible="false" maxHeight="300"/>
+        </VBox>
+    </VBox>
+
+    <!-- CONTENU SCROLLABLE -->
+    <ScrollPane fitToWidth="true" style="-fx-background: transparent; -fx-background-color: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox spacing="0" style="-fx-background-color: transparent;">
+
+            <!-- HERO SECTION -->
+            <StackPane styleClass="hero, gradient-bg">
+                <VBox alignment="CENTER" spacing="20" styleClass="hero-content">
+                    <Label text="Midgar" styleClass="hero-title"/>
+                    <Label text="Créez, partagez et faites vivre vos univers fantasy" styleClass="hero-tagline" wrapText="true" textAlignment="CENTER"/>
+                    <Button text="✨ Commencer le Quiz" styleClass="btn-primary, btn-glow, pulse" onAction="#lancerQuiz"/>
+                </VBox>
+            </StackPane>
+
+            <!-- UNIVERS POPULAIRES -->
+            <VBox styleClass="section">
+                <Label text="Univers Populaires" styleClass="section-title"/>
+                <HBox fx:id="universSlider" spacing="20" alignment="CENTER"/>
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="❮" styleClass="slider-nav" onAction="#prevUnivers"/>
+                    <Button text="❯" styleClass="slider-nav" onAction="#nextUnivers"/>
+                </HBox>
+            </VBox>
+
+            <!-- CRÉATIONS RÉCENTES -->
+            <VBox styleClass="section">
+                <Label text="Créations Récentes" styleClass="section-title"/>
+                <HBox fx:id="creationsSlider" spacing="20" alignment="CENTER"/>
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="❮" styleClass="slider-nav" onAction="#prevCreation"/>
+                    <Button text="❯" styleClass="slider-nav" onAction="#nextCreation"/>
+                </HBox>
+            </VBox>
+
+            <!-- DÉFIS -->
+            <VBox styleClass="section">
+                <Label text="Défis" styleClass="section-title"/>
+                <TilePane fx:id="defisGrid" styleClass="defis-grid" prefColumns="4" hgap="20" vgap="20"/>
+            </VBox>
+
+            <!-- FOOTER -->
+            <VBox styleClass="footer" alignment="CENTER" spacing="10">
+                <padding>
+                    <Insets top="30" right="20" bottom="30" left="20"/>
+                </padding>
+                <Label text="&#169; 2026 Midgar Fantasy Platform. Tous droits réservés."/>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+    <!-- MODAL DÉFI -->
+    <StackPane fx:id="defiModal" styleClass="modal" visible="false" managed="false"
+               AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        <VBox styleClass="modal-content" spacing="15" maxWidth="500">
+            <Button text="✕" styleClass="modal-close" onAction="#closeDefiModal"/>
+            <Label fx:id="modalTitre" styleClass="modal-title"/>
+            <HBox spacing="10">
+                <Label text="Thème :" style="-fx-font-weight: bold;"/>
+                <Label fx:id="modalTheme"/>
+            </HBox>
+            <Label fx:id="modalDescription" wrapText="true"/>
+            <HBox spacing="10">
+                <Label text="Début :" style="-fx-font-weight: bold;"/>
+                <Label fx:id="modalDebut"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Fin :" style="-fx-font-weight: bold;"/>
+                <Label fx:id="modalFin"/>
+            </HBox>
+            <HBox spacing="10">
+                <Label text="Statut :" style="-fx-font-weight: bold;"/>
+                <Label fx:id="modalStatut"/>
+            </HBox>
+            <Button text="Participer" styleClass="btn-primary" onAction="#participerDefi"/>
+        </VBox>
+    </StackPane>
+
+    <!--
+    <StackPane fx:id="faceModal" styleClass="modal" visible="false" managed="false"
+               AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        <VBox styleClass="modal-content" spacing="15" maxWidth="400">
+            <Button text="✕" styleClass="modal-close" onAction="#closeFaceModal"/>
+            <Label text="🔐 Sécurisez votre compte" styleClass="modal-title"/>
+            <Label text="Activez la reconnaissance faciale pour une connexion plus rapide et plus sécurisée."
+                   wrapText="true" style="-fx-text-fill: #B0B9B6;"/>
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="📷 Activer maintenant" styleClass="btn-primary" onAction="#activerReconnaissanceFaciale"/>
+                <Button text="Plus tard" styleClass="btn-secondary" onAction="#closeFaceModal"/>
+            </HBox>
+        </VBox>
+    </StackPane> -->
+
+</AnchorPane>

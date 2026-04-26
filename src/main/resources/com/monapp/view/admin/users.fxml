@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.AdminController"
+            style="-fx-background-color: #0a0c10;">
+
+    <!-- Sidebar -->
+    <VBox style="-fx-background-color: #0d1117; -fx-border-color: #1a2530; -fx-border-width: 0 1 0 0;"
+          AnchorPane.leftAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0" prefWidth="260" spacing="0">
+        
+        <VBox spacing="15" style="-fx-padding: 30 20 20 20;" alignment="CENTER">
+            <Label text="⚡" style="-fx-text-fill: #18E3A4; -fx-font-size: 36px;"/>
+            <Label text="MIDGAR ADMIN" style="-fx-text-fill: #18E3A4; -fx-font-size: 18px; -fx-font-weight: bold; -fx-letter-spacing: 2px;"/>
+            <Label text="Panel d'administration" style="-fx-text-fill: #6a7a8a; -fx-font-size: 11px;"/>
+            <Separator style="-fx-background-color: rgba(24,227,164,0.2);"/>
+        </VBox>
+        
+        <VBox spacing="8" style="-fx-padding: 10 20 0 20;">
+            <Button text="🏠 Dashboard" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+                    onAction="#goHome"/>
+            <Button text="👥 Utilisateurs" style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;" 
+                    onAction="#showUsersTab"/>
+            <Button text="📚 Œuvres" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+                    onAction="#showOeuvresTab"/>
+            <Button text="⚡ Artefacts" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+                    onAction="#showArtefactsTab"/>
+        </VBox>
+        
+        <Region VBox.vgrow="ALWAYS"/>
+        
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <Separator style="-fx-background-color: rgba(24,227,164,0.15);"/>
+            <Button text="← Retour au profil" onAction="#returnToProfile"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 25; -fx-padding: 12; -fx-cursor: hand; -fx-font-weight: bold;"/>
+        </VBox>
+    </VBox>
+
+    <!-- Contenu principal -->
+    <VBox spacing="0" AnchorPane.leftAnchor="260" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        
+        <!-- Header -->
+        <VBox style="-fx-background-color: #0b0f10; -fx-border-color: #1a2530; -fx-border-width: 0 0 1 0;">
+            <HBox style="-fx-padding: 20 30;" alignment="CENTER_LEFT">
+                <VBox>
+                    <Label text="Gestion des utilisateurs" fx:id="pageTitle" style="-fx-text-fill: #fff; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                    <Label text="Gérez les comptes utilisateurs de la plateforme" style="-fx-text-fill: #6a7a8a; -fx-font-size: 12px;"/>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="🏠 Retour au site" onAction="#goHome"
+                        style="-fx-background-color: #1a2530; -fx-text-fill: #18E3A4; -fx-padding: 10 20; -fx-background-radius: 25; -fx-cursor: hand; -fx-border-color: #18E3A4; -fx-border-radius: 25;"/>
+            </HBox>
+            
+            <!-- Cartes statistiques -->
+            <HBox spacing="20" style="-fx-padding: 0 30 25 30;">
+                <VBox spacing="8" style="-fx-padding: 20; -fx-background-color: #0f212e; -fx-background-radius: 15; -fx-border-color: #1a2530; -fx-border-radius: 15; -fx-min-width: 160;">
+                    <Label text="👥" style="-fx-font-size: 32px;"/>
+                    <Label text="Total Utilisateurs" style="-fx-text-fill: #6a7a8a; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                    <Label fx:id="totalUsersLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                </VBox>
+                
+                <VBox spacing="8" style="-fx-padding: 20; -fx-background-color: #0f212e; -fx-background-radius: 15; -fx-border-color: #1a2530; -fx-border-radius: 15; -fx-min-width: 160;">
+                    <Label text="👑" style="-fx-font-size: 32px;"/>
+                    <Label text="Administrateurs" style="-fx-text-fill: #6a7a8a; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                    <Label fx:id="totalAdminsLabel" text="0" style="-fx-text-fill: #FFA726; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                </VBox>
+                
+                <VBox spacing="8" style="-fx-padding: 20; -fx-background-color: #0f212e; -fx-background-radius: 15; -fx-border-color: #1a2530; -fx-border-radius: 15; -fx-min-width: 160;">
+                    <Label text="🔒" style="-fx-font-size: 32px;"/>
+                    <Label text="Comptes bloqués" style="-fx-text-fill: #6a7a8a; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+                    <Label fx:id="totalBlockedLabel" text="0" style="-fx-text-fill: #EF5350; -fx-font-size: 32px; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Filtres -->
+        <HBox style="-fx-padding: 25 30 15 30;" spacing="15" alignment="CENTER_LEFT">
+            <HBox spacing="10" style="-fx-background-color: #1a2530; -fx-background-radius: 25; -fx-padding: 5 15;">
+                <Label text="🔍" style="-fx-text-fill: #6a7a8a;"/>
+                <TextField fx:id="searchField" promptText="Rechercher un utilisateur..."
+                           style="-fx-background-color: transparent; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-pref-width: 250;"/>
+            </HBox>
+            <DatePicker fx:id="startDatePicker" promptText="Date début" 
+                        style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-border-color: #2a3540; -fx-background-radius: 20;"/>
+            <DatePicker fx:id="endDatePicker" promptText="Date fin" 
+                        style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-border-color: #2a3540; -fx-background-radius: 20;"/>
+            <ComboBox fx:id="sortCombo" promptText="Trier par" 
+                      style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 20;" prefWidth="120"/>
+            <ComboBox fx:id="directionCombo" promptText="Ordre" 
+                      style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 20;" prefWidth="90"/>
+            <Button text="Rechercher" onAction="#searchUsers"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+            <Button text="Réinitialiser" onAction="#resetFilters"
+                    style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- TabPane avec les 3 tableaux -->
+        <TabPane fx:id="adminTabPane" style="-fx-background-color: transparent; -fx-tab-min-height: 40;" VBox.vgrow="ALWAYS">
+            
+            <!-- TAB UTILISATEURS -->
+            <Tab text="👥 Utilisateurs" closable="false">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <TableView fx:id="userTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+            
+            <!-- TAB ŒUVRES -->
+            <Tab text="📚 Œuvres" closable="false">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox spacing="10">
+                        <HBox spacing="10" style="-fx-background-color: #1a2530; -fx-background-radius: 25; -fx-padding: 5 15;" HBox.hgrow="ALWAYS">
+                            <Label text="🔍" style="-fx-text-fill: #6a7a8a;"/>
+                            <TextField fx:id="searchOeuvreField" promptText="Rechercher une œuvre..."
+                                       style="-fx-background-color: transparent; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a;"/>
+                        </HBox>
+                        <Button text="Rechercher" onAction="#searchOeuvres"
+                                style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                        <Button text="Réinitialiser" onAction="#resetOeuvreFilters"
+                                style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                    </HBox>
+                    <TableView fx:id="oeuvreTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+            
+            <!-- TAB ARTEFACTS -->
+            <Tab text="⚡ Artefacts" closable="false">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <HBox spacing="10">
+                        <HBox spacing="10" style="-fx-background-color: #1a2530; -fx-background-radius: 25; -fx-padding: 5 15;" HBox.hgrow="ALWAYS">
+                            <Label text="🔍" style="-fx-text-fill: #6a7a8a;"/>
+                            <TextField fx:id="searchArtefactField" promptText="Rechercher un artefact..."
+                                       style="-fx-background-color: transparent; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a;"/>
+                        </HBox>
+                        <Button text="Rechercher" onAction="#searchArtefacts"
+                                style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                        <Button text="Réinitialiser" onAction="#resetArtefactFilters"
+                                style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                    </HBox>
+                    <TableView fx:id="artefactTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+            
+        </TabPane>
+
+    </VBox>
+</AnchorPane>

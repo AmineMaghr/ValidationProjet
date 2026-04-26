@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<!-- Header commun réutilisable -->
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml" style="-fx-background-color: #0b0f10;">
+    <HBox style="-fx-background-color: #071011; -fx-padding: 10 20;" alignment="CENTER_LEFT">
+        <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 24; -fx-font-weight: bold;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="15">
+            <Label text="Français" style="-fx-text-fill: #fff;"/>
+            <Label text="€ EUR" style="-fx-text-fill: #fff;"/>
+        </HBox>
+    </HBox>
+    <HBox style="-fx-background-color: #0b0f10; -fx-padding: 15 20;" alignment="CENTER">
+        <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 20; -fx-font-weight: 800;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="30">
+            <Button text="ACCUEIL" styleClass="nav-button"/>
+            <Button text="DÉCOUVRIR" styleClass="nav-button"/>
+            <Button text="UNIVERS" styleClass="nav-button"/>
+            <Button text="PERSONNAGES" styleClass="nav-button"/>
+            <Button text="BOUTIQUE" styleClass="nav-button"/>
+            <Button text="DÉFIS" styleClass="nav-button"/>
+        </HBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <HBox spacing="15">
+            <Button text="🔍" styleClass="icon-button"/>
+            <Button text="🛒" styleClass="icon-button"/>
+            <Button text="👤" styleClass="icon-button"/>
+        </HBox>
+    </HBox>
+</VBox>
+

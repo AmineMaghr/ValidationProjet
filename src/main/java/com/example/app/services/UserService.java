@@ -1,0 +1,161 @@
+package com.example.app.services;
+
+import com.example.app.entities.User;
+import com.example.app.dao.UserDAO;
+import com.example.app.utils.PasswordHasher;
+import java.sql.SQLException;
+import java.util.List;
+
+public class UserService implements IService<User> {
+
+    private UserDAO userDAO;
+    private PasswordHasher passwordHasher;
+
+    public UserService() {
+        this.userDAO = new UserDAO();
+        this.passwordHasher = new PasswordHasher();
+    }
+
+    @Override
+    public void add(User user) throws SQLException {
+        // Validation avant ajout
+        if (!user.isValid()) {
+            throw new IllegalArgumentException("Données utilisateur invalides: " + user.getValidationErrorsAsString());
+        }
+
+        // Vérifier que l'username et l'email sont disponibles
+        if (userDAO.isUsernameTaken(user.getUsername())) {
+            throw new IllegalArgumentException("Ce nom d'utilisateur est déjà pris");
+        }
+        if (userDAO.isEmailTaken(user.getEmail())) {
+            throw new IllegalArgumentException("Cette adresse email est déjà utilisée");
+        }
+
+        // Hasher le mot de passe
+        System.out.println("Password before hash: " + user.getPassword());
+        user.setPassword(passwordHasher.hash(user.getPassword()));
+        System.out.println("Password after hash: " + user.getPassword());
+
+        userDAO.add(user);
+    }
+
+    @Override
+    public void update(User user) throws SQLException {
+        userDAO.update(user);
+    }
+
+    @Override
+    public void delete(int id) throws SQLException {
+        userDAO.delete(id);
+    }
+
+    @Override
+    public List<User> select() throws SQLException {
+        return userDAO.select();
+    }
+
+    public User findById(int id) throws SQLException {
+        return userDAO.findById(id);
+    }
+
+    public User findByUsername(String username) throws SQLException {
+        return userDAO.findByUsername(username);
+    }
+
+    public User findByEmail(String email) throws SQLException {
+        return userDAO.findByEmail(email);
+    }
+
+    public boolean isUsernameTaken(String username) throws SQLException {
+        return userDAO.isUsernameTaken(username);
+    }
+
+    public boolean isEmailTaken(String email) throws SQLException {
+        return userDAO.isEmailTaken(email);
+    }
+
+    public List<String> generateUsernameSuggestions(String baseUsername) throws SQLException {
+        return userDAO.generateUsernameSuggestions(baseUsername);
+    }
+
+    public boolean authenticate(String username, String password) throws SQLException {
+        User user = userDAO.findByUsername(username);
+        if (user == null) {
+            user = userDAO.findByEmail(username);
+        }
+
+        if (user != null && !user.isBlocked()) {
+            return passwordHasher.verify(password, user.getPassword()) || user.getPassword().equals(password);
+        }
+
+        return false;
+    }
+
+    public User login(String username, String password) throws SQLException {
+        User user = userDAO.findByUsername(username);
+        if (user == null) {
+            user = userDAO.findByEmail(username);
+        }
+
+        if (user != null && !user.isBlocked()) {
+            // Check hashed password, or plain password for backward compatibility
+            if (passwordHasher.verify(password, user.getPassword()) || user.getPassword().equals(password)) {
+                return user;
+            }
+        }
+
+        return null;
+    }
+
+    public void updatePassword(int userId, String newPassword) throws SQLException {
+        User user = findById(userId);
+        if (user != null) {
+            user.setPassword(newPassword);
+            userDAO.update(user);
+        }
+    }
+
+    public boolean changePassword(int userId, String oldPassword, String newPassword) throws SQLException {
+        User user = findById(userId);
+        if (user != null && oldPassword.equals(user.getPassword())) {
+            user.setPassword(newPassword);
+            userDAO.update(user);
+            return true;
+        }
+        return false;
+    }
+
+    public java.util.List<User> searchUsers(String query) throws SQLException {
+        return userDAO.select().stream()
+            .filter(u -> u.getUsername().toLowerCase().contains(query.toLowerCase()) ||
+                        u.getPrenom().toLowerCase().contains(query.toLowerCase()) ||
+                        u.getNom().toLowerCase().contains(query.toLowerCase()))
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    public java.util.List<User> searchUsersAdmin(String search, java.time.LocalDate start, java.time.LocalDate end, String sort, String direction) throws SQLException {
+        return userDAO.select().stream()
+            .filter(u -> {
+                if (search != null && !search.isEmpty()) {
+                    return u.getUsername().toLowerCase().contains(search.toLowerCase()) ||
+                           u.getEmail().toLowerCase().contains(search.toLowerCase());
+                }
+                return true;
+            })
+            .sorted((u1, u2) -> {
+                int cmp = 0;
+                switch (sort) {
+                    case "username" -> cmp = u1.getUsername().compareTo(u2.getUsername());
+                    case "lastName" -> cmp = u1.getNom().compareTo(u2.getNom());
+                    case "firstName" -> cmp = u1.getPrenom().compareTo(u2.getPrenom());
+                    default -> cmp = u1.getCreatedAt().compareTo(u2.getCreatedAt());
+                }
+                return "desc".equals(direction) ? -cmp : cmp;
+            })
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    public void toggleUserBlock(int userId, boolean blocked) throws SQLException {
+        userDAO.updateUserBlockStatus(userId, blocked);
+    }
+}
