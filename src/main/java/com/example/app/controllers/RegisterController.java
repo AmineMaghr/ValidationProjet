@@ -2,6 +2,7 @@ package com.example.app.controllers;
 
 import com.example.app.entities.User;
 import com.example.app.services.UserService;
+import com.example.app.services.EmailService;  // AJOUTÉ
 import com.example.app.utils.UserSession;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -79,26 +80,15 @@ public class RegisterController extends BaseController {
 
         // Validation on focus lost
         usernameField.focusedProperty().addListener((obs, old, newVal) -> {
-            if (!newVal) { // lost focus
+            if (!newVal) {
                 checkUsername();
             }
         });
 
         emailField.focusedProperty().addListener((obs, old, newVal) -> {
-            if (!newVal) { // lost focus
+            if (!newVal) {
                 checkEmail();
             }
-        });
-
-        // Validation email avec debounce
-        emailField.textProperty().addListener((obs, old, val) -> {
-            if (emailTimer != null) emailTimer.cancel();
-            emailTimer.schedule(new java.util.TimerTask() {
-                @Override
-                public void run() {
-                    Platform.runLater(() -> checkEmail());
-                }
-            }, 500);
         });
 
         // Validation mot de passe
@@ -111,11 +101,11 @@ public class RegisterController extends BaseController {
     private void validatePrenom() {
         String prenom = prenomField.getText().trim();
         if (prenom.isEmpty()) {
-            setFieldStyle(prenomField, false, "Prénom requis");
+            setFieldStyle(prenomField, false);
         } else if (prenom.length() < 2) {
-            setFieldStyle(prenomField, false, "Minimum 2 caractères");
+            setFieldStyle(prenomField, false);
         } else {
-            setFieldStyle(prenomField, true, "✓");
+            setFieldStyle(prenomField, true);
         }
         checkFormValidity();
     }
@@ -123,11 +113,11 @@ public class RegisterController extends BaseController {
     private void validateNom() {
         String nom = nomField.getText().trim();
         if (nom.isEmpty()) {
-            setFieldStyle(nomField, false, "Nom requis");
+            setFieldStyle(nomField, false);
         } else if (nom.length() < 2) {
-            setFieldStyle(nomField, false, "Minimum 2 caractères");
+            setFieldStyle(nomField, false);
         } else {
-            setFieldStyle(nomField, true, "✓");
+            setFieldStyle(nomField, true);
         }
         checkFormValidity();
     }
@@ -138,7 +128,7 @@ public class RegisterController extends BaseController {
         if (username.isEmpty()) {
             usernameStatus.setText("Nom d'utilisateur requis");
             usernameStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(usernameField, false, null);
+            setFieldStyle(usernameField, false);
             isUsernameValid = false;
             checkFormValidity();
             return;
@@ -147,7 +137,7 @@ public class RegisterController extends BaseController {
         if (username.length() < 3) {
             usernameStatus.setText("Minimum 3 caractères");
             usernameStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(usernameField, false, null);
+            setFieldStyle(usernameField, false);
             isUsernameValid = false;
             checkFormValidity();
             return;
@@ -156,7 +146,7 @@ public class RegisterController extends BaseController {
         if (username.length() > 20) {
             usernameStatus.setText("Maximum 20 caractères");
             usernameStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(usernameField, false, null);
+            setFieldStyle(usernameField, false);
             isUsernameValid = false;
             checkFormValidity();
             return;
@@ -165,7 +155,7 @@ public class RegisterController extends BaseController {
         if (!username.matches("^[a-zA-Z0-9]+$")) {
             usernameStatus.setText("Lettres et chiffres uniquement");
             usernameStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(usernameField, false, null);
+            setFieldStyle(usernameField, false);
             isUsernameValid = false;
             checkFormValidity();
             return;
@@ -180,24 +170,10 @@ public class RegisterController extends BaseController {
         };
 
         task.setOnSucceeded(e -> {
-            // Temporarily disable taken check for testing
-            /*
-            if (task.getValue()) {
-                usernameStatus.setText("✗ Nom d'utilisateur déjà pris");
-                usernameStatus.setStyle("-fx-text-fill: #EF5350;");
-                setFieldStyle(usernameField, false, null);
-                isUsernameValid = false;
-                // Générer suggestions
-                generateUsernameSuggestions(username);
-            } else {
-            */
-                usernameStatus.setText("✓ Disponible");
-                usernameStatus.setStyle("-fx-text-fill: #18E3A4;");
-                setFieldStyle(usernameField, true, null);
-                isUsernameValid = true;
-            /*
-            }
-            */
+            usernameStatus.setText("✓ Disponible");
+            usernameStatus.setStyle("-fx-text-fill: #18E3A4;");
+            setFieldStyle(usernameField, true);
+            isUsernameValid = true;
             checkFormValidity();
         });
 
@@ -230,7 +206,6 @@ public class RegisterController extends BaseController {
     }
 
     private void showSuggestions(List<String> suggestions) {
-        // Afficher les suggestions (à implémenter dans le FXML)
         StringBuilder sb = new StringBuilder("Suggestions: ");
         for (String s : suggestions) {
             sb.append(s).append(" ");
@@ -245,7 +220,7 @@ public class RegisterController extends BaseController {
         if (email.isEmpty()) {
             emailStatus.setText("Email requis");
             emailStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(emailField, false, null);
+            setFieldStyle(emailField, false);
             isEmailValid = false;
             checkFormValidity();
             return;
@@ -254,7 +229,7 @@ public class RegisterController extends BaseController {
         if (!email.matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
             emailStatus.setText("Format d'email invalide");
             emailStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(emailField, false, null);
+            setFieldStyle(emailField, false);
             isEmailValid = false;
             checkFormValidity();
             return;
@@ -269,22 +244,10 @@ public class RegisterController extends BaseController {
         };
 
         task.setOnSucceeded(e -> {
-            // Temporarily disable taken check for testing
-            /*
-            if (task.getValue()) {
-                emailStatus.setText("✗ Email déjà utilisé");
-                emailStatus.setStyle("-fx-text-fill: #EF5350;");
-                setFieldStyle(emailField, false, null);
-                isEmailValid = false;
-            } else {
-            */
-                emailStatus.setText("✓ Email disponible");
-                emailStatus.setStyle("-fx-text-fill: #18E3A4;");
-                setFieldStyle(emailField, true, null);
-                isEmailValid = true;
-            /*
-            }
-            */
+            emailStatus.setText("✓ Email disponible");
+            emailStatus.setStyle("-fx-text-fill: #18E3A4;");
+            setFieldStyle(emailField, true);
+            isEmailValid = true;
             checkFormValidity();
         });
 
@@ -297,13 +260,12 @@ public class RegisterController extends BaseController {
         if (password.isEmpty()) {
             passwordStatus.setText("Mot de passe requis");
             passwordStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(passwordField, false, null);
+            setFieldStyle(passwordField, false);
         } else if (password.length() < 6) {
             passwordStatus.setText("Minimum 6 caractères");
             passwordStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(passwordField, false, null);
+            setFieldStyle(passwordField, false);
         } else {
-            // Force du mot de passe
             int strength = calculatePasswordStrength(password);
             if (strength < 50) {
                 passwordStatus.setText("Faible");
@@ -315,10 +277,9 @@ public class RegisterController extends BaseController {
                 passwordStatus.setText("Fort ✓");
                 passwordStatus.setStyle("-fx-text-fill: #18E3A4;");
             }
-            setFieldStyle(passwordField, true, null);
+            setFieldStyle(passwordField, true);
         }
 
-        // Re-valider la confirmation
         if (!confirmPasswordField.getText().isEmpty()) {
             validateConfirm();
         }
@@ -328,12 +289,10 @@ public class RegisterController extends BaseController {
 
     private int calculatePasswordStrength(String password) {
         int strength = 0;
-
         if (password.length() >= 8) strength += 25;
         if (password.matches(".*[A-Z].*")) strength += 25;
         if (password.matches(".*[a-z].*")) strength += 25;
         if (password.matches(".*[0-9].*") || password.matches(".*[^A-Za-z0-9].*")) strength += 25;
-
         return strength;
     }
 
@@ -344,21 +303,21 @@ public class RegisterController extends BaseController {
         if (confirm.isEmpty()) {
             confirmStatus.setText("Confirmation requise");
             confirmStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(confirmPasswordField, false, null);
+            setFieldStyle(confirmPasswordField, false);
         } else if (!password.equals(confirm)) {
             confirmStatus.setText("Les mots de passe ne correspondent pas");
             confirmStatus.setStyle("-fx-text-fill: #EF5350;");
-            setFieldStyle(confirmPasswordField, false, null);
+            setFieldStyle(confirmPasswordField, false);
         } else {
             confirmStatus.setText("✓ Mots de passe identiques");
             confirmStatus.setStyle("-fx-text-fill: #18E3A4;");
-            setFieldStyle(confirmPasswordField, true, null);
+            setFieldStyle(confirmPasswordField, true);
         }
 
         checkFormValidity();
     }
 
-    private void setFieldStyle(TextField field, boolean isValid, String message) {
+    private void setFieldStyle(TextField field, boolean isValid) {
         if (isValid) {
             field.setStyle("-fx-border-color: #18E3A4; -fx-border-radius: 12;");
         } else {
@@ -366,7 +325,7 @@ public class RegisterController extends BaseController {
         }
     }
 
-    private void setFieldStyle(PasswordField field, boolean isValid, String message) {
+    private void setFieldStyle(PasswordField field, boolean isValid) {
         if (isValid) {
             field.setStyle("-fx-border-color: #18E3A4; -fx-border-radius: 12;");
         } else {
@@ -425,6 +384,9 @@ public class RegisterController extends BaseController {
             return;
         }
 
+        registerBtn.setDisable(true);
+        registerBtn.setText("Inscription en cours...");
+
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -434,11 +396,17 @@ public class RegisterController extends BaseController {
         };
 
         task.setOnSucceeded(e -> {
+            // Envoyer email de bienvenue
+            EmailService emailService = new EmailService();
+            emailService.sendWelcomeEmail(user.getEmail(), user.getUsername());
+            
             showAlert("Succès", "Inscription réussie ! Vous pouvez maintenant vous connecter.");
             navigateTo("/login");
         });
 
         task.setOnFailed(e -> {
+            registerBtn.setDisable(false);
+            registerBtn.setText("S'inscrire");
             Throwable ex = e.getSource().getException();
             errorLabel.setText("Erreur: " + (ex != null ? ex.getMessage() : "Inconnue"));
             errorLabel.setVisible(true);
@@ -456,4 +424,14 @@ public class RegisterController extends BaseController {
     private void goToHome() {
         navigateTo("/");
     }
+
+   @Override
+protected void showAlert(String title, String content) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    alert.setTitle(title);
+    alert.setHeaderText(null);
+    alert.setContentText(content);
+    alert.getDialogPane().setStyle("-fx-background-color: #11161c; -fx-text-fill: #fff;");
+    alert.showAndWait();
+}
 }

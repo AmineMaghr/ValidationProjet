@@ -5,6 +5,7 @@ import com.example.app.dao.UserDAO;
 import com.example.app.utils.PasswordHasher;
 import java.sql.SQLException;
 import java.util.List;
+import java.time.LocalDateTime;
 
 public class UserService implements IService<User> {
 
@@ -18,12 +19,10 @@ public class UserService implements IService<User> {
 
     @Override
     public void add(User user) throws SQLException {
-        // Validation avant ajout
         if (!user.isValid()) {
             throw new IllegalArgumentException("Données utilisateur invalides: " + user.getValidationErrorsAsString());
         }
 
-        // Vérifier que l'username et l'email sont disponibles
         if (userDAO.isUsernameTaken(user.getUsername())) {
             throw new IllegalArgumentException("Ce nom d'utilisateur est déjà pris");
         }
@@ -31,10 +30,9 @@ public class UserService implements IService<User> {
             throw new IllegalArgumentException("Cette adresse email est déjà utilisée");
         }
 
-        // Hasher le mot de passe
-        System.out.println("Password before hash: " + user.getPassword());
-        user.setPassword(passwordHasher.hash(user.getPassword()));
-        System.out.println("Password after hash: " + user.getPassword());
+        if ("local".equals(user.getAuthProvider()) && user.getPassword() != null && !user.getPassword().isEmpty()) {
+            user.setPassword(passwordHasher.hash(user.getPassword()));
+        }
 
         userDAO.add(user);
     }
@@ -57,13 +55,17 @@ public class UserService implements IService<User> {
     public User findById(int id) throws SQLException {
         return userDAO.findById(id);
     }
-
+    
     public User findByUsername(String username) throws SQLException {
         return userDAO.findByUsername(username);
     }
 
     public User findByEmail(String email) throws SQLException {
         return userDAO.findByEmail(email);
+    }
+    
+    public User findByGoogleId(String googleId) throws SQLException {
+        return userDAO.findByGoogleId(googleId);
     }
 
     public boolean isUsernameTaken(String username) throws SQLException {
@@ -98,34 +100,36 @@ public class UserService implements IService<User> {
         }
 
         if (user != null && !user.isBlocked()) {
-            // Check hashed password, or plain password for backward compatibility
-            if (passwordHasher.verify(password, user.getPassword()) || user.getPassword().equals(password)) {
+            if (user.getPassword() != null && (passwordHasher.verify(password, user.getPassword()) || user.getPassword().equals(password))) {
                 return user;
             }
         }
 
         return null;
     }
+    
+    public void updateGoogleId(int userId, String googleId, String provider) throws SQLException {
+        userDAO.updateGoogleId(userId, googleId, provider);
+    }
 
+    // ✅ MÉTHODE updatePassword CORRIGÉE
     public void updatePassword(int userId, String newPassword) throws SQLException {
-        User user = findById(userId);
-        if (user != null) {
-            user.setPassword(newPassword);
-            userDAO.update(user);
-        }
+        System.out.println("📝 UserService.updatePassword - Mot de passe reçu: " + newPassword);
+        String hashedPassword = passwordHasher.hash(newPassword);
+        System.out.println("📝 Hash généré: " + hashedPassword);
+        userDAO.updatePassword(userId, hashedPassword);
     }
 
     public boolean changePassword(int userId, String oldPassword, String newPassword) throws SQLException {
         User user = findById(userId);
-        if (user != null && oldPassword.equals(user.getPassword())) {
-            user.setPassword(newPassword);
-            userDAO.update(user);
+        if (user != null && passwordHasher.verify(oldPassword, user.getPassword())) {
+            updatePassword(userId, newPassword);
             return true;
         }
         return false;
     }
 
-    public java.util.List<User> searchUsers(String query) throws SQLException {
+    public List<User> searchUsers(String query) throws SQLException {
         return userDAO.select().stream()
             .filter(u -> u.getUsername().toLowerCase().contains(query.toLowerCase()) ||
                         u.getPrenom().toLowerCase().contains(query.toLowerCase()) ||
@@ -133,7 +137,7 @@ public class UserService implements IService<User> {
             .collect(java.util.stream.Collectors.toList());
     }
 
-    public java.util.List<User> searchUsersAdmin(String search, java.time.LocalDate start, java.time.LocalDate end, String sort, String direction) throws SQLException {
+    public List<User> searchUsersAdmin(String search, java.time.LocalDate start, java.time.LocalDate end, String sort, String direction) throws SQLException {
         return userDAO.select().stream()
             .filter(u -> {
                 if (search != null && !search.isEmpty()) {
@@ -157,5 +161,31 @@ public class UserService implements IService<User> {
 
     public void toggleUserBlock(int userId, boolean blocked) throws SQLException {
         userDAO.updateUserBlockStatus(userId, blocked);
+    }
+
+    // ==================== RESET PASSWORD METHODS ====================
+    
+    public void saveResetToken(int userId, String token, LocalDateTime expiry) throws SQLException {
+        userDAO.saveResetToken(userId, token, expiry);
+    }
+
+    public void saveResetCode(int userId, String code, LocalDateTime expiry) throws SQLException {
+        userDAO.saveResetCode(userId, code, expiry);
+    }
+
+    public User findByResetToken(String token) throws SQLException {
+        return userDAO.findByResetToken(token);
+    }
+
+    public User findByResetCode(String code) throws SQLException {
+        return userDAO.findByResetCode(code);
+    }
+
+    public void clearResetToken(int userId) throws SQLException {
+        userDAO.clearResetToken(userId);
+    }
+
+    public User findByPhoneNumber(String phone) throws SQLException {
+        return userDAO.findByPhoneNumber(phone);
     }
 }

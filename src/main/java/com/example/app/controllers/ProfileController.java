@@ -13,14 +13,11 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
@@ -33,9 +30,8 @@ public class ProfileController extends BaseController {
     @FXML private Label fullNameLabel;
     @FXML private Label emailLabel;
     @FXML private Label memberSinceLabel;
+    @FXML private Label bioLabel;
     @FXML private ImageView avatarImage;
-    @FXML private Button editProfileBtn;
-    @FXML private Button logoutBtn;
     @FXML private Button adminBtn;
     @FXML private TabPane contentTabPane;
     @FXML private TilePane oeuvresGrid;
@@ -46,11 +42,21 @@ public class ProfileController extends BaseController {
     @FXML private Label artefactsCountLabel;
     @FXML private Label favoritesCountLabel;
     
+    // Pour les modales
+    @FXML private VBox editModal;
+    @FXML private TextField editUsername;
+    @FXML private TextField editEmail;
+    @FXML private TextArea editBio;
+    @FXML private ImageView previewAvatar;  // AJOUTER CETTE LIGNE !
+    @FXML private VBox favorisSection;
+    
     private UserService userService;
     private OeuvreService oeuvreService;
     private ArtefactService artefactService;
     private User currentUser;
-    private boolean isOwner;
+    
+    // Variables pour l'avatar temporaire
+    private File selectedAvatarFile = null;
     
     @FXML
     public void initialize() {
@@ -58,15 +64,12 @@ public class ProfileController extends BaseController {
         oeuvreService = new OeuvreService();
         artefactService = new ArtefactService();
         
-        // Vérifier si c'est le propriétaire du profil
         currentUser = UserSession.getCurrentUser();
-        isOwner = true; // Pour le profil personnel
         
         loadProfileData();
-        setupTabs();
-        // Temporarily show admin button for testing
+        
         if (adminBtn != null) {
-            adminBtn.setVisible(true);
+            adminBtn.setVisible(UserSession.isAdmin());
         }
     }
     
@@ -77,7 +80,6 @@ public class ProfileController extends BaseController {
             return;
         }
         
-        // Afficher les informations de base
         usernameLabel.setText("@" + currentUser.getUsername());
         fullNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         emailLabel.setText(currentUser.getEmail());
@@ -85,161 +87,111 @@ public class ProfileController extends BaseController {
             (currentUser.getCreatedAt() != null ? 
              currentUser.getCreatedAt().toLocalDate().toString() : "récemment"));
         
-        // ⭐ CHARGER L'AVATAR ⭐
-        loadAvatar();
-        
-        // Charger les créations
-        loadUserCreations();
-        
-        // Charger les favoris
-        loadUserFavorites();
-        
-        // Afficher/Masquer le bouton admin
-        if (adminBtn != null) {
-            adminBtn.setVisible(UserSession.isAdmin());
+        String bio = currentUser.getBio();
+        if (bio != null && !bio.isEmpty()) {
+            bioLabel.setText(bio);
+        } else {
+            bioLabel.setText("Aucune bio pour le moment");
         }
+        
+        loadAvatar();
+        loadUserCreations();
+        loadUserFavorites();
     }
     
-    /**
-     * Charge la photo de profil de l'utilisateur
-     */
     private void loadAvatar() {
         String avatarPath = currentUser.getAvatar();
-        System.out.println("🔍 Chargement avatar - Chemin stocké: " + avatarPath);
-
+        
         if (avatarPath != null && !avatarPath.isEmpty()) {
             File avatarFile = findAvatarFile(avatarPath);
-
+            
             if (avatarFile != null && avatarFile.exists()) {
                 try {
-                    System.out.println("✅ Avatar trouvé: " + avatarFile.getAbsolutePath());
-                    Image avatar = new Image(avatarFile.toURI().toString(), 120, 120, true, true);
+                    Image avatar = new Image(avatarFile.toURI().toString(), 130, 130, true, true);
                     avatarImage.setImage(avatar);
                     return;
                 } catch (Exception e) {
-                    System.err.println("Erreur chargement image: " + e.getMessage());
+                    System.err.println("Erreur chargement avatar: " + e.getMessage());
                 }
-            } else {
-                System.out.println("❌ Avatar non trouvé pour: " + avatarPath);
             }
-        } else {
-            System.out.println("ℹ️ Aucun avatar défini pour l'utilisateur");
         }
-
-        // Si on arrive ici, afficher le placeholder
         setPlaceholderAvatar();
     }
-
-    /**
-     * Cherche le fichier avatar dans différents emplacements possibles
-     */
+    
     private File findAvatarFile(String avatarPath) {
         String userDir = System.getProperty("user.dir");
         String fileName = new File(avatarPath).getName();
-
-        // Liste des chemins possibles
+        
         String[] possiblePaths = {
-            avatarPath,                                           // Chemin absolu direct
-            userDir + "/" + avatarPath,                          // Relatif depuis projet
-            "uploads/avatars/" + fileName,                       // Dossier uploads/avatars/
-            userDir + "/uploads/avatars/" + fileName,            // Chemin complet vers uploads
-            "src/main/resources/uploads/avatars/" + fileName,    // Dans resources
+            avatarPath,
+            userDir + "/" + avatarPath,
+            "uploads/avatars/" + fileName,
+            userDir + "/uploads/avatars/" + fileName,
+            "src/main/resources/uploads/avatars/" + fileName,
             userDir + "/src/main/resources/uploads/avatars/" + fileName
         };
-
+        
         for (String path : possiblePaths) {
             File file = new File(path);
             if (file.exists()) {
-                System.out.println("  ✅ Trouvé: " + path);
                 return file;
             }
         }
-
-        System.out.println("  ❌ Non trouvé dans aucun chemin");
         return null;
     }
-
-    /**
-     * Crée un placeholder avec les initiales de l'utilisateur
-     */
+    
     private void setPlaceholderAvatar() {
         String initials = getInitials();
-        System.out.println("📷 Affichage placeholder pour: " + initials);
-
-        // Créer une image avec les initiales
-        javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(120, 120);
+        javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(130, 130);
         javafx.scene.canvas.GraphicsContext gc = canvas.getGraphicsContext2D();
-
-        // Dessiner un cercle de fond
+        
         gc.setFill(javafx.scene.paint.Color.web("#18E3A4"));
-        gc.fillOval(0, 0, 120, 120);
-
-        // Dessiner une bordure
+        gc.fillOval(0, 0, 130, 130);
         gc.setStroke(javafx.scene.paint.Color.web("#0a0c10"));
         gc.setLineWidth(3);
-        gc.strokeOval(2, 2, 116, 116);
-
-        // Dessiner le texte (initiales)
+        gc.strokeOval(2, 2, 126, 126);
         gc.setFill(javafx.scene.paint.Color.web("#0a0c10"));
-        gc.setFont(javafx.scene.text.Font.font("Arial", 40));
+        gc.setFont(javafx.scene.text.Font.font("Arial", 45));
         gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-        gc.fillText(initials, 60, 75);
-
-        // Convertir en image
-        javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage(120, 120);
+        gc.fillText(initials, 65, 85);
+        
+        javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage(130, 130);
         canvas.snapshot(null, writableImage);
         avatarImage.setImage(writableImage);
     }
-
-    /**
-     * Extrait les initiales du nom complet
-     */
+    
     private String getInitials() {
         StringBuilder initials = new StringBuilder();
-
         if (currentUser.getPrenom() != null && !currentUser.getPrenom().isEmpty()) {
             initials.append(currentUser.getPrenom().charAt(0));
         }
-
         if (currentUser.getNom() != null && !currentUser.getNom().isEmpty()) {
             initials.append(currentUser.getNom().charAt(0));
         }
-
         return initials.toString().toUpperCase();
     }
-
-    /**
-     * Sauvegarde l'image avatar sélectionnée
-     */
+    
     private String saveAvatarImage(File sourceFile) throws Exception {
-        // Créer le dossier uploads s'il n'existe pas
         File uploadsDir = new File("uploads/avatars");
         if (!uploadsDir.exists()) {
             uploadsDir.mkdirs();
         }
-
-        // Générer un nom unique pour l'avatar
+        
         String extension = getFileExtension(sourceFile);
         String fileName = "avatar_" + currentUser.getId() + "_" + System.currentTimeMillis() + "." + extension;
         File destFile = new File(uploadsDir, fileName);
-
-        // Copier le fichier
+        
         Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
         return destFile.getAbsolutePath();
     }
-
-    /**
-     * Extrait l'extension du fichier
-     */
+    
     private String getFileExtension(File file) {
         String name = file.getName();
         int lastIndex = name.lastIndexOf('.');
         return lastIndex > 0 ? name.substring(lastIndex + 1) : "png";
     }
-
+    
     private void loadUserCreations() {
-        // Charger les œuvres
         Task<List<Oeuvre>> oeuvreTask = new Task<>() {
             @Override
             protected List<Oeuvre> call() throws Exception {
@@ -256,7 +208,6 @@ public class ProfileController extends BaseController {
         oeuvreTask.setOnFailed(e -> System.err.println("Erreur chargement œuvres: " + e.getSource().getException()));
         new Thread(oeuvreTask).start();
         
-        // Charger les artefacts
         Task<List<Artefact>> artefactTask = new Task<>() {
             @Override
             protected List<Artefact> call() throws Exception {
@@ -275,8 +226,12 @@ public class ProfileController extends BaseController {
     }
     
     private void loadUserFavorites() {
-        // TODO: Implémenter la récupération des favoris depuis la base de données
         favoritesCountLabel.setText("0");
+        
+        if (favorisSection != null) {
+            favorisSection.setVisible(true);
+            favorisSection.setManaged(true);
+        }
     }
     
     private void displayOeuvresAsCards(List<Oeuvre> oeuvres, TilePane grid) {
@@ -305,132 +260,114 @@ public class ProfileController extends BaseController {
         });
     }
     
-    private void setupTabs() {
-        if (contentTabPane != null) {
-            contentTabPane.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldTab, newTab) -> {
-                    String tabText = newTab.getText();
-                    if (tabText.contains("Œuvres")) {
-                        refreshTab("oeuvres");
-                    } else if (tabText.contains("Artefacts")) {
-                        refreshTab("artefacts");
-                    } else if (tabText.contains("Favoris")) {
-                        refreshTab("favoris");
-                    }
-                }
-            );
-        }
-    }
+    // ===== MODALE ÉDITION AVEC AVATAR =====
     
-    private void refreshTab(String tabName) {
-        switch (tabName) {
-            case "oeuvres":
-                loadUserCreations();
-                break;
-            case "artefacts":
-                loadUserCreations();
-                break;
-            case "favoris":
-                loadUserFavorites();
-                break;
+    @FXML
+    private void openAvatarModal() {
+        if (editModal != null) {
+            editUsername.setText(currentUser.getUsername());
+            editEmail.setText(currentUser.getEmail());
+            editBio.setText(currentUser.getBio());
+            
+            // Afficher l'avatar actuel dans la preview
+            String avatarPath = currentUser.getAvatar();
+            if (avatarPath != null && !avatarPath.isEmpty()) {
+                File avatarFile = findAvatarFile(avatarPath);
+                if (avatarFile != null && avatarFile.exists()) {
+                    Image preview = new Image(avatarFile.toURI().toString(), 90, 90, true, true);
+                    previewAvatar.setImage(preview);
+                } else {
+                    setPreviewPlaceholder();
+                }
+            } else {
+                setPreviewPlaceholder();
+            }
+            
+            selectedAvatarFile = null;
+            editModal.setVisible(true);
+            editModal.setManaged(true);
+        } else {
+            showEditProfileDialog();
         }
     }
     
     @FXML
-    private void handleEditProfile() {
-        Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Éditer le profil");
-        dialog.setHeaderText("Modifier vos informations");
+    private void closeEditModal() {
+        if (editModal != null) {
+            editModal.setVisible(false);
+            editModal.setManaged(false);
+        }
+    }
+    
+    @FXML
+    private void chooseAvatarImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choisir une photo de profil");
+        fileChooser.getExtensionFilters().addAll(
+            new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.bmp")
+        );
         
-        ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
-        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-        
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(15);
-        grid.setPadding(new Insets(20));
-        grid.setStyle("-fx-background-color: #11161c;");
-        
-        TextField usernameField = new TextField(currentUser.getUsername());
-        usernameField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-        
-        TextField prenomField = new TextField(currentUser.getPrenom());
-        prenomField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-        
-        TextField nomField = new TextField(currentUser.getNom());
-        nomField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-        
-        TextField emailField = new TextField(currentUser.getEmail());
-        emailField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-
-        Button changeAvatarBtn = new Button("Changer l'avatar");
-        changeAvatarBtn.setStyle("-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;");
-
-        Label avatarStatus = new Label("Image actuelle conservée");
-        avatarStatus.setStyle("-fx-text-fill: #6a7a8a; -fx-font-size: 11px;");
-
-        grid.add(new Label("Nom d'utilisateur:"), 0, 0);
-        grid.add(usernameField, 1, 0);
-        grid.add(new Label("Prénom:"), 0, 1);
-        grid.add(prenomField, 1, 1);
-        grid.add(new Label("Nom:"), 0, 2);
-        grid.add(nomField, 1, 2);
-        grid.add(new Label("Email:"), 0, 3);
-        grid.add(emailField, 1, 3);
-        grid.add(new Label("Avatar:"), 0, 4);
-
-        VBox avatarBox = new VBox(5, changeAvatarBtn, avatarStatus);
-        grid.add(avatarBox, 1, 4);
-        
-        for (javafx.scene.Node node : grid.getChildren()) {
-            if (node instanceof Label) {
-                ((Label) node).setStyle("-fx-text-fill: #b0b9b6; -fx-font-weight: bold;");
+        File selectedFile = fileChooser.showOpenDialog(editModal.getScene().getWindow());
+        if (selectedFile != null) {
+            selectedAvatarFile = selectedFile;
+            try {
+                Image preview = new Image(selectedFile.toURI().toString(), 90, 90, true, true);
+                previewAvatar.setImage(preview);
+            } catch (Exception e) {
+                System.err.println("Erreur preview: " + e.getMessage());
             }
         }
+    }
+    
+    private void setPreviewPlaceholder() {
+        javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(90, 90);
+        javafx.scene.canvas.GraphicsContext gc = canvas.getGraphicsContext2D();
+        gc.setFill(javafx.scene.paint.Color.web("#18E3A4"));
+        gc.fillOval(0, 0, 90, 90);
+        gc.setFill(javafx.scene.paint.Color.web("#0a0c10"));
+        gc.setFont(javafx.scene.text.Font.font("Arial", 36));
+        gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
+        gc.fillText(getInitials(), 45, 55);
         
-        dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setStyle("-fx-background-color: #0a0c10;");
-
-        final File[] selectedAvatarFile = {null};
-        changeAvatarBtn.setOnAction(e -> {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Images", "*.jpg", "*.jpeg", "*.png", "*.webp")
-            );
-            File file = fileChooser.showOpenDialog(dialog.getOwner());
-            if (file != null) {
-                selectedAvatarFile[0] = file;
-                avatarStatus.setText("✓ Nouvel avatar: " + file.getName());
-                avatarStatus.setStyle("-fx-text-fill: #18E3A4; -fx-font-size: 11px;");
+        javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage(90, 90);
+        canvas.snapshot(null, writableImage);
+        previewAvatar.setImage(writableImage);
+    }
+    
+    @FXML
+    private void saveProfile() {
+        try {
+            if (editUsername != null && editUsername.getText() != null && !editUsername.getText().isEmpty()) {
+                currentUser.setUsername(editUsername.getText());
             }
-        });
-
-        dialog.showAndWait().ifPresent(response -> {
-            if (response == saveButtonType) {
-                currentUser.setUsername(usernameField.getText());
-                currentUser.setPrenom(prenomField.getText());
-                currentUser.setNom(nomField.getText());
-                currentUser.setEmail(emailField.getText());
-
-                if (selectedAvatarFile[0] != null) {
-                    try {
-                        String avatarPath = saveAvatarImage(selectedAvatarFile[0]);
-                        currentUser.setAvatar(avatarPath);
-                    } catch (Exception ex) {
-                        showAlert("Erreur", "Erreur lors de la sauvegarde de l'avatar: " + ex.getMessage());
-                        return;
-                    }
-                }
-
-                try {
-                    userService.update(currentUser);
-                    showAlert("Succès", "Profil mis à jour avec succès !");
-                    loadProfileData();
-                } catch (SQLException ex) {
-                    showAlert("Erreur", "Erreur lors de la mise à jour: " + ex.getMessage());
-                }
+            if (editEmail != null && editEmail.getText() != null && !editEmail.getText().isEmpty()) {
+                currentUser.setEmail(editEmail.getText());
             }
-        });
+            if (editBio != null && editBio.getText() != null) {
+                currentUser.setBio(editBio.getText());
+            }
+            
+            if (selectedAvatarFile != null) {
+                String avatarPath = saveAvatarImage(selectedAvatarFile);
+                currentUser.setAvatar(avatarPath);
+                selectedAvatarFile = null;
+            }
+            
+            userService.update(currentUser);
+            showAlert("Succès", "Profil mis à jour avec succès !");
+            loadProfileData();
+            closeEditModal();
+            
+        } catch (SQLException ex) {
+            showAlert("Erreur", "Erreur lors de la mise à jour: " + ex.getMessage());
+        } catch (Exception ex) {
+            showAlert("Erreur", "Erreur lors de la sauvegarde de l'avatar: " + ex.getMessage());
+        }
+    }
+    
+    @FXML
+    private void handleGenerateAvatar() {
+        showAlert("Info", "Fonctionnalité à venir");
     }
     
     @FXML
@@ -446,16 +383,10 @@ public class ProfileController extends BaseController {
         grid.setHgap(10);
         grid.setVgap(15);
         grid.setPadding(new Insets(20));
-        grid.setStyle("-fx-background-color: #11161c;");
         
         PasswordField oldPasswordField = new PasswordField();
-        oldPasswordField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-        
         PasswordField newPasswordField = new PasswordField();
-        newPasswordField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
-        
         PasswordField confirmPasswordField = new PasswordField();
-        confirmPasswordField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
         
         grid.add(new Label("Mot de passe actuel:"), 0, 0);
         grid.add(oldPasswordField, 1, 0);
@@ -464,14 +395,7 @@ public class ProfileController extends BaseController {
         grid.add(new Label("Confirmer:"), 0, 2);
         grid.add(confirmPasswordField, 1, 2);
         
-        for (javafx.scene.Node node : grid.getChildren()) {
-            if (node instanceof Label) {
-                ((Label) node).setStyle("-fx-text-fill: #b0b9b6; -fx-font-weight: bold;");
-            }
-        }
-        
         dialog.getDialogPane().setContent(grid);
-        dialog.getDialogPane().setStyle("-fx-background-color: #0a0c10;");
         
         dialog.showAndWait().ifPresent(response -> {
             if (response == saveButtonType) {
@@ -504,40 +428,6 @@ public class ProfileController extends BaseController {
     }
     
     @FXML
-    private void handleDeleteAccount() {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation de suppression");
-        confirm.setHeaderText("Supprimer votre compte");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer définitivement votre compte ?\n\n" +
-                              "Cette action est irréversible et toutes vos données seront perdues.");
-        
-        confirm.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                TextInputDialog passwordDialog = new TextInputDialog();
-                passwordDialog.setTitle("Vérification");
-                passwordDialog.setHeaderText("Confirmez votre mot de passe");
-                passwordDialog.setContentText("Veuillez saisir votre mot de passe pour confirmer :");
-                passwordDialog.getDialogPane().setStyle("-fx-background-color: #11161c;");
-                
-                passwordDialog.showAndWait().ifPresent(password -> {
-                    try {
-                        if (userService.authenticate(currentUser.getUsername(), password)) {
-                            userService.delete(currentUser.getId());
-                            UserSession.logout();
-                            showAlert("Compte supprimé", "Votre compte a été supprimé avec succès.");
-                            navigateTo("/login");
-                        } else {
-                            showAlert("Erreur", "Mot de passe incorrect");
-                        }
-                    } catch (SQLException ex) {
-                        showAlert("Erreur", "Erreur lors de la suppression: " + ex.getMessage());
-                    }
-                });
-            }
-        });
-    }
-    
-    @FXML
     private void handleLogout() {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Déconnexion");
@@ -561,7 +451,62 @@ public class ProfileController extends BaseController {
     public void goToHome() {
         navigateTo("/");
     }
-
+    
+    // Navigation
+    @FXML public void goAccueil() { navigateTo("/"); }
+    @FXML public void goDiscover() { navigateTo("/discover"); }
+    @FXML public void goUniverses() { navigateTo("/universes"); }
+    @FXML public void goPersonnages() { navigateTo("/personnages"); }
+    @FXML public void goOeuvres() { navigateTo("/oeuvre"); }
+    @FXML public void goArtefacts() { navigateTo("/artefact"); }
+    @FXML public void goShop() { navigateTo("/shop"); }
+    @FXML public void goChallenges() { navigateTo("/challenges"); }
+    
+    @FXML private void toggleSearchBar() {}
+    @FXML private void showOeuvresTab() { if (contentTabPane != null) contentTabPane.getSelectionModel().select(0); }
+    @FXML private void showArtefactsTab() { if (contentTabPane != null) contentTabPane.getSelectionModel().select(1); }
+    @FXML private void showFavorisTab() { if (contentTabPane != null) contentTabPane.getSelectionModel().select(2); }
+    private void styleActiveTab(String activeTab) {}
+    
+    private void showEditProfileDialog() {
+        Dialog<ButtonType> dialog = new Dialog<>();
+        dialog.setTitle("Éditer le profil");
+        dialog.setHeaderText("Modifier vos informations");
+        
+        ButtonType saveButtonType = new ButtonType("Enregistrer", ButtonBar.ButtonData.OK_DONE);
+        dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+        
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(15);
+        grid.setPadding(new Insets(20));
+        
+        TextField usernameField = new TextField(currentUser.getUsername());
+        TextField emailField = new TextField(currentUser.getEmail());
+        
+        grid.add(new Label("Nom d'utilisateur:"), 0, 0);
+        grid.add(usernameField, 1, 0);
+        grid.add(new Label("Email:"), 0, 1);
+        grid.add(emailField, 1, 1);
+        
+        dialog.getDialogPane().setContent(grid);
+        
+        dialog.showAndWait().ifPresent(response -> {
+            if (response == saveButtonType) {
+                currentUser.setUsername(usernameField.getText());
+                currentUser.setEmail(emailField.getText());
+                
+                try {
+                    userService.update(currentUser);
+                    showAlert("Succès", "Profil mis à jour avec succès !");
+                    loadProfileData();
+                } catch (SQLException ex) {
+                    showAlert("Erreur", "Erreur lors de la mise à jour: " + ex.getMessage());
+                }
+            }
+        });
+    }
+    
     protected void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);

@@ -39,7 +39,7 @@ public abstract class BaseController {
     @FXML
     public void goAdmin() {
         if (UserSession.isLoggedIn() && UserSession.getCurrentUser().isAdmin()) {
-            navigateTo("/admin");  // Changé de "/admin" à "/admin/users" ou gardez "/admin"
+            navigateTo("/admin");
         } else {
             showAlert("Accès refusé", "Vous n'êtes pas administrateur");
         }
@@ -74,6 +74,12 @@ public abstract class BaseController {
                     break;
                 case "/register":
                     fxmlPath = "/com/monapp/view/register-view.fxml";
+                    break;
+                case "/forgot-password":
+                    fxmlPath = "/com/monapp/view/forgot-password-view.fxml";
+                    break;
+                case "/reset-password":
+                    fxmlPath = "/com/monapp/view/reset-password-view.fxml";
                     break;
                 case "/oeuvre":
                     fxmlPath = "/com/monapp/view/oeuvre/index.fxml";
