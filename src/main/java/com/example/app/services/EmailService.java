@@ -1,5 +1,6 @@
 package com.example.app.services;
 
+import com.example.app.utils.EnvLoader;
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.util.Properties;
@@ -8,8 +9,9 @@ public class EmailService {
     
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
-    private static final String EMAIL_FROM = "zeinebsgh466@gmail.com";
-    private static final String EMAIL_PASSWORD = "dkylbjupzplouige";
+    private static final String EMAIL_FROM = EnvLoader.get("EMAIL_FROM");
+    private static final String EMAIL_PASSWORD = EnvLoader.get("EMAIL_PASSWORD");
+   
     
     public void sendWelcomeEmail(String to, String username) {
         String subject = "Bienvenue sur Midgar !";
@@ -75,3 +77,4 @@ public class EmailService {
         }
     }
 }
+    
