@@ -2,6 +2,7 @@ package com.example.app.entities;
 
 import javafx.beans.property.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Commentaire {
     private final SimpleIntegerProperty id = new SimpleIntegerProperty();
@@ -11,6 +12,7 @@ public class Commentaire {
     private final SimpleIntegerProperty artefactId = new SimpleIntegerProperty();
     private LocalDateTime createdAt;
     private User user;
+    private String username;
 
     public Commentaire() {
         this.createdAt = LocalDateTime.now();
@@ -40,10 +42,13 @@ public class Commentaire {
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public User getUser() { return user; }
-    public void setUser(User user) {
-        this.user = user;
-        if (user != null) {
-            this.userId.set(user.getId());
-        }
+    public void setUser(User user) { this.user = user; }
+
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    
+    public String getFormattedDate() {
+        if (createdAt == null) return "Date inconnue";
+        return createdAt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
     }
 }

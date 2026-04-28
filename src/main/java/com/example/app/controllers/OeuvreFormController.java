@@ -11,43 +11,50 @@ import java.util.regex.Pattern;
 
 public class OeuvreFormController extends BaseController {
 
-    // Champs du formulaire (seuls les champs existants dans l'entité)
-    @FXML
-    private TextField titleField;
-    @FXML
-    private TextArea descriptionArea;
-    @FXML
-    private TextField authorField;
-    @FXML
-    private ComboBox<String> typeComboBox;
-    @FXML
-    private TextField imageUrlField;
-    @FXML
-    private ComboBox<String> universeComboBox;
+    @FXML private TextField titleField;
+    @FXML private TextArea descriptionArea;
+    @FXML private TextField authorField;
+    @FXML private ComboBox<String> typeComboBox;
+    @FXML private TextField imageUrlField;
+    @FXML private ComboBox<String> universeComboBox;
 
-    // Labels d'erreur
-    @FXML
-    private Label titleError;
-    @FXML
-    private Label descriptionError;
-    @FXML
-    private Label authorError;
-    @FXML
-    private Label imageUrlError;
+    @FXML private Label titleError;
+    @FXML private Label descriptionError;
+    @FXML private Label authorError;
+    @FXML private Label imageUrlError;
 
-    // Patterns de validation
     private static final Pattern TITLE_PATTERN = Pattern.compile("^[a-zA-Z0-9\\s\\p{Punct}]{2,200}$");
     private static final Pattern AUTHOR_PATTERN = Pattern.compile("^[a-zA-Z\\s.-]{2,100}$");
-    private static final Pattern URL_PATTERN = Pattern
-            .compile("^(https?://)?([\\da-z.-]+\\.([a-z.]{2,6})[/\\w .-]*/?)$");
 
     private OeuvreDAO oeuvreDAO = new OeuvreDAO();
     private Oeuvre editingOeuvre;
+
+    // ⭐ MÉTHODE STATIQUE POUR PASSER L'OEUVRE À MODIFIER
+    private static Oeuvre oeuvreToEdit;
+
+    public static void setEditingOeuvre(Oeuvre oeuvre) {
+        oeuvreToEdit = oeuvre;
+    }
+
+    public static Oeuvre getEditingOeuvre() {
+        return oeuvreToEdit;
+    }
 
     @FXML
     public void initialize() {
         setupValidationListeners();
         loadComboBoxData();
+        
+        // ⭐ Charger l'œuvre à modifier si elle existe
+        if (oeuvreToEdit != null) {
+            editingOeuvre = oeuvreToEdit;
+            titleField.setText(editingOeuvre.getTitle());
+            authorField.setText(editingOeuvre.getAuthor());
+            descriptionArea.setText(editingOeuvre.getDescription());
+            typeComboBox.setValue(editingOeuvre.getType());
+            imageUrlField.setText(editingOeuvre.getImageUrl());
+            oeuvreToEdit = null;
+        }
     }
 
     private void setupValidationListeners() {
@@ -65,12 +72,8 @@ public class OeuvreFormController extends BaseController {
         }
     }
 
-    // ============= VALIDATIONS INDIVIDUELLES =============
-
     private boolean validateTitle() {
-        if (titleField == null || titleError == null)
-            return true;
-
+        if (titleField == null || titleError == null) return true;
         String title = titleField.getText();
         if (title == null || title.trim().isEmpty()) {
             titleError.setText("Le titre est requis");
@@ -78,23 +81,19 @@ public class OeuvreFormController extends BaseController {
             titleField.setStyle("-fx-border-color: red;");
             return false;
         }
-
         if (!TITLE_PATTERN.matcher(title.trim()).matches()) {
-            titleError.setText("Le titre doit contenir 2-200 caractères (lettres, chiffres, ponctuation)");
+            titleError.setText("Le titre doit contenir 2-200 caractères");
             titleError.setVisible(true);
             titleField.setStyle("-fx-border-color: red;");
             return false;
         }
-
         titleError.setVisible(false);
         titleField.setStyle("");
         return true;
     }
 
     private boolean validateAuthor() {
-        if (authorField == null || authorError == null)
-            return true;
-
+        if (authorField == null || authorError == null) return true;
         String author = authorField.getText();
         if (author == null || author.trim().isEmpty()) {
             authorError.setText("L'auteur est requis");
@@ -102,23 +101,19 @@ public class OeuvreFormController extends BaseController {
             authorField.setStyle("-fx-border-color: red;");
             return false;
         }
-
         if (!AUTHOR_PATTERN.matcher(author.trim()).matches()) {
-            authorError.setText("L'auteur doit contenir 2-100 caractères (lettres, espaces, points, tirets)");
+            authorError.setText("L'auteur doit contenir 2-100 caractères");
             authorError.setVisible(true);
             authorField.setStyle("-fx-border-color: red;");
             return false;
         }
-
         authorError.setVisible(false);
         authorField.setStyle("");
         return true;
     }
 
     private boolean validateDescription() {
-        if (descriptionArea == null || descriptionError == null)
-            return true;
-
+        if (descriptionArea == null || descriptionError == null) return true;
         String description = descriptionArea.getText();
         if (description == null || description.trim().isEmpty()) {
             descriptionError.setText("La description est requise");
@@ -126,30 +121,19 @@ public class OeuvreFormController extends BaseController {
             descriptionArea.setStyle("-fx-border-color: red;");
             return false;
         }
-
         if (description.length() < 20) {
             descriptionError.setText("La description doit contenir au moins 20 caractères");
             descriptionError.setVisible(true);
             descriptionArea.setStyle("-fx-border-color: red;");
             return false;
         }
-
-        if (description.length() > 5000) {
-            descriptionError.setText("La description ne peut pas dépasser 5000 caractères");
-            descriptionError.setVisible(true);
-            descriptionArea.setStyle("-fx-border-color: red;");
-            return false;
-        }
-
         descriptionError.setVisible(false);
         descriptionArea.setStyle("");
         return true;
     }
 
     private boolean validateImageUrl() {
-        if (imageUrlField == null || imageUrlError == null)
-            return true;
-
+        if (imageUrlField == null || imageUrlError == null) return true;
         String url = imageUrlField.getText();
         if (url == null || url.trim().isEmpty()) {
             imageUrlError.setText("L'URL de l'image est requise");
@@ -157,14 +141,6 @@ public class OeuvreFormController extends BaseController {
             imageUrlField.setStyle("-fx-border-color: red;");
             return false;
         }
-
-        if (!URL_PATTERN.matcher(url.trim()).matches()) {
-            imageUrlError.setText("URL invalide");
-            imageUrlError.setVisible(true);
-            imageUrlField.setStyle("-fx-border-color: red;");
-            return false;
-        }
-
         imageUrlError.setVisible(false);
         imageUrlField.setStyle("");
         return true;
@@ -179,30 +155,19 @@ public class OeuvreFormController extends BaseController {
             typeComboBox.getItems().addAll("Livre", "Film", "Série", "Jeu Vidéo", "Bande Dessinée", "Manga", "Autre");
         }
         if (universeComboBox != null) {
-            try {
-                List<com.example.app.entities.Universe> universes = new com.example.app.dao.UniverseDAO().select();
-                universeComboBox.getItems().add("Autre");
-                for (com.example.app.entities.Universe u : universes) {
-                    universeComboBox.getItems().add(u.getName());
-                }
-            } catch (SQLException e) {
-                universeComboBox.getItems().addAll("Marvel", "DC", "Harry Potter", "Star Wars", "Seigneur des Anneaux",
-                        "Autre");
-            }
+            universeComboBox.getItems().addAll("Marvel", "DC", "Harry Potter", "Star Wars", "Seigneur des Anneaux", "Autre");
         }
     }
 
     @FXML
     private void handleSave() {
-        // Validation avant sauvegarde
         if (!validateAllFields()) {
             showAlert("Erreur de validation", "Veuillez corriger les erreurs dans le formulaire");
             return;
         }
 
-        // Vérifier si l'utilisateur est connecté
         if (!UserSession.isLoggedIn()) {
-            showAlert("Connexion requise", "Vous devez être connecté pour créer/modifier une œuvre");
+            showAlert("Connexion requise", "Vous devez être connecté");
             navigateTo("/login");
             return;
         }
@@ -214,7 +179,7 @@ public class OeuvreFormController extends BaseController {
             oeuvre.setDescription(descriptionArea.getText().trim());
             oeuvre.setType(typeComboBox.getValue());
             oeuvre.setImageUrl(imageUrlField.getText().trim());
-            oeuvre.setCreatedBy(UserSession.getCurrentUser());
+            oeuvre.setCreateurId(UserSession.getCurrentUser().getId());
 
             if (editingOeuvre != null) {
                 oeuvre.setId(editingOeuvre.getId());
@@ -232,19 +197,16 @@ public class OeuvreFormController extends BaseController {
         }
     }
 
-    public void setEditingOeuvre(Oeuvre oeuvre) {
-        this.editingOeuvre = oeuvre;
-        if (oeuvre != null) {
-            titleField.setText(oeuvre.getTitle());
-            authorField.setText(oeuvre.getAuthor());
-            descriptionArea.setText(oeuvre.getDescription());
-            typeComboBox.setValue(oeuvre.getType());
-            imageUrlField.setText(oeuvre.getImageUrl());
-        }
-    }
-
     @FXML
     private void handleCancel() {
         navigateTo("/oeuvre");
+    }
+
+    protected void showAlert(String title, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

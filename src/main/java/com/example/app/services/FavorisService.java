@@ -2,6 +2,7 @@ package com.example.app.services;
 
 import com.example.app.dao.FavorisDAO;
 import com.example.app.entities.Favoris;
+import com.example.app.entities.User;
 import com.example.app.utils.UserSession;
 import java.sql.SQLException;
 import java.util.List;
@@ -9,9 +10,11 @@ import java.util.List;
 public class FavorisService {
 
     private FavorisDAO favorisDAO;
+    private UserService userService;
 
     public FavorisService() {
         this.favorisDAO = new FavorisDAO();
+        this.userService = new UserService();
     }
 
     // Méthodes pour les œuvres
@@ -74,6 +77,16 @@ public class FavorisService {
 
     public List<Favoris> getUserFavoriteArtefacts(int userId) throws SQLException {
         return favorisDAO.findFavoriArtefactsByUser(userId);
+    }
+
+    // ⭐ NOUVELLE MÉTHODE : Récupérer les types d'œuvres favoris d'un utilisateur
+    public List<String> getUserFavoriteOeuvreTypes(int userId) throws SQLException {
+        return favorisDAO.findFavoriteOeuvreTypesByUser(userId);
+    }
+    
+    // ⭐ NOUVELLE MÉTHODE : Récupérer les types d'artefacts favoris d'un utilisateur
+    public List<String> getUserFavoriteArtefactTypes(int userId) throws SQLException {
+        return favorisDAO.findFavoriteArtefactTypesByUser(userId);
     }
 
     // Méthodes utilitaires

@@ -16,6 +16,21 @@ public class OeuvreService implements IService<Oeuvre> {
     @Override
     public void add(Oeuvre oeuvre) throws SQLException {
         oeuvreDAO.add(oeuvre);
+        
+        // ⭐ Envoyer la notification dans un thread séparé (non bloquant)
+        new Thread(() -> {
+            try {
+                System.out.println("=== [OEUVRE] Nouvelle œuvre ajoutée: " + oeuvre.getTitle());
+                NotificationService notificationService = new NotificationService();
+                notificationService.notifierNouvelleOeuvreParType(
+                    oeuvre.getTitle(),
+                    oeuvre.getType(),
+                    oeuvre.getCreateurId()
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur notification: " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override
@@ -33,7 +48,6 @@ public class OeuvreService implements IService<Oeuvre> {
         return oeuvreDAO.select();
     }
 
-    // ⭐ MÉTHODE findById AJOUTÉE ⭐
     public Oeuvre findById(int id) throws SQLException {
         return oeuvreDAO.findById(id);
     }

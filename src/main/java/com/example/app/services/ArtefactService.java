@@ -16,6 +16,21 @@ public class ArtefactService implements IService<Artefact> {
     @Override
     public void add(Artefact artefact) throws SQLException {
         artefactDAO.add(artefact);
+        
+        // ⭐ Envoyer la notification dans un thread séparé (non bloquant)
+        new Thread(() -> {
+            try {
+                System.out.println("=== [ARTEFACT] Nouvel artefact ajouté: " + artefact.getName());
+                NotificationService notificationService = new NotificationService();
+                notificationService.notifierNouvelArtefactParType(
+                    artefact.getName(),
+                    artefact.getType(),
+                    artefact.getCreatedBy() != null ? artefact.getCreatedBy().getId() : 1
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur notification: " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override
