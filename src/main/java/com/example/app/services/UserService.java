@@ -6,6 +6,7 @@ import com.example.app.utils.PasswordHasher;
 import java.sql.SQLException;
 import java.util.List;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class UserService implements IService<User> {
 
@@ -187,5 +188,43 @@ public class UserService implements IService<User> {
 
     public User findByPhoneNumber(String phone) throws SQLException {
         return userDAO.findByPhoneNumber(phone);
+    }
+    // ==================== FACE RECOGNITION METHODS ====================
+
+public List<User> getUsersWithFaceDescriptors() {
+    List<User> users = new ArrayList<>();
+    String sql = "SELECT id, username, email, face_descriptor, face_enabled FROM user WHERE face_descriptor IS NOT NULL AND face_descriptor != ''";
+    
+    try (java.sql.Statement stmt = userDAO.getConnection().createStatement();
+         java.sql.ResultSet rs = stmt.executeQuery(sql)) {
+        
+        while (rs.next()) {
+            User user = new User();
+            user.setId(rs.getInt("id"));
+            user.setUsername(rs.getString("username"));
+            user.setEmail(rs.getString("email"));
+            user.setFaceDescriptor(rs.getString("face_descriptor"));
+            user.setFaceEnabled(rs.getBoolean("face_enabled"));
+            users.add(user);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return users;
+}
+    // ==================== SAUVEGARDE DESCRIPTEUR FACIAL ====================
+    
+    public void saveFaceDescriptor(int userId, String descriptor) {
+        String sql = "UPDATE user SET face_descriptor = ?, face_enabled = 1 WHERE id = ?";
+        
+        try (java.sql.PreparedStatement pstmt = userDAO.getConnection().prepareStatement(sql)) {
+            pstmt.setString(1, descriptor);
+            pstmt.setInt(2, userId);
+            pstmt.executeUpdate();
+            System.out.println("✓ Descripteur facial sauvegardé pour l'utilisateur " + userId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -103,28 +103,31 @@ public class SceneManager {
     }
 
     private String getFxmlPath(String route) {
-        return switch (route) {
-            case "/" -> "/com/monapp/view/index.fxml";
-            case "/discover" -> "/com/monapp/view/discover.fxml";
-            case "/universes" -> "/com/monapp/view/universes.fxml";
-            case "/personnages" -> "/com/monapp/view/personnages.fxml";
-            case "/oeuvre" -> "/com/monapp/view/oeuvre/index.fxml";
-            case "/oeuvre/create" -> "/com/monapp/view/oeuvre/create.fxml";
-            case "/oeuvre/show" -> "/com/monapp/view/oeuvre/show.fxml";
-            case "/artefact" -> "/com/monapp/view/artefact/index.fxml";
-            case "/artefact/create" -> "/com/monapp/view/artefact/create.fxml";
-            case "/artefact/show" -> "/com/monapp/view/artefact/show.fxml";
-            case "/shop" -> "/com/monapp/view/shop/shop.fxml";
-            case "/challenges" -> "/com/monapp/view/challenges.fxml";
-            case "/quiz" -> "/com/monapp/view/quiz.fxml";
-            case "/login" -> "/com/monapp/view/login-view.fxml";
-            case "/register" -> "/com/monapp/view/register-view.fxml";
-            case "/forgot-password" -> "/com/monapp/view/forgot-password-view.fxml";
-            case "/reset-password" -> "/com/monapp/view/reset-password-view.fxml";
-            case "/profile" -> "/com/monapp/view/profile-view.fxml";
-            case "/admin" -> "/com/monapp/view/admin/users.fxml";
-            case "/admin/users" -> "/com/monapp/view/admin/users.fxml";
-            default -> "/com/monapp/view/index.fxml";
-        };
-    }
+    return switch (route) {
+        case "/" -> "/com/monapp/view/index.fxml";
+        case "/discover" -> "/com/monapp/view/discover.fxml";
+        case "/universes" -> "/com/monapp/view/universes.fxml";
+        case "/personnages" -> "/com/monapp/view/personnages.fxml";
+        case "/oeuvre" -> "/com/monapp/view/oeuvre/index.fxml";
+        case "/oeuvre/create" -> "/com/monapp/view/oeuvre/create.fxml";
+        case "/oeuvre/show" -> "/com/monapp/view/oeuvre/show.fxml";
+        case "/artefact" -> "/com/monapp/view/artefact/index.fxml";
+        case "/artefact/create" -> "/com/monapp/view/artefact/create.fxml";
+        case "/artefact/show" -> "/com/monapp/view/artefact/show.fxml";
+        case "/shop" -> "/com/monapp/view/shop/shop.fxml";
+        case "/challenges" -> "/com/monapp/view/challenges.fxml";
+        case "/quiz" -> "/com/monapp/view/quiz.fxml";
+        case "/login" -> "/com/monapp/view/login-view.fxml";
+        case "/register" -> "/com/monapp/view/register-view.fxml";
+        case "/forgot-password" -> "/com/monapp/view/forgot-password-view.fxml";
+        case "/reset-password" -> "/com/monapp/view/reset-password-view.fxml";
+        case "/profile" -> "/com/monapp/view/profile-view.fxml";
+        case "/admin" -> "/com/monapp/view/admin/users.fxml";
+        case "/admin/users" -> "/com/monapp/view/admin/users.fxml";
+        // NOUVELLES ROUTES
+        case "/face-login" -> "/com/monapp/view/face-login-view.fxml";
+        case "/face-register" -> "/com/monapp/view/face-register-view.fxml";
+        default -> "/com/monapp/view/index.fxml";
+    };
+}
 }

@@ -1,5 +1,6 @@
 package com.example.app.controllers;
 
+import com.example.app.entities.User;
 import com.example.app.utils.SceneManager;
 import com.example.app.utils.UserSession;
 import javafx.fxml.FXML;
@@ -57,7 +58,13 @@ public abstract class BaseController {
     @FXML
     public void goRegister() { navigateTo("/register"); }
 
+    // ==================== MÉTHODE NAVIGATION STANDARD ====================
     protected void navigateTo(String view) {
+        navigateTo(view, null);
+    }
+
+    // ==================== MÉTHODE NAVIGATION AVEC UTILISATEUR ====================
+    protected void navigateTo(String view, User user) {
         try {
             String fxmlPath;
 
@@ -90,6 +97,12 @@ public abstract class BaseController {
                 case "/":
                     fxmlPath = "/com/monapp/view/index.fxml";
                     break;
+                case "/face-register":
+                    fxmlPath = "/com/monapp/view/face-register-view.fxml";
+                    break;
+                case "/face-login":
+                    fxmlPath = "/com/monapp/view/face-login-view.fxml";
+                    break;
                 default:
                     fxmlPath = "/com/monapp/view" + view + ".fxml";
                     break;
@@ -106,6 +119,15 @@ public abstract class BaseController {
 
             FXMLLoader loader = new FXMLLoader(resource);
             Scene scene = new Scene(loader.load());
+            
+            // Passer l'utilisateur au contrôleur si c'est FaceRegisterController
+            if (user != null) {
+                Object controller = loader.getController();
+                if (controller instanceof FaceRegisterController) {
+                    ((FaceRegisterController) controller).setCurrentUser(user);
+                    System.out.println("✅ Utilisateur transmis à FaceRegisterController: " + user.getUsername());
+                }
+            }
 
             try {
                 URL cssResource = getClass().getResource("/css/modern-style.css");

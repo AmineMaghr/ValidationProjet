@@ -138,7 +138,15 @@
                                 style="-fx-background-color: rgba(220,53,69,0.15); -fx-border-color: #dc3545; 
                                        -fx-text-fill: #dc3545; -fx-border-radius: 28; -fx-padding: 10 22; 
                                        -fx-cursor: hand; -fx-border-width: 1.5;"/>
-                    </HBox>
+                                                <!-- Boutons reconnaissance faciale -->
+                        <Button text="👤 Configurer reconnaissance faciale" onAction="#goToFaceRegister"
+                                style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; 
+                                    -fx-font-weight: bold; -fx-border-radius: 25; -fx-padding: 12 25; -fx-cursor: hand;"/>
+
+                        <Button text="🔐 Connexion par visage" onAction="#goToFaceLogin"
+                                style="-fx-background-color: #2a3540; -fx-text-fill: #18E3A4; -fx-font-weight: bold; 
+                                    -fx-border-radius: 25; -fx-padding: 12 25; -fx-cursor: hand; -fx-border-color: #18E3A4;"/>
+                     </HBox>
                 </VBox>
             </VBox>
             

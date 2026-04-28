@@ -47,7 +47,7 @@ public class ProfileController extends BaseController {
     @FXML private TextField editUsername;
     @FXML private TextField editEmail;
     @FXML private TextArea editBio;
-    @FXML private ImageView previewAvatar;  // AJOUTER CETTE LIGNE !
+    @FXML private ImageView previewAvatar;
     @FXML private VBox favorisSection;
     
     private UserService userService;
@@ -505,6 +505,23 @@ public class ProfileController extends BaseController {
                 }
             }
         });
+    }
+    
+    // ==================== RECONNAISSANCE FACIALE ====================
+    
+    @FXML
+    private void goToFaceRegister() {
+        if (currentUser != null) {
+            // Utiliser la méthode avec passage de l'utilisateur
+            navigateTo("/face-register", currentUser);
+        } else {
+            showAlert("Erreur", "Vous devez être connecté pour configurer la reconnaissance faciale");
+        }
+    }
+
+    @FXML
+    private void goToFaceLogin() {
+        navigateTo("/face-login");
     }
     
     protected void showAlert(String title, String content) {

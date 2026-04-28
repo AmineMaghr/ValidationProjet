@@ -81,10 +81,11 @@
                                         <!-- Connexion sociale -->
                     <VBox spacing="12">
                         <!-- Reconnaissance faciale -->
-                        <Button text="👤 Reconnaissance faciale" onAction="#facialRecognition"
-                                style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; 
-                                    -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
-                                maxWidth="Infinity"/>
+                                                <!-- Connexion par visage -->
+                        <Button text="👤 Connexion par visage" onAction="#goToFaceLogin"
+                                    style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; 
+                                        -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
+                                    maxWidth="Infinity"/>
 
                         <!-- Google -->
                         <Button text="G Continuer avec Google" onAction="#googleLogin"

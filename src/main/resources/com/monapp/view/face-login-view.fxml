@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.FaceLoginController"
+            style="-fx-background-color: #0a0c10;">
+
+    <VBox spacing="0" alignment="TOP_CENTER" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" 
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        
+        <!-- Header -->
+        <HBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10); -fx-padding: 15 30;" 
+              alignment="CENTER_LEFT" prefWidth="Infinity">
+            <Label text="MIDGAR FACIAL LOGIN" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Retour" onAction="#goToLogin"
+                    style="-fx-background-color: transparent; -fx-border-color: #6a7a8a; -fx-text-fill: #6a7a8a; 
+                           -fx-border-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
+        </HBox>
+
+        <!-- Main Content -->
+        <VBox alignment="CENTER" style="-fx-padding: 30;" spacing="20" VBox.vgrow="ALWAYS">
+            
+            <VBox maxWidth="500" style="-fx-background-color: #11161c; -fx-background-radius: 24; 
+                                         -fx-border-color: #1a2530; -fx-border-radius: 24; -fx-padding: 25;" spacing="20" alignment="CENTER">
+                
+                <Label text="Connexion faciale" style="-fx-text-fill: #18E3A4; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                
+                <ImageView fx:id="cameraView" fitWidth="400" fitHeight="300" 
+                          style="-fx-background-color: #1a2530; -fx-background-radius: 12; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                
+                <Label fx:id="statusLabel" style="-fx-text-fill: #B0B9B6; -fx-font-size: 12px;" text="Initialisation..."/>
+                <Label fx:id="detectionLabel" style="-fx-text-fill: #ffd700; -fx-font-size: 14px;" text="Recherche de visage..."/>
+                <Label fx:id="userNameLabel" style="-fx-text-fill: #18E3A4; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                
+                <ProgressIndicator fx:id="progressIndicator" visible="false"/>
+                
+                <Button fx:id="loginButton" text="Se connecter" disable="true"
+                        style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; 
+                               -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand;"
+                        maxWidth="Infinity"/>
+                
+                <Button fx:id="retryButton" text="Reessayer" disable="true"
+                        style="-fx-background-color: transparent; -fx-border-color: #6a7a8a; -fx-text-fill: #6a7a8a; 
+                               -fx-border-radius: 30; -fx-padding: 12; -fx-cursor: hand;"
+                        maxWidth="Infinity"/>
+                
+                <Button text="Connexion classique" onAction="#goToLogin"
+                        style="-fx-background-color: transparent; -fx-border-color: #EF5350; -fx-text-fill: #EF5350; 
+                               -fx-border-radius: 30; -fx-padding: 10; -fx-cursor: hand;"
+                        maxWidth="Infinity"/>
+            </VBox>
+        </VBox>
+    </VBox>
+</AnchorPane>

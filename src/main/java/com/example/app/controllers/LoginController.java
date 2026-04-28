@@ -128,14 +128,13 @@ public class LoginController extends BaseController {
         new Thread(loginTask).start();
     }
 
-    // ==================== GOOGLE LOGIN AUTOMATIQUE AVEC WEBVIEW ====================
+    // ==================== GOOGLE LOGIN ====================
     
     @FXML
     private void googleLogin() {
         loginBtn.setDisable(true);
         loginBtn.setText("Ouverture Google...");
         
-        // Créer une fenêtre avec WebView
         Stage stage = new Stage();
         stage.setTitle("Connexion Google - Midgar");
         stage.setWidth(500);
@@ -144,26 +143,19 @@ public class LoginController extends BaseController {
         WebView webView = new WebView();
         WebEngine webEngine = webView.getEngine();
         
-        // Charger l'URL d'authentification Google
         String authUrl = googleOAuthService.getAuthorizationUrl();
         System.out.println("🌐 Chargement de: " + authUrl);
         webEngine.load(authUrl);
         
-        // Écouter les changements d'URL pour capturer le code automatiquement
         webEngine.locationProperty().addListener((obs, oldUrl, newUrl) -> {
             System.out.println("📍 URL: " + newUrl);
             
-            // Vérifier si c'est l'URL de callback avec le code
             if (newUrl != null && newUrl.contains("code=")) {
-                // Extraire le code automatiquement
                 String code = extractCodeFromUrl(newUrl);
                 System.out.println("🔑 Code capturé automatiquement: " + code);
                 
                 if (code != null && !code.isEmpty()) {
-                    // Fermer la fenêtre WebView
                     stage.close();
-                    
-                    // Traiter le code
                     loginBtn.setText("Connexion en cours...");
                     
                     new Thread(() -> {
@@ -195,7 +187,6 @@ public class LoginController extends BaseController {
             }
         });
         
-        // Gérer les erreurs de chargement
         webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.FAILED) {
                 System.err.println("❌ Erreur de chargement: " + webEngine.getLoadWorker().getException());
@@ -206,35 +197,33 @@ public class LoginController extends BaseController {
         stage.setScene(scene);
         stage.show();
         
-        // Si la fenêtre est fermée manuellement, réactiver le bouton
         stage.setOnCloseRequest(e -> {
             loginBtn.setDisable(false);
             loginBtn.setText("Se Connecter");
         });
     }
     
-  private String extractCodeFromUrl(String url) {
-    if (url != null && url.contains("code=")) {
-        int start = url.indexOf("code=") + 5;
-        int end = url.indexOf("&", start);
-        if (end == -1) {
-            end = url.length();
+    private String extractCodeFromUrl(String url) {
+        if (url != null && url.contains("code=")) {
+            int start = url.indexOf("code=") + 5;
+            int end = url.indexOf("&", start);
+            if (end == -1) {
+                end = url.length();
+            }
+            String encodedCode = url.substring(start, end);
+            
+            try {
+                String decodedCode = java.net.URLDecoder.decode(encodedCode, "UTF-8");
+                System.out.println("🔑 Code encodé: " + encodedCode);
+                System.out.println("🔑 Code décodé: " + decodedCode);
+                return decodedCode;
+            } catch (Exception e) {
+                System.err.println("Erreur décodage: " + e.getMessage());
+                return encodedCode;
+            }
         }
-        String encodedCode = url.substring(start, end);
-        
-        // Décoder le code automatiquement
-        try {
-            String decodedCode = java.net.URLDecoder.decode(encodedCode, "UTF-8");
-            System.out.println("🔑 Code encodé: " + encodedCode);
-            System.out.println("🔑 Code décodé: " + decodedCode);
-            return decodedCode;
-        } catch (Exception e) {
-            System.err.println("Erreur décodage: " + e.getMessage());
-            return encodedCode;
-        }
+        return null;
     }
-    return null;
-}
     
     private User processGoogleUser(GoogleOAuthService.GoogleUserInfo googleUser) throws SQLException {
         System.out.println("📝 Traitement de: " + googleUser.getEmail());
@@ -292,14 +281,13 @@ public class LoginController extends BaseController {
         return password.toString();
     }
 
-    // ==================== AUTRES MÉTHODES ====================
+    // ==================== NAVIGATION ====================
     
     @FXML
-private void handleForgotPassword() {
-    System.out.println("🔐 Redirection vers la page mot de passe oublié");
-    navigateTo("/forgot-password");
-}
-
+    private void handleForgotPassword() {
+        System.out.println("🔐 Redirection vers la page mot de passe oublié");
+        navigateTo("/forgot-password");
+    }
 
     @FXML
     private void goToRegister() {
@@ -312,9 +300,12 @@ private void handleForgotPassword() {
     }
 
     @FXML
-    private void facialRecognition() {
-        showInfo("Reconnaissance faciale (à implémenter)");
+    private void goToFaceLogin() {
+        // Navigation vers la page de connexion faciale
+        navigateTo("/face-login");
     }
+
+    // ==================== MÉTHODES UTILITAIRES ====================
 
     private void showError(String message) {
         errorLabel.setText(message);
@@ -341,14 +332,4 @@ private void handleForgotPassword() {
             }
         }, 3000);
     }
-
-    private void showInfo(String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information");
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.getDialogPane().setStyle("-fx-background-color: #11161c;");
-        alert.showAndWait();
-    }
-    
 }

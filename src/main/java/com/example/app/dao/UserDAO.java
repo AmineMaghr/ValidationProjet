@@ -6,7 +6,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
-import java.sql.Timestamp;
 
 public class UserDAO implements IDAO<User> {
 
@@ -430,4 +429,117 @@ public class UserDAO implements IDAO<User> {
 
         return user;
     }
+    public Connection getConnection() {
+    return connection;
+}
+// ==================== RECONNAISSANCE FACIALE ====================
+
+/**
+ * Sauvegarder le descripteur facial d'un utilisateur
+ */
+public boolean saveFaceDescriptor(int userId, String faceDescriptor) {
+    String sql = "UPDATE user SET face_descriptor = ?, face_enabled = 1 WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setString(1, faceDescriptor);
+        stmt.setInt(2, userId);
+        int affectedRows = stmt.executeUpdate();
+        if (affectedRows > 0) {
+            System.out.println("✓ Face descriptor sauvegardé pour l'utilisateur ID: " + userId);
+            return true;
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur sauvegarde face descriptor: " + e.getMessage());
+        e.printStackTrace();
+    }
+    return false;
+}
+
+/**
+ * Récupérer le descripteur facial d'un utilisateur
+ */
+public String getFaceDescriptor(int userId) {
+    String sql = "SELECT face_descriptor FROM user WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, userId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getString("face_descriptor");
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur récupération face descriptor: " + e.getMessage());
+    }
+    return null;
+}
+
+/**
+ * Vérifier si un utilisateur a la reconnaissance faciale activée
+ */
+public boolean isFaceEnabled(int userId) {
+    String sql = "SELECT face_enabled FROM user WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, userId);
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getBoolean("face_enabled");
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur vérification face_enabled: " + e.getMessage());
+    }
+    return false;
+}
+
+/**
+ * Récupérer tous les utilisateurs qui ont la reconnaissance faciale activée
+ * (avec leur descripteur facial)
+ */
+public List<User> getUsersWithFaceEnabled() {
+    List<User> users = new ArrayList<>();
+    String sql = "SELECT * FROM user WHERE face_enabled = 1 AND face_descriptor IS NOT NULL";
+    try (Statement stmt = connection.createStatement()) {
+        ResultSet rs = stmt.executeQuery(sql);
+        while (rs.next()) {
+            User user = mapResultSet(rs);
+            // S'assurer que le face_descriptor est bien chargé
+            user.setFaceDescriptor(rs.getString("face_descriptor"));
+            users.add(user);
+        }
+        System.out.println("✓ " + users.size() + " utilisateur(s) avec reconnaissance faciale activée");
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur récupération utilisateurs avec face: " + e.getMessage());
+    }
+    return users;
+}
+
+/**
+ * Désactiver la reconnaissance faciale pour un utilisateur
+ */
+public boolean disableFace(int userId) {
+    String sql = "UPDATE user SET face_enabled = 0, face_descriptor = NULL WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setInt(1, userId);
+        int affected = stmt.executeUpdate();
+        if (affected > 0) {
+            System.out.println("✓ Reconnaissance faciale désactivée pour l'utilisateur ID: " + userId);
+            return true;
+        }
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur désactivation face: " + e.getMessage());
+    }
+    return false;
+}
+
+/**
+ * Mettre à jour le descripteur facial et activer la reconnaissance
+ */
+public boolean updateFaceDescriptor(int userId, String faceDescriptor) {
+    String sql = "UPDATE user SET face_descriptor = ?, face_enabled = 1 WHERE id = ?";
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        stmt.setString(1, faceDescriptor);
+        stmt.setInt(2, userId);
+        return stmt.executeUpdate() > 0;
+    } catch (SQLException e) {
+        System.err.println("❌ Erreur mise à jour face descriptor: " + e.getMessage());
+        return false;
+    }
+}
 }

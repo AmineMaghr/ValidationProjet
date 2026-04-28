@@ -3,6 +3,11 @@ package com.example.app.entities;
 import javafx.beans.property.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import javafx.beans.property.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;        // AJOUTER
+import java.util.ArrayList;   // AJOUTER
 
 public class User {
     private final SimpleIntegerProperty id = new SimpleIntegerProperty();
@@ -197,4 +202,5 @@ public class User {
     
     public LocalDateTime getResetCodeExpiresAt() { return resetCodeExpiresAt; }
     public void setResetCodeExpiresAt(LocalDateTime resetCodeExpiresAt) { this.resetCodeExpiresAt = resetCodeExpiresAt; }
-}
+
+     }
