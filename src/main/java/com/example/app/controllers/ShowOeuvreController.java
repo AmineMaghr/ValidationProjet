@@ -45,7 +45,6 @@ public class ShowOeuvreController extends BaseController {
             loadComments();
             commentList.setCellFactory(param -> new CommentCell());
             
-            // Afficher les boutons seulement pour le propriétaire
             if (UserSession.isLoggedIn()) {
                 boolean isOwner = oeuvre.getCreateurId() == UserSession.getCurrentUser().getId();
                 boolean isAdmin = UserSession.getCurrentUser().isAdmin();
@@ -213,7 +212,6 @@ public class ShowOeuvreController extends BaseController {
         navigateTo("/oeuvre");
     }
 
-    // ⭐ SUPPRESSION COMMENTAIRE - Uniquement le propriétaire de l'œuvre
     private void deleteComment(Commentaire commentaire) {
         if (!UserSession.isLoggedIn()) return;
         
@@ -247,7 +245,6 @@ public class ShowOeuvreController extends BaseController {
         });
     }
 
-    // ⭐ CELLULE DES COMMENTAIRES
     private class CommentCell extends ListCell<Commentaire> {
         private VBox content;
         private Label userLabel;
@@ -294,7 +291,6 @@ public class ShowOeuvreController extends BaseController {
             dateLabel.setText(commentaire.getFormattedDate());
             commentText.setText(commentaire.getContenu());
             
-            // ⭐ Seul le PROPRIÉTAIRE peut supprimer les commentaires
             boolean isOwner = UserSession.isLoggedIn() && 
                 (oeuvre.getCreateurId() == UserSession.getCurrentUser().getId() || 
                  UserSession.getCurrentUser().isAdmin());

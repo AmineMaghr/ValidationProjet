@@ -3,11 +3,17 @@ package com.example.app.controllers;
 import com.example.app.entities.Oeuvre;
 import com.example.app.dao.OeuvreDAO;
 import com.example.app.utils.UserSession;
+import com.example.app.services.MoondreamService;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Alert.AlertType;
+import javafx.stage.FileChooser;
+import java.io.File;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class OeuvreFormController extends BaseController {
 
@@ -22,30 +28,33 @@ public class OeuvreFormController extends BaseController {
     @FXML private Label descriptionError;
     @FXML private Label authorError;
     @FXML private Label imageUrlError;
-
-    private static final Pattern TITLE_PATTERN = Pattern.compile("^[a-zA-Z0-9\\s\\p{Punct}]{2,200}$");
-    private static final Pattern AUTHOR_PATTERN = Pattern.compile("^[a-zA-Z\\s.-]{2,100}$");
+    
+    @FXML private Button generateAIBtn;
+    @FXML private ProgressIndicator loadingIndicator;
 
     private OeuvreDAO oeuvreDAO = new OeuvreDAO();
     private Oeuvre editingOeuvre;
-
-    // ⭐ MÉTHODE STATIQUE POUR PASSER L'OEUVRE À MODIFIER
+    private MoondreamService moondreamService;
+    
     private static Oeuvre oeuvreToEdit;
 
     public static void setEditingOeuvre(Oeuvre oeuvre) {
         oeuvreToEdit = oeuvre;
     }
 
-    public static Oeuvre getEditingOeuvre() {
-        return oeuvreToEdit;
-    }
-
     @FXML
     public void initialize() {
-        setupValidationListeners();
-        loadComboBoxData();
+        appliquerStyleTexteVisible();
         
-        // ⭐ Charger l'œuvre à modifier si elle existe
+        moondreamService = new MoondreamService();
+        
+        if (typeComboBox != null) {
+            typeComboBox.getItems().addAll("Livre", "Film", "Série", "Jeu Vidéo", "Bande Dessinée", "Manga", "Autre");
+        }
+        if (universeComboBox != null) {
+            universeComboBox.getItems().addAll("Marvel", "DC", "Harry Potter", "Star Wars", "Seigneur des Anneaux", "Autre");
+        }
+        
         if (oeuvreToEdit != null) {
             editingOeuvre = oeuvreToEdit;
             titleField.setText(editingOeuvre.getTitle());
@@ -55,119 +64,139 @@ public class OeuvreFormController extends BaseController {
             imageUrlField.setText(editingOeuvre.getImageUrl());
             oeuvreToEdit = null;
         }
+        
+        updateAIBtnStatus();
     }
-
-    private void setupValidationListeners() {
+    
+    private void updateAIBtnStatus() {
+        if (moondreamService.isMoondreamAvailable()) {
+            generateAIBtn.setText("🤖 Générer description avec IA");
+            generateAIBtn.setStyle("-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 20;");
+        } else {
+            generateAIBtn.setText("🎨 Générer description (simulation)");
+            generateAIBtn.setStyle("-fx-background-color: #6a7a8a; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 20;");
+        }
+    }
+    
+    private void appliquerStyleTexteVisible() {
         if (titleField != null) {
-            titleField.textProperty().addListener((obs, old, val) -> validateTitle());
+            titleField.setStyle("-fx-text-fill: #000000; -fx-background-color: #ffffff;");
+            titleField.setPromptText("Ex: Le Secret des Anciens...");
         }
+        
         if (authorField != null) {
-            authorField.textProperty().addListener((obs, old, val) -> validateAuthor());
+            authorField.setStyle("-fx-text-fill: #000000; -fx-background-color: #ffffff;");
+            authorField.setPromptText("Votre nom ou pseudonyme");
         }
+        
         if (descriptionArea != null) {
-            descriptionArea.textProperty().addListener((obs, old, val) -> validateDescription());
+            descriptionArea.setStyle("-fx-text-fill: #000000; -fx-background-color: #ffffff;");
+            descriptionArea.setPromptText("Décrivez votre œuvre, son contexte, ses inspirations...");
         }
+        
         if (imageUrlField != null) {
-            imageUrlField.textProperty().addListener((obs, old, val) -> validateImageUrl());
+            imageUrlField.setStyle("-fx-text-fill: #000000; -fx-background-color: #ffffff;");
+            imageUrlField.setPromptText("Chemin de l'image ou URL");
         }
     }
-
-    private boolean validateTitle() {
-        if (titleField == null || titleError == null) return true;
-        String title = titleField.getText();
-        if (title == null || title.trim().isEmpty()) {
-            titleError.setText("Le titre est requis");
-            titleError.setVisible(true);
-            titleField.setStyle("-fx-border-color: red;");
-            return false;
+    
+    @FXML
+    private void genererAvecAI() {
+        String imagePath = imageUrlField.getText().trim();
+        
+        if (imagePath.isEmpty()) {
+            showAlert("Erreur", "Veuillez d'abord sélectionner ou entrer le chemin d'une image.");
+            return;
         }
-        if (!TITLE_PATTERN.matcher(title.trim()).matches()) {
-            titleError.setText("Le titre doit contenir 2-200 caractères");
-            titleError.setVisible(true);
-            titleField.setStyle("-fx-border-color: red;");
-            return false;
+        
+        String localPath = extraireCheminLocal(imagePath);
+        if (localPath == null || !new File(localPath).exists()) {
+            showAlert("Erreur", "L'image n'existe pas ou le chemin est invalide.");
+            return;
         }
-        titleError.setVisible(false);
-        titleField.setStyle("");
-        return true;
+        
+        generateAIBtn.setDisable(true);
+        loadingIndicator.setVisible(true);
+        
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                return moondreamService.genererDescriptionArtistique(localPath);
+            }
+        };
+        
+        task.setOnSucceeded(e -> {
+            String description = task.getValue();
+            
+            Platform.runLater(() -> {
+                descriptionArea.clear();
+                descriptionArea.setText(description);
+                descriptionArea.positionCaret(description.length());
+                
+                System.out.println("✅ Description insérée avec succès (" + description.length() + " caractères)");
+            });
+            
+            generateAIBtn.setDisable(false);
+            loadingIndicator.setVisible(false);
+            showAlert("Succès", "Description générée par l'IA !");
+        });
+        
+        task.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                Throwable ex = task.getException();
+                System.err.println("❌ Erreur génération IA : " + ex.getMessage());
+                ex.printStackTrace();
+                showAlert("Erreur", "Impossible de générer la description :\n" + ex.getMessage());
+            });
+            
+            generateAIBtn.setDisable(false);
+            loadingIndicator.setVisible(false);
+        });
+        
+        new Thread(task).start();
     }
-
-    private boolean validateAuthor() {
-        if (authorField == null || authorError == null) return true;
-        String author = authorField.getText();
-        if (author == null || author.trim().isEmpty()) {
-            authorError.setText("L'auteur est requis");
-            authorError.setVisible(true);
-            authorField.setStyle("-fx-border-color: red;");
-            return false;
+    
+    @FXML
+    private void parcourirImage() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Sélectionner une image");
+        fileChooser.getExtensionFilters().add(
+            new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.webp", "*.gif")
+        );
+        
+        File selectedFile = fileChooser.showOpenDialog(null);
+        if (selectedFile != null) {
+            imageUrlField.setText(selectedFile.getAbsolutePath());
+            System.out.println("📁 Image sélectionnée : " + selectedFile.getAbsolutePath());
         }
-        if (!AUTHOR_PATTERN.matcher(author.trim()).matches()) {
-            authorError.setText("L'auteur doit contenir 2-100 caractères");
-            authorError.setVisible(true);
-            authorField.setStyle("-fx-border-color: red;");
-            return false;
-        }
-        authorError.setVisible(false);
-        authorField.setStyle("");
-        return true;
     }
-
-    private boolean validateDescription() {
-        if (descriptionArea == null || descriptionError == null) return true;
-        String description = descriptionArea.getText();
-        if (description == null || description.trim().isEmpty()) {
-            descriptionError.setText("La description est requise");
-            descriptionError.setVisible(true);
-            descriptionArea.setStyle("-fx-border-color: red;");
-            return false;
+    
+    private String extraireCheminLocal(String path) {
+        if (path == null || path.trim().isEmpty()) return null;
+        
+        String cleanPath = path.trim();
+        
+        try {
+            cleanPath = URLDecoder.decode(cleanPath, StandardCharsets.UTF_8);
+        } catch (Exception ignored) {}
+        
+        if (cleanPath.startsWith("file:///")) {
+            cleanPath = cleanPath.substring(8);
+        } else if (cleanPath.startsWith("file:/")) {
+            cleanPath = cleanPath.substring(6);
         }
-        if (description.length() < 20) {
-            descriptionError.setText("La description doit contenir au moins 20 caractères");
-            descriptionError.setVisible(true);
-            descriptionArea.setStyle("-fx-border-color: red;");
-            return false;
+        
+        if (cleanPath.matches("^/[A-Za-z]:.*")) {
+            cleanPath = cleanPath.substring(1);
         }
-        descriptionError.setVisible(false);
-        descriptionArea.setStyle("");
-        return true;
-    }
-
-    private boolean validateImageUrl() {
-        if (imageUrlField == null || imageUrlError == null) return true;
-        String url = imageUrlField.getText();
-        if (url == null || url.trim().isEmpty()) {
-            imageUrlError.setText("L'URL de l'image est requise");
-            imageUrlError.setVisible(true);
-            imageUrlField.setStyle("-fx-border-color: red;");
-            return false;
-        }
-        imageUrlError.setVisible(false);
-        imageUrlField.setStyle("");
-        return true;
-    }
-
-    private boolean validateAllFields() {
-        return validateTitle() && validateAuthor() && validateDescription() && validateImageUrl();
-    }
-
-    private void loadComboBoxData() {
-        if (typeComboBox != null) {
-            typeComboBox.getItems().addAll("Livre", "Film", "Série", "Jeu Vidéo", "Bande Dessinée", "Manga", "Autre");
-        }
-        if (universeComboBox != null) {
-            universeComboBox.getItems().addAll("Marvel", "DC", "Harry Potter", "Star Wars", "Seigneur des Anneaux", "Autre");
-        }
+        
+        return cleanPath;
     }
 
     @FXML
     private void handleSave() {
-        if (!validateAllFields()) {
-            showAlert("Erreur de validation", "Veuillez corriger les erreurs dans le formulaire");
-            return;
-        }
-
         if (!UserSession.isLoggedIn()) {
-            showAlert("Connexion requise", "Vous devez être connecté");
+            showAlert("Connexion requise", "Vous devez être connecté pour sauvegarder.");
             navigateTo("/login");
             return;
         }
@@ -184,16 +213,16 @@ public class OeuvreFormController extends BaseController {
             if (editingOeuvre != null) {
                 oeuvre.setId(editingOeuvre.getId());
                 oeuvreDAO.update(oeuvre);
-                showAlert("Succès", "L'œuvre a été mise à jour");
+                showAlert("Succès", "L'œuvre a été mise à jour avec succès.");
             } else {
                 oeuvreDAO.add(oeuvre);
-                showAlert("Succès", "L'œuvre a été créée");
+                showAlert("Succès", "L'œuvre a été créée avec succès.");
             }
 
             navigateTo("/oeuvre");
 
         } catch (SQLException e) {
-            showAlert("Erreur", "Erreur base de données: " + e.getMessage());
+            showAlert("Erreur", "Erreur lors de la sauvegarde : " + e.getMessage());
         }
     }
 
@@ -203,7 +232,7 @@ public class OeuvreFormController extends BaseController {
     }
 
     protected void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
