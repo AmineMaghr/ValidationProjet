@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.midgar.controller.UniverseDetailController" style="-fx-background-color: #0d1117;">
+
+    <fx:include source="partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
+
+        <!-- Universe Header -->
+        <StackPane style="-fx-background-color: linear-gradient(to bottom, #1a1f1e, #0d1117); -fx-min-height: 300;">
+            <VBox alignment="CENTER" spacing="20">
+                <ImageView fitWidth="200" fitHeight="200" style="-fx-background-color: #2a3139; -fx-background-radius: 100;"/>
+                <Label text="Nom de l'univers" style="-fx-text-fill: #fff; -fx-font-size: 36; -fx-font-weight: bold;"/>
+                <Label text="par Username" style="-fx-text-fill: #888;"/>
+                <HBox spacing="10">
+                    <Button text="Suivre" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 10 20;"/>
+                    <Button text="Partager" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 10 20;"/>
+                </HBox>
+            </VBox>
+        </StackPane>
+
+        <!-- Description -->
+        <VBox style="-fx-padding: 30 100;" spacing="20">
+            <Label text="Description" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+            <Label text="Description de l'univers..." style="-fx-text-fill: #888;" wrapText="true" maxWidth="800"/>
+        </VBox>
+
+        <!-- Characters Section & Chatbot -->
+        <TabPane style="-fx-background-color: #0b0f10;">
+            <Tab text="Personnages & Œuvres" style="-fx-text-fill: #18E3A4;">
+                <VBox style="-fx-background-color: #0b0f10; -fx-padding: 30 100;" spacing="20">
+            <Label text="Personnages (5)" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+            <HBox spacing="15">
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 180;" spacing="8">
+                    <ImageView fitWidth="180" fitHeight="220" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 10;">
+                        <Label text="Personnage 1" style="-fx-text-fill: #fff;"/>
+                    </VBox>
+                </VBox>
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 180;" spacing="8">
+                    <ImageView fitWidth="180" fitHeight="220" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 10;">
+                        <Label text="Personnage 2" style="-fx-text-fill: #fff;"/>
+                    </VBox>
+                </VBox>
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 180;" spacing="8">
+                    <ImageView fitWidth="180" fitHeight="220" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 10;">
+                        <Label text="Personnage 3" style="-fx-text-fill: #fff;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- Oeuvres Section -->
+        <VBox style="-fx-padding: 30 100;" spacing="20">
+            <Label text="Œuvres (3)" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+            <HBox spacing="15">
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 250;" spacing="10">
+                    <ImageView fitWidth="250" fitHeight="180" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;">
+                        <Label text="Titre de l'œuvre" style="-fx-text-fill: #fff;"/>
+                        <Label text="Type" style="-fx-text-fill: #888;"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+                </VBox>
+            </Tab>
+
+            <Tab text="🤖 Ask About Universe" style="-fx-text-fill: #18E3A4;">
+                <fx:include source="ChatbotPanel.fxml"/>
+            </Tab>
+        </TabPane>
+
+    </VBox>
+
+</AnchorPane>
