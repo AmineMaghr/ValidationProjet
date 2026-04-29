@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.PersonnageController"
+            style="-fx-background-color: #0d1117;">
+
+    <fx:include source="partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="15" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="PERSONNAGES"
+               style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+        <!-- Barre de recherche -->
+        <HBox spacing="10">
+            <TextField fx:id="searchField" promptText="Rechercher un personnage..." HBox.hgrow="ALWAYS"
+                       style="-fx-background-color: #1a1f1e; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-border-color: #2a3139; -fx-border-radius: 10;"/>
+            <Button text="Rechercher" onAction="#search"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+            <Button text="Réinitialiser" onAction="#resetFilters"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+            <Button text="Créer" onAction="#prepareNewPersonnage"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+        </HBox>
+
+        <!-- Filtres -->
+        <HBox spacing="20">
+            <VBox spacing="5">
+                <Label text="Classe" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <ListView fx:id="classRoleFilter" prefHeight="200" prefWidth="150"
+                          style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-radius: 10;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Univers" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <ListView fx:id="universeFilter" prefHeight="200" prefWidth="150"
+                          style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-radius: 10;"/>
+            </VBox>
+            <VBox spacing="5">
+                <Label text="Trier par" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <ComboBox fx:id="sortCombo" prefWidth="150"
+                          style="-fx-background-color: #1a1f1e; -fx-text-fill: white; -fx-border-color: #2a3139; -fx-border-radius: 10;"/>
+            </VBox>
+        </HBox>
+
+        <!-- Liste des personnages -->
+        <ListView fx:id="personnageList"
+                  style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-border-color: #2a3139; -fx-border-radius: 10;"
+                  VBox.vgrow="ALWAYS"/>
+
+    </VBox>
+
+</AnchorPane>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.CreateUniverseController"
+            style="-fx-background-color: #0d1117;">
+
+    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="20" alignment="CENTER" AnchorPane.leftAnchor="50" AnchorPane.rightAnchor="50" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="50">
+        <padding>
+            <Insets top="30" right="30" bottom="30" left="30"/>
+        </padding>
+
+        <Label text="CRÉER UN NOUVEL UNIVERS" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+        <VBox spacing="15" maxWidth="600" style="-fx-background-color: #1a1f1e; -fx-padding: 30; -fx-background-radius: 15; -fx-border-color: #2a3139; -fx-border-radius: 15;">
+
+            <VBox spacing="5">
+                <Label text="Nom de l'univers *" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <TextField fx:id="nameField" promptText="Ex: Fantasy Realm"
+                           style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Genre" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <TextField fx:id="genreField" promptText="Ex: Science-Fiction, Fantasy..."
+                           style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Thèmes (séparés par des virgules)" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <TextField fx:id="themesField" promptText="Ex: Magie, Aventure, Espace..."
+                           style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Courte description" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <TextArea fx:id="shortDescArea" promptText="Résumé de l'univers..." prefHeight="80"
+                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+
+            <VBox spacing="5">
+                <Label text="Contexte narratif / Histoire" style="-fx-text-fill: white; -fx-font-weight: bold;"/>
+                <TextArea fx:id="storyContextArea" promptText="Décrivez l'histoire complète..." prefHeight="120"
+                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+
+            <HBox spacing="20" alignment="CENTER_RIGHT" style="-fx-padding-top: 20;">
+                <Button text="Annuler" onAction="#cancel"
+                        style="-fx-background-color: transparent; -fx-border-color: white; -fx-text-fill: white; -fx-background-radius: 5; -fx-border-radius: 5; -fx-padding: 10 20;"/>
+                <Button text="Sauvegarder" onAction="#saveUniverse"
+                        style="-fx-background-color: #18E3A4; -fx-text-fill: #0d1117; -fx-background-radius: 5; -fx-padding: 10 20; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </VBox>
+</AnchorPane>
+

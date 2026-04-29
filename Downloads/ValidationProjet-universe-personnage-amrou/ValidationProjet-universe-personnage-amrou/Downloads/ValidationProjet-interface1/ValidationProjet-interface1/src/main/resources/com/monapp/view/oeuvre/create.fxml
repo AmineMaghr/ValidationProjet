@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.OeuvreController" style="-fx-background-color: #0d1117;">
+
+    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
+
+        <StackPane style="-fx-background-color: linear-gradient(to bottom, #1a1f1e, #0d1117); -fx-min-height: 200;">
+            <VBox alignment="CENTER">
+                <Label text="CRÉER UNE ŒUVRE" style="-fx-text-fill: #fff; -fx-font-size: 36; -fx-font-weight: bold;"/>
+            </VBox>
+        </StackPane>
+
+        <VBox style="-fx-padding: 40 100;" spacing="30" maxWidth="800">
+            <VBox spacing="15">
+                <Label text="Titre" style="-fx-text-fill: #b0b9b6;"/>
+                <TextField fx:id="titleField" promptText="Titre de l'œuvre" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 12;"/>
+            </VBox>
+            
+            <VBox spacing="15">
+                <Label text="Description" style="-fx-text-fill: #b0b9b6;"/>
+                <TextArea promptText="Description de votre œuvre..." style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 5; -fx-padding: 12;" minHeight="150"/>
+            </VBox>
+            
+            <VBox spacing="15">
+                <Label text="Type" style="-fx-text-fill: #b0b9b6;"/>
+                <ComboBox promptText="Sélectionner un type" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff;"/>
+            </VBox>
+            
+            <VBox spacing="15">
+                <Label text="Image" style="-fx-text-fill: #b0b9b6;"/>
+                <VBox style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 10; -fx-padding: 40;" alignment="CENTER">
+                    <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 36;"/>
+                    <Label text="Glissez une image ou cliquez pour parcourir" style="-fx-text-fill: #888;"/>
+                </VBox>
+            </VBox>
+            
+            <HBox spacing="20">
+                <Button text="Annuler" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 12 25;"/>
+                <Button text="Créer l'œuvre" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 25;"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

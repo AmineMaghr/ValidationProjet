@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.AdminController" style="-fx-background-color: #0d1117;">
+
+    <VBox spacing="0" AnchorPane.leftAnchor="250" AnchorPane.rightAnchor="0">
+        
+        <!-- Header -->
+        <HBox style="-fx-background-color: #0b0f10; -fx-padding: 20;" alignment="CENTER_LEFT">
+            <Label text="Gestion des produits" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="+ Ajouter un produit" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-padding: 10 20; -fx-background-radius: 5;"/>
+        </HBox>
+
+        <!-- Filters -->
+        <HBox style="-fx-padding: 20;" spacing="15">
+            <TextField promptText="Rechercher un produit..." style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 5; -fx-pref-width: 300;"/>
+            <ComboBox promptText="Catégorie" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff;"/>
+        </HBox>
+
+        <!-- Products Grid -->
+        <VBox style="-fx-padding: 20;" spacing="20">
+            <HBox spacing="20">
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 250;" spacing="10">
+                    <ImageView fitWidth="250" fitHeight="180" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;" spacing="8">
+                        <Label text="Nom du produit" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                        <Label text="Catégorie" style="-fx-text-fill: #888;"/>
+                        <HBox spacing="10">
+                            <Label text="29.99€" style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="✏️" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-font-size: 12;"/>
+                            <Button text="🗑️" style="-fx-background-color: #ff6b6b; -fx-text-fill: #fff; -fx-font-size: 12;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+                
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-min-width: 250;" spacing="10">
+                    <ImageView fitWidth="250" fitHeight="180" style="-fx-background-radius: 10 10 0 0;"/>
+                    <VBox style="-fx-padding: 15;" spacing="8">
+                        <Label text="Nom du produit" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                        <Label text="Catégorie" style="-fx-text-fill: #888;"/>
+                        <HBox spacing="10">
+                            <Label text="19.99€" style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="✏️" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-font-size: 12;"/>
+                            <Button text="🗑️" style="-fx-background-color: #ff6b6b; -fx-text-fill: #fff; -fx-font-size: 12;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+                
+                <VBox style="-fx-background-color: #2a3139; -fx-background-radius: 10; -fx-min-width: 250; -fx-min-height: 300;" alignment="CENTER">
+                    <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 36;"/>
+                    <Label text="Ajouter" style="-fx-text-fill: #18E3A4;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>
