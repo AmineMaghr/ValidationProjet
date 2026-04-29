@@ -6,13 +6,10 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
 
-
 <AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.midgar.controller.PersonnageDetailController" style="-fx-background-color: #0d1117;">
 
-    <fx:include source="partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
-
-    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
-
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0">
+        
         <!-- Character Header -->
         <HBox style="-fx-padding: 40 100;" spacing="40">
             <ImageView fitWidth="300" fitHeight="400" style="-fx-background-color: #1a1f1e; -fx-background-radius: 10;"/>

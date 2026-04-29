@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.monapp.view.challenges.PaintDesignerController"
+            prefWidth="1200.0" prefHeight="800.0" styleClass="root" stylesheets="@paint_designer.css">
+
+    <!-- Top Toolbar -->
+    <top>
+        <ToolBar styleClass="paint-toolbar" prefHeight="50">
+            <!-- Brush Tool -->
+            <ToggleButton fx:id="brushButton" text="Pinceau" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="🖌️" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <!-- Eraser Tool -->
+            <ToggleButton fx:id="eraserButton" text="Gomme" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="🧽" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <!-- Color Picker -->
+            <Label text="Couleur: " styleClass="toolbar-label"/>
+            <ColorPicker fx:id="colorPicker" styleClass="tool-color-picker" prefWidth="40"/>
+            <!-- Brush Size -->
+            <Label text="Taille: " styleClass="toolbar-label"/>
+            <Slider fx:id="brushSizeSlider" min="1" max="50" value="5" showTickLabels="true" showTickMarks="true" 
+                   majorTickUnit="10" styleClass="brush-size-slider" prefWidth="150"/>
+            <Label fx:id="brushSizeLabel" text="5" styleClass="toolbar-value"/>
+            <!-- Separator -->
+            <Separator orientation="VERTICAL" styleClass="toolbar-separator"/>
+            <!-- Shape Tools -->
+            <ToggleButton fx:id="rectButton" text="Rectangle" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="◼️" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="circleButton" text="Cercle" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="⚪" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="lineButton" text="Ligne" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="➖" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <ToggleButton fx:id="textButton" text="Texte" styleClass="tool-button" toggleGroup="$toolGroup">
+                <graphic>
+                    <Label text="🔤" styleClass="tool-icon"/>
+                </graphic>
+            </ToggleButton>
+            <!-- Separator -->
+            <Separator orientation="VERTICAL" styleClass="toolbar-separator"/>
+            <!-- Action Buttons -->
+            <Button fx:id="undoButton" text="Annuler" styleClass="action-button" disable="true">
+                <graphic>
+                    <Label text="↩️" styleClass="tool-icon"/>
+                </graphic>
+            </Button>
+            <Button fx:id="redoButton" text="Rétablir" styleClass="action-button" disable="true">
+                <graphic>
+                    <Label text="↪️" styleClass="tool-icon"/>
+                </graphic>
+            </Button>
+            <Button fx:id="clearButton" text="Effacer" styleClass="action-button btn-danger">
+                <graphic>
+                    <Label text="🗑️" styleClass="tool-icon"/>
+                </graphic>
+            </Button>
+            <Button fx:id="saveButton" text="Sauvegarder" styleClass="action-button btn-primary">
+                <graphic>
+                    <Label text="💾" styleClass="tool-icon"/>
+                </graphic>
+            </Button>
+            <!-- Spacer to push buttons to left/right -->
+            <Region HBox.hgrow="ALWAYS">
+                <HBox.hgrow>ALWAYS</HBox.hgrow>
+            </Region>
+            <!-- Zoom Controls -->
+            <Label text="Zoom: " styleClass="toolbar-label"/>
+            <Slider fx:id="zoomSlider" min="25" max="200" value="100" showTickLabels="true" showTickMarks="true" 
+                   majorTickUnit="25" styleClass="zoom-slider" prefWidth="100"/>
+            <Label fx:id="zoomLabel" text="100%" styleClass="toolbar-value"/>
+        </ToolBar>
+    </top>
+
+    <!-- Center Canvas with ScrollPane for zoom and panning -->
+    <center>
+        <ScrollPane fx:id="canvasScrollPane" styleClass="canvas-scroll-pane" pannable="true" fitToWidth="true" fitToHeight="true">
+
+            <Canvas fx:id="canvas" width="1000" height="650" styleClass="drawing-canvas"/>
+
+        </ScrollPane>
+    </center>
+
+    <!-- Bottom Status Bar -->
+    <bottom>
+        <Label fx:id="statusLabel" text="Prêt à dessiner" styleClass="status-bar" alignment="CENTER_LEFT"/>
+    </bottom>
+</BorderPane>

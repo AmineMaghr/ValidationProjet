@@ -6,82 +6,99 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.AdminController" style="-fx-background-color: #0d1117;">
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.AdminController" stylesheets="@../admin_challenges.css" styleClass="root">
 
     <!-- Admin Sidebar -->
     <left>
-        <VBox style="-fx-background-color: #0b0f10; -fx-min-width: 250; -fx-padding: 20;" spacing="20">
-            <Label text="ADMINISTRATION" style="-fx-text-fill: #18E3A4; -fx-font-size: 20; -fx-font-weight: bold;"/>
+        <VBox styleClass="admin-sidebar">
+            <HBox styleClass="sidebar-logo">
+                <Label text="👑" styleClass="logo-icon"/>
+                <Label text="ADMIN PAN" styleClass="logo-text"/>
+            </HBox>
             
-            <VBox spacing="5">
-                <Button text="Dashboard" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Utilisateurs" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Univers" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Personnages" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Œuvres" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Produits" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Commandes" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Défis" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
-                <Button text="Quiz" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-alignment: CENTER_LEFT; -fx-padding: 12 15;"/>
+            <VBox spacing="2">
+                <Button text="🏠 Dashboard" styleClass="nav-link, active"/>
+                <Button text="👥 Utilisateurs" styleClass="nav-link"/>
+                <Button text="🌌 Univers" styleClass="nav-link"/>
+                <Button text="🎭 Personnages" styleClass="nav-link"/>
+                <Button text="🎨 Œuvres" styleClass="nav-link"/>
+                <Button text="🛍️ Produits" styleClass="nav-link"/>
+                <Button text="📦 Commandes" styleClass="nav-link"/>
+                <Button text="🏆 Défis" styleClass="nav-link" onAction="#goChallenges"/>
+                <Button text="🧠 Quiz" styleClass="nav-link"/>
             </VBox>
             
             <Region VBox.vgrow="ALWAYS"/>
             
-            <Button text="Retour au site" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 12 15;"/>
+            <Button text="← Retour au site" styleClass="nav-link" onAction="#goAccueil"/>
         </VBox>
     </left>
 
     <!-- Main Content -->
     <center>
-        <VBox style="-fx-padding: 30;" spacing="30">
-            <Label text="Dashboard Administrateur" style="-fx-text-fill: #fff; -fx-font-size: 28; -fx-font-weight: bold;"/>
-            
-            <!-- Stats Cards -->
-            <HBox spacing="20">
-                <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-background-radius: 10;" spacing="10" minWidth="200">
-                    <Label text="Utilisateurs" style="-fx-text-fill: #888;"/>
-                    <Label text="1,234" style="-fx-text-fill: #fff; -fx-font-size: 32; -fx-font-weight: bold;"/>
-                </VBox>
-                <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-background-radius: 10;" spacing="10" minWidth="200">
-                    <Label text="Univers" style="-fx-text-fill: #888;"/>
-                    <Label text="567" style="-fx-text-fill: #fff; -fx-font-size: 32; -fx-font-weight: bold;"/>
-                </VBox>
-                <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-background-radius: 10;" spacing="10" minWidth="200">
-                    <Label text="Commandes" style="-fx-text-fill: #888;"/>
-                    <Label text="89" style="-fx-text-fill: #fff; -fx-font-size: 32; -fx-font-weight: bold;"/>
-                </VBox>
-                <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-background-radius: 10;" spacing="10" minWidth="200">
-                    <Label text="Revenus" style="-fx-text-fill: #888;"/>
-                    <Label text="4,567€" style="-fx-text-fill: #18E3A4; -fx-font-size: 32; -fx-font-weight: bold;"/>
-                </VBox>
-            </HBox>
-
-            <!-- Recent Activity -->
-            <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-background-radius: 10;" spacing="15">
-                <Label text="Activité récente" style="-fx-text-fill: #fff; -fx-font-size: 18; -fx-font-weight: bold;"/>
+        <ScrollPane fitToWidth="true" styleClass="scroll-pane">
+            <VBox styleClass="admin-content" spacing="35">
+                <HBox alignment="CENTER_LEFT">
+                    <VBox>
+                        <Label text="Tableau de Bord" styleClass="page-title"/>
+                        <Label text="Bienvenue dans votre espace d'administration" styleClass="page-subtitle"/>
+                    </VBox>
+                </HBox>
                 
-                <VBox spacing="10">
-                    <HBox alignment="CENTER_LEFT" spacing="15">
-                        <Label text="Nouvel utilisateur" style="-fx-text-fill: #18E3A4;"/>
-                        <Label text="john@example.com" style="-fx-text-fill: #fff;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Label text="Il y a 5 min" style="-fx-text-fill: #666;"/>
-                    </HBox>
-                    <HBox alignment="CENTER_LEFT" spacing="15">
-                        <Label text="Nouvelle commande" style="-fx-text-fill: #18E3A4;"/>
-                        <Label text="#1234 - 45.00€" style="-fx-text-fill: #fff;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Label text="Il y a 15 min" style="-fx-text-fill: #666;"/>
-                    </HBox>
-                    <HBox alignment="CENTER_LEFT" spacing="15">
-                        <Label text="Nouveau défi créé" style="-fx-text-fill: #18E3A4;"/>
-                        <Label text="Défi mensuel" style="-fx-text-fill: #fff;"/>
-                        <Region HBox.hgrow="ALWAYS"/>
-                        <Label text="Il y a 1h" style="-fx-text-fill: #666;"/>
-                    </HBox>
+                <!-- Stats Cards -->
+                <HBox spacing="25">
+                    <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                        <Label text="👤" styleClass="stat-icon" style="-fx-text-fill: #18E3A4;"/>
+                        <Label text="UTILISATEURS" styleClass="stat-title"/>
+                        <Label text="1,234" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                        <Label text="🌌" styleClass="stat-icon" style="-fx-text-fill: #00F2FE;"/>
+                        <Label text="UNIVERS" styleClass="stat-title"/>
+                        <Label text="567" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                        <Label text="📦" styleClass="stat-icon" style="-fx-text-fill: #8B5CF6;"/>
+                        <Label text="COMMANDES" styleClass="stat-title"/>
+                        <Label text="89" styleClass="stat-value"/>
+                    </VBox>
+                    <VBox styleClass="summary-card" HBox.hgrow="ALWAYS">
+                        <Label text="💰" styleClass="stat-icon" style="-fx-text-fill: #18E3A4;"/>
+                        <Label text="REVENUS" styleClass="stat-title"/>
+                        <Label text="4,567 €" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Recent Activity -->
+                <VBox styleClass="chart-card" spacing="20">
+                    <Label text="Activité récente" styleClass="section-title"/>
+                    
+                    <VBox spacing="8">
+                        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 12; -fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 10;">
+                            <Label text="✨" style="-fx-font-size: 16;"/>
+                            <Label text="Nouvel utilisateur" style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                            <Label text="john@example.com" style="-fx-text-fill: #fff;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Il y a 5 min" style="-fx-text-fill: #666; -fx-font-size: 11;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 12; -fx-background-color: rgba(255,255,255,0.01); -fx-background-radius: 10;">
+                            <Label text="🛒" style="-fx-font-size: 16;"/>
+                            <Label text="Nouvelle commande" style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                            <Label text="#1234 - 45.00€" style="-fx-text-fill: #fff;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Il y a 15 min" style="-fx-text-fill: #666; -fx-font-size: 11;"/>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="15" style="-fx-padding: 12; -fx-background-color: rgba(255,255,255,0.03); -fx-background-radius: 10;">
+                            <Label text="🏆" style="-fx-font-size: 16;"/>
+                            <Label text="Nouveau défi créé" style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                            <Label text="Défi mensuel" style="-fx-text-fill: #fff;"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label text="Il y a 1h" style="-fx-text-fill: #666; -fx-font-size: 11;"/>
+                        </HBox>
+                    </VBox>
                 </VBox>
             </VBox>
-        </VBox>
+        </ScrollPane>
     </center>
 
 </BorderPane>

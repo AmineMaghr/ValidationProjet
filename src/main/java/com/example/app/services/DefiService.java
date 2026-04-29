@@ -17,7 +17,7 @@ public class DefiService implements IService<Defi> {
 
     @Override
     public void add(Defi defi) throws SQLException {
-        String sql = "INSERT INTO defi (titre, description, theme, image_cover, date_debut, date_fin, statut, createur_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO defi (titre, description, theme, image_cover, date_debut, date_fin, statut, createur_id, difficulte) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
@@ -30,12 +30,13 @@ public class DefiService implements IService<Defi> {
 
         ps.setString(7, defi.getStatut());
         ps.setInt(8, defi.getCreateurId());
+        ps.setString(9, defi.getDifficulte());
         ps.executeUpdate();
     }
 
     @Override
     public void update(Defi defi) throws SQLException {
-        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, image_cover = ?, date_debut = ?, date_fin = ?, statut = ? WHERE id = ?";
+        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, image_cover = ?, date_debut = ?, date_fin = ?, statut = ?, difficulte = ? WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
@@ -47,7 +48,8 @@ public class DefiService implements IService<Defi> {
         ps.setDate(6, defi.getDateFin() != null ? Date.valueOf(defi.getDateFin()) : null);
 
         ps.setString(7, defi.getStatut());
-        ps.setInt(8, defi.getId());
+        ps.setString(8, defi.getDifficulte());
+        ps.setInt(9, defi.getId());
         ps.executeUpdate();
     }
 
@@ -82,6 +84,7 @@ public class DefiService implements IService<Defi> {
 
             d.setStatut(rs.getString("statut"));
             d.setCreateurId(rs.getInt("createur_id"));
+            d.setDifficulte(rs.getString("difficulte"));
             list.add(d);
         }
         return list;
@@ -123,9 +126,34 @@ public class DefiService implements IService<Defi> {
 
             d.setStatut(rs.getString("statut"));
             d.setCreateurId(rs.getInt("createur_id"));
+            d.setDifficulte(rs.getString("difficulte"));
             list.add(d);
         }
         return list;
+    }
+
+    public Defi selectById(int id) throws SQLException {
+        String sql = "SELECT * FROM defi WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Defi d = new Defi();
+            d.setId(rs.getInt("id"));
+            d.setTitre(rs.getString("titre"));
+            d.setDescription(rs.getString("description"));
+            d.setTheme(rs.getString("theme"));
+            d.setImageCover(rs.getString("image_cover"));
+            Date dateDebut = rs.getDate("date_debut");
+            if (dateDebut != null) d.setDateDebut(dateDebut.toLocalDate());
+            Date dateFin = rs.getDate("date_fin");
+            if (dateFin != null) d.setDateFin(dateFin.toLocalDate());
+            d.setStatut(rs.getString("statut"));
+            d.setCreateurId(rs.getInt("createur_id"));
+            d.setDifficulte(rs.getString("difficulte"));
+            return d;
+        }
+        return null;
     }
 
     public List<Defi> getAllDefis() throws SQLException {

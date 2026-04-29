@@ -8,14 +8,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,11 +25,23 @@ public class DefiController extends BaseController {
     @FXML private TilePane activeDefisGrid;
     @FXML private TilePane pastDefisGrid;
     @FXML private Label emptyMessage;
+    @FXML private Label countLabel;
     @FXML private VBox adminSection;
     @FXML private TextField adminTitreField;
     @FXML private TextField adminThemeField;
     @FXML private DatePicker adminDateDebutPicker;
     @FXML private DatePicker adminDateFinPicker;
+
+    // Sidebar filter controls
+    @FXML private RadioButton radioOuvert;
+    @FXML private RadioButton radioFerme;
+    @FXML private RadioButton radioTousStatut;
+    @FXML private RadioButton radioRecent;
+    @FXML private RadioButton radioAncien;
+    @FXML private RadioButton radioDate;
+    @FXML private RadioButton radioTheme;
+    @FXML private RadioButton radioStatut;
+    @FXML private RadioButton radioAZ;
 
     private final DefiService defiService = new DefiService();
     private final ParticipationService participationService = new ParticipationService();
@@ -47,6 +57,13 @@ public class DefiController extends BaseController {
 
     private void setupAuthButtons() {
         authContainer.getChildren().clear();
+        
+        // Add Admin button (always visible, navigates to admin page)
+        Button adminBtn = new Button("Admin");
+        adminBtn.getStyleClass().addAll("btn-secondary");
+        adminBtn.setOnAction(e -> navigateTo("/admin"));
+        authContainer.getChildren().add(adminBtn);
+        
         if (UserSession.isLoggedIn()) {
             var user = UserSession.getCurrentUser();
             Button profileBtn = new Button(user.getUsername());
@@ -55,8 +72,10 @@ public class DefiController extends BaseController {
 
             Button logoutBtn = new Button("Déconnexion");
             logoutBtn.getStyleClass().addAll("btn-secondary");
-            logoutBtn.setOnAction(e -> logout());
-
+            logoutBtn.setOnAction(e -> {
+                UserSession.logout();
+                navigateTo("/defis");
+            });
             authContainer.getChildren().addAll(profileBtn, logoutBtn);
         } else {
             Button loginBtn = new Button("Connexion");
@@ -90,6 +109,7 @@ public class DefiController extends BaseController {
         };
         task.setOnSucceeded(e -> {
             defis.setAll(task.getValue());
+            if (countLabel != null) countLabel.setText(defis.size() + " défi(s)");
             updateGrids();
         });
         task.setOnFailed(e -> {
@@ -141,11 +161,12 @@ public class DefiController extends BaseController {
         if (!isActive) {
             card.setOpacity(0.8);
         }
-        card.setOnMouseClicked(e -> {
-            if (isActive) {
-                navigateTo("/challenges/participer/" + defi.getId());
-            }
-        });
+            card.setOnMouseClicked(e -> {
+                if (isActive) {
+                    com.midgar.controller.ParticiperController.setPendingDefiId(defi.getId());
+                    navigateTo("/challenges/" + defi.getId());
+                }
+            });
 
         // Image
         StackPane imageContainer = new StackPane();
@@ -224,6 +245,47 @@ public class DefiController extends BaseController {
     }
 
     @FXML
+    private void applyFilters() {
+        String statusFilter = "";
+        if (radioOuvert != null && radioOuvert.isSelected())  statusFilter = "OUVERT";
+        else if (radioFerme != null && radioFerme.isSelected()) statusFilter = "FERME";
+
+        String sort = "recent";
+        if (radioAncien != null && radioAncien.isSelected())  sort = "ancien";
+        else if (radioDate != null && radioDate.isSelected())  sort = "date";
+        else if (radioTheme != null && radioTheme.isSelected()) sort = "theme";
+        else if (radioStatut != null && radioStatut.isSelected()) sort = "statut";
+        else if (radioAZ != null && radioAZ.isSelected())     sort = "az";
+
+        final String finalStatus = statusFilter;
+        final String finalSort   = sort;
+        final String search      = searchField != null ? searchField.getText() : "";
+
+        javafx.concurrent.Task<java.util.List<Defi>> task = new javafx.concurrent.Task<>() {
+            @Override
+            protected java.util.List<Defi> call() throws java.sql.SQLException {
+                return defiService.searchDefis(search, finalSort);
+            }
+        };
+        task.setOnSucceeded(e -> {
+            java.util.List<Defi> all = task.getValue();
+            defis.setAll(all);
+            if (countLabel != null) countLabel.setText(all.size() + " défi(s)");
+            updateGrids();
+        });
+        task.setOnFailed(e -> showAlert("Erreur", "Impossible de filtrer les défis"));
+        new Thread(task).start();
+    }
+
+    @FXML
+    private void resetFilters() {
+        if (radioTousStatut != null) radioTousStatut.setSelected(true);
+        if (radioRecent     != null) radioRecent.setSelected(true);
+        if (searchField     != null) searchField.clear();
+        loadDefis();
+    }
+
+    @FXML
     private void createDefi() {
         if (adminTitreField.getText().isEmpty()) {
             showAlert("Erreur", "Le titre est requis");
@@ -259,8 +321,4 @@ public class DefiController extends BaseController {
         new Thread(task).start();
     }
 
-    private void logout() {
-        UserSession.logout();
-        navigateTo("/");
-    }
 }

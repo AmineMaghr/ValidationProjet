@@ -11,6 +11,7 @@ public class Defi {
     private final SimpleStringProperty titre = new SimpleStringProperty();
     private final SimpleStringProperty description = new SimpleStringProperty();
     private final SimpleStringProperty theme = new SimpleStringProperty();
+    private final SimpleStringProperty difficulte = new SimpleStringProperty();
     private final SimpleStringProperty imageCover = new SimpleStringProperty();
     private final SimpleStringProperty statut = new SimpleStringProperty();
     private final SimpleIntegerProperty createurId = new SimpleIntegerProperty();
@@ -41,6 +42,11 @@ public class Defi {
     public String getTheme() { return theme.get(); }
     public void setTheme(String theme) { this.theme.set(theme); }
     public StringProperty themeProperty() { return theme; }
+
+    // ===== DIFFICULTE =====
+    public String getDifficulte() { return difficulte.get(); }
+    public void setDifficulte(String difficulte) { this.difficulte.set(difficulte); }
+    public StringProperty difficulteProperty() { return difficulte; }
 
     // ===== IMAGE COVER =====
     public String getImageCover() { return imageCover.get(); }

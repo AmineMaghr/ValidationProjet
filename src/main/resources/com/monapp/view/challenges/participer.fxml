@@ -3,123 +3,155 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/17"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.app.controllers.ParticipationController"
-            style="-fx-background-color: #0d1117;">
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.midgar.controller.ParticiperController"
+            stylesheets="@participe.css"
+            styleClass="root">
 
-    <!-- Inclusion du header -->
-    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+    <!-- ===== TOP (HEADER) ===== -->
+    <top>
+        <HBox styleClass="header" spacing="20">
 
-    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0">
+            <!-- Logo -->
+            <HBox styleClass="logo" spacing="8" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 22px;"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+            </HBox>
 
-        <!-- Bouton retour -->
-        <HBox style="-fx-padding: 20 100 0 100;">
-            <Button text="← Retour aux défis" onAction="#goBack"
-                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 8 15; -fx-cursor: hand;"/>
-            <Region HBox.hgrow="ALWAYS"/>
+            <!-- Navigation -->
+            <HBox spacing="10" styleClass="nav" HBox.hgrow="ALWAYS">
+                <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                <Button text="Œuvres" styleClass="magic-btn" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                <Button text="Défis" styleClass="magic-btn active" onAction="#goChallenges"/>
+            </HBox>
+
+            <!-- Static Auth buttons (example for connected user) -->
+            <HBox spacing="10" styleClass="auth" alignment="CENTER_RIGHT" fx:id="authContainer">
+                <Button text="Utilisateur" styleClass="magic-btn" onAction="#goToProfile"/>
+                <Button text="Déconnexion" styleClass="btn-secondary" onAction="#handleLogout"/>
+            </HBox>
+
         </HBox>
+    </top>
 
-        <!-- Carte du défi -->
-        <VBox style="-fx-padding: 20 100 0 100;" spacing="20">
+    <!-- ===== CENTER ===== -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll">
 
-            <!-- Image du défi (cliquable) -->
-            <ImageView fx:id="defiImageView" fitWidth="Infinity" fitHeight="200" preserveRatio="true"
-                       style="-fx-cursor: hand; -fx-border-radius: 10; -fx-background-radius: 10;"
-                       onMouseClicked="#openImageModal" visible="false" managed="false"/>
+            <VBox spacing="20" styleClass="container">
 
-            <VBox style="-fx-background-color: rgba(26,31,30,0.7); -fx-background-radius: 12; -fx-padding: 25; -fx-border-color: rgba(24,227,164,0.1); -fx-border-radius: 12;">
+                <!-- Challenge Details Card (Static Example) -->
+                <VBox styleClass="card">
 
-                <!-- Titre et thème -->
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label fx:id="defiTitreLabel" text="Titre du défi"
-                           style="-fx-text-fill: #18E3A4; -fx-font-size: 24px; -fx-font-weight: bold;"/>
-                    <Label fx:id="defiThemeLabel" text="Thème"
-                           style="-fx-background-color: rgba(24,227,164,0.2); -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-radius: 20; -fx-padding: 4 12; -fx-font-size: 12px;"/>
-                </HBox>
+                    <!-- Challenge Image (using a placeholder) -->
+                    <ImageView fx:id="challengeImageView"
+                               fitWidth="400" fitHeight="200"
+                               preserveRatio="true"
+                               styleClass="challenge-image"/>
 
-                <!-- Description -->
-                <Label fx:id="defiDescriptionLabel" text="Description..."
-                       style="-fx-text-fill: #B0B9B6; -fx-font-size: 14px;" wrapText="true"/>
-
-                <!-- Dates -->
-                <Label fx:id="defiDatesLabel" text="📅 Du ... au ..."
-                       style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
-            </VBox>
-
-            <!-- Formulaire de participation -->
-            <VBox style="-fx-background-color: rgba(26,31,30,0.7); -fx-background-radius: 12; -fx-padding: 25; -fx-border-color: rgba(24,227,164,0.1); -fx-border-radius: 12;" spacing="20">
-
-                <Label text="Participer à ce défi"
-                       style="-fx-text-fill: #18E3A4; -fx-font-size: 20px; -fx-font-weight: bold;"/>
-
-                <Label text="Indiquez l'ID d'une œuvre déjà en ligne ou peignez une œuvre dans l'éditeur."
-                       style="-fx-text-fill: #888; -fx-font-size: 12px;" wrapText="true"/>
-
-                <!-- Options -->
-                <VBox spacing="10">
-                    <Label text="Vous avez deux options :" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
-                    <VBox style="-fx-padding: 0 0 0 15;" spacing="5">
-                        <Label text="• Utiliser une œuvre déjà en ligne en indiquant son ID ci-dessous."
-                               style="-fx-text-fill: #888; -fx-font-size: 12px;" wrapText="true"/>
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="• Ou" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
-                            <Button text="Peindre une œuvre" onAction="#openPainter"
-                                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                    <!-- Challenge Info (Static Example Data) -->
+                    <VBox spacing="12">
+                        <Label fx:id="challengeTitleLabel"
+                               text="Défi de Création Artististique"
+                               styleClass="title"/>
+                        <Label fx:id="challengeThemeLabel"
+                               text="Art numérique"
+                               styleClass="badge"/>
+                        <Label fx:id="challengeDescriptionLabel"
+                               text="Crée une œuvre originale représentant l'esprit de Midgar à travers l'art numérique. Tu peux utiliser n'importe quel medium numérique : dessin, peinture 3D, photomanipulation, animation, etc."
+                               wrapText="true"
+                               styleClass="description"/>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label fx:id="challengeDatesLabel"
+                                   text="📅 01/05/2026 → 31/05/2026"
+                                   style="-fx-text-fill: #8b949e; -fx-font-size: 13px;"/>
+                            <Label fx:id="challengeStatusLabel"
+                                   text="Actif"
+                                   styleClass="tag-status"/>
                         </HBox>
                     </VBox>
+
                 </VBox>
 
-                <!-- Description de la création -->
-                <VBox spacing="8">
-                    <Label text="Description de votre création"
-                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                    <TextArea fx:id="descriptionArea"
-                              style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 8; -fx-padding: 12;"
-                              promptText="Décrivez votre création..." prefHeight="100"/>
-                </VBox>
+                <!-- Participation Form Card -->
+                <VBox styleClass="card">
 
-                <!-- ID de l'œuvre -->
-                <VBox spacing="8">
-                    <Label text="ID de l'œuvre (optionnel)"
-                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                    <TextField fx:id="artworkIdField"
-                               style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 8; -fx-padding: 12;"
-                               promptText="Entrez l'ID d'une œuvre existante"/>
-                </VBox>
+                    <Label text="Participer à ce défi"
+                           styleClass="title"/>
 
-                <!-- Zone d'upload d'image -->
-                <VBox spacing="8">
-                    <Label text="Soumettre votre création"
-                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                    <VBox fx:id="uploadZone"
-                          style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 10; -fx-padding: 30; -fx-cursor: hand;"
-                          alignment="CENTER" onMouseClicked="#selectImage">
-                        <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 36px;"/>
-                        <Label text="Cliquez pour sélectionner une image" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+                    <!-- Form Hint -->
+                    <Label text="Indiquez l'ID d'une œuvre déjà en ligne ou peignez une œuvre dans l'éditeur."
+                           styleClass="form-hint"
+                           wrapText="true"/>
+
+                    <!-- Description Field -->
+                    <VBox spacing="8">
+                        <Label text="📝 Description de votre participation"
+                               styleClass="form-label"/>
+                        <TextArea fx:id="descriptionField"
+                                  promptText="Décrivez votre participation..."
+                                  styleClass="form-control"
+                                  prefRowCount="5"/>
                     </VBox>
-                    <ImageView fx:id="imagePreview" fitWidth="200" fitHeight="150" preserveRatio="true"
-                               style="-fx-border-radius: 8; -fx-background-radius: 8;" visible="false" managed="false"/>
-                    <Label fx:id="fileNameLabel" style="-fx-text-fill: #18E3A4; -fx-font-size: 12px;" visible="false" managed="false"/>
+
+                    <!-- Options -->
+                    <VBox spacing="12">
+                        <Label text="Vous avez deux options :"
+                               styleClass="form-hint"/>
+                        <VBox spacing="6" style="-fx-padding: 0 0 0 20;">
+                            <Label text="• Utiliser une œuvre déjà en ligne en indiquant son ID ci-dessous."
+                                   styleClass="form-hint"/>
+                            <Label text="• Ou peindre une nouvelle œuvre dans l'éditeur en ligne."
+                                   styleClass="form-hint"/>
+                        </VBox>
+                        <Button fx:id="peindreButton" text="🎨 Peindre une œuvre"
+                                styleClass="btn-secondary magic-btn"
+                                onAction="#goToPaintEditor"/>
+
+                    </VBox>
+
+                    <!-- Artwork ID Field -->
+                    <VBox spacing="8">
+                        <Label text="🖼️ ID de l'œuvre (optionnel)"
+                               styleClass="form-label"/>
+                        <TextField fx:id="artworkIdField"
+                                   promptText="Ex: 1"
+                                   styleClass="form-control"/>
+                        <Label text="Laissez vide si vous n'avez pas d'œuvre existante"
+                               styleClass="form-hint"/>
+                    </VBox>
+
+                    <!-- Validation Hint -->
+                    <Label text="💡 Remplissez tous les champs correctement pour activer le bouton de soumission"
+                           styleClass="hint"/>
+
+                    <!-- Buttons -->
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Button text="Annuler"
+                                styleClass="btn-secondary"
+                                onAction="#annuler"/>
+                        <Button text="Envoyer ma participation"
+                                fx:id="submitBtn"
+                                styleClass="btn-primary"
+                                onAction="#soumettre"/>
+                    </HBox>
+
                 </VBox>
-
-                <!-- Message d'erreur -->
-                <Label fx:id="errorLabel" style="-fx-text-fill: #ff6b6b;" visible="false" wrapText="true"/>
-
-                <!-- Boutons d'action -->
-                <HBox spacing="15" alignment="CENTER">
-                    <Button text="Envoyer ma participation" onAction="#soumettre"
-                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                    <Button text="Annuler" onAction="#goBack"
-                            style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand;"/>
-                </HBox>
 
             </VBox>
-        </VBox>
 
-    </VBox>
+        </ScrollPane>
+    </center>
 
-</AnchorPane>
+    <bottom>
+        <Label text="Developed by Kilo" styleClass="version-label" alignment="center"/>
+    </bottom>
+</BorderPane>

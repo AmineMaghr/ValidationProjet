@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.app.controllers.DefiAnalyticsController" stylesheets="@../admin_challenges.css" styleClass="root">
+   <top>
+      <HBox styleClass="admin-header" alignment="CENTER_LEFT">
+         <Button styleClass="btn-secondary" text="← Retour" onAction="#goBack"/>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Label styleClass="page-title" text="Analyse Performance Défis"/>
+         <Region HBox.hgrow="ALWAYS"/>
+         <Button fx:id="refreshButton" styleClass="btn-primary" text="Actualiser les données" onAction="#refreshAnalytics"/>
+      </HBox>
+   </top>
+
+   <center>
+      <ScrollPane fitToWidth="true" styleClass="scroll">
+         <VBox spacing="25" styleClass="analytics-container">
+            <VBox.margin>
+               <Insets top="30" right="40" bottom="20" left="40"/>
+            </VBox.margin>
+
+            <!-- GLOBAL SCORE SUMMARY -->
+            <VBox styleClass="summary-card">
+               <Label styleClass="section-title" text="Statistiques de Performance"/>
+               <HBox spacing="30" alignment="CENTER">
+                  <VBox styleClass="score-card, green">
+                     <Label styleClass="score-label" text="Score Moyen"/>
+                     <Label fx:id="avgScoreLabel" styleClass="score-value" text="0.0"/>
+                  </VBox>
+                  <VBox styleClass="score-card, yellow">
+                     <Label styleClass="score-label" text="Top Défi"/>
+                     <Label fx:id="topDefiLabel" styleClass="score-value" text="--"/>
+                  </VBox>
+                  <VBox styleClass="score-card, red">
+                     <Label styleClass="score-label" text="Flop Défi"/>
+                     <Label fx:id="worstDefiLabel" styleClass="score-value" text="--"/>
+                  </VBox>
+               </HBox>
+            </VBox>
+
+            <!-- PERFORMANCE TABLE SECTION -->
+            <VBox spacing="20">
+               <HBox spacing="15" alignment="CENTER_LEFT">
+                  <Label styleClass="section-title" text="Classement détaillé"/>
+                  <Region HBox.hgrow="ALWAYS"/>
+                  <ComboBox fx:id="sortCombo" styleClass="form-control" prefWidth="200" promptText="Trier par...">
+                     <items>
+                        <FXCollections fx:factory="observableArrayList">
+                           <String fx:value="Score ↓"/>
+                           <String fx:value="Score ↑"/>
+                           <String fx:value="Participants"/>
+                           <String fx:value="Réussite %"/>
+                        </FXCollections>
+                     </items>
+                  </ComboBox>
+               </HBox>
+               
+               <TableView fx:id="analyticsTable" style="-fx-font-size: 12;">
+                  <columns>
+                     <TableColumn text="Score" prefWidth="70"/>
+                     <TableColumn text="Titre" prefWidth="200"/>
+                     <TableColumn text="Participants" prefWidth="90"/>
+                     <TableColumn text="Réussite %" prefWidth="90"/>
+                     <TableColumn text="Abandon %" prefWidth="90"/>
+                     <TableColumn text="Recommandation" prefWidth="120"/>
+                     <TableColumn text="Actions" prefWidth="100"/>
+                  </columns>
+               </TableView>
+            </VBox>
+
+            <!-- RECOMMENDATIONS CARDS -->
+            <VBox spacing="20">
+               <Label styleClass="section-title" text="🎯 Recommandations IA"/>
+               
+               <HBox spacing="20">
+                  <!-- Garder -->
+                  <VBox styleClass="rec-card keep">
+                     <Label styleClass="rec-title" text="✅ À GARDER"/>
+                     <Label fx:id="keepCountLabel" styleClass="rec-count" text="0"/>
+                     <Label fx:id="keepListLabel" styleClass="rec-list" text="Aucun"/>
+                  </VBox>
+                  
+                  <!-- Améliorer -->
+                  <VBox styleClass="rec-card improve">
+                     <Label styleClass="rec-title" text="⚠️ À AMÉLIORER"/>
+                     <Label fx:id="improveCountLabel" styleClass="rec-count" text="0"/>
+                     <Label fx:id="improveListLabel" styleClass="rec-list" text="Aucun"/>
+                  </VBox>
+                  
+                  <!-- Supprimer -->
+                  <VBox styleClass="rec-card delete">
+                     <Label styleClass="rec-title" text="🗑️ À SUPPRIMER"/>
+                     <Label fx:id="deleteCountLabel" styleClass="rec-count" text="0"/>
+                     <Label fx:id="deleteListLabel" styleClass="rec-list" text="Aucun"/>
+                  </VBox>
+               </HBox>
+            </VBox>
+
+            <!-- CHARTS SECTION -->
+            <HBox spacing="30">
+               <VBox styleClass="chart-card" HBox.hgrow="ALWAYS">
+                  <Label styleClass="section-title" text="Distribution des Scores"/>
+                  <BarChart fx:id="scoreChart" verticalGridLinesVisible="false" horizontalGridLinesVisible="false" legendVisible="false">
+                     <xAxis>
+                        <CategoryAxis label="Intervalles de Score" tickLabelFill="WHITE"/>
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis label="NB Défis" tickLabelFill="WHITE"/>
+                     </yAxis>
+                  </BarChart>
+               </VBox>
+               
+               <VBox styleClass="chart-card" HBox.hgrow="ALWAYS" maxWidth="350">
+                  <Label styleClass="section-title" text="Top 5 (Performance)"/>
+                  <PieChart fx:id="topChart" legendVisible="true" labelLineLength="10"/>
+               </VBox>
+            </HBox>
+
+            <!-- LAST UPDATE -->
+            <Label fx:id="lastUpdateAnalytics" styleClass="last-update" text="Analyse générée: maintenant"/>
+         </VBox>
+      </ScrollPane>
+   </center>
+</BorderPane>
+

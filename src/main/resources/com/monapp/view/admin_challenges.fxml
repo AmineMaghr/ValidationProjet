@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<BorderPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.AdminChallengesController" stylesheets="@admin_challenges.css">
+    <!-- LEFT SIDEBAR -->
+    <left>
+        <VBox styleClass="admin-sidebar">
+            <!-- Logo -->
+            <HBox styleClass="sidebar-logo" spacing="10" style="-fx-padding: 20; -fx-border-color: #2A3139; -fx-border-width: 0 0 1 0;">
+                <Label styleClass="logo-icon" text="⚡"/>
+                <Label styleClass="logo-text" text="Midgar Admin"/>
+            </HBox>
+
+            <!-- Navigation Menu -->
+            <VBox fx:id="sidebarMenu" spacing="5" style="-fx-padding: 20 0;">
+                <Button styleClass="nav-link" text="👥 Utilisateurs" onAction="#navigateTo"/>
+                <Button styleClass="nav-link" text="❓ Quiz" onAction="#navigateTo"/>
+                <Button styleClass="nav-link" text="🛍 Shop" onAction="#navigateTo"/>
+                <Button styleClass="nav-link,active" text="🏆 Défis" onAction="#navigateTo"/>
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <ScrollPane styleClass="scroll-pane" fitToWidth="true">
+            <VBox styleClass="admin-content" spacing="25">
+                <VBox.margin><Insets top="30" right="40" bottom="30" left="40"/></VBox.margin>
+
+                <!-- PAGE HEADER -->
+                <VBox spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label styleClass="page-title" text="🏆"/>
+                        <Label styleClass="page-title" text="Gestion des défis"/>
+                    </HBox>
+                    <Label styleClass="page-subtitle" text="Créez et gérez les défis de la plateforme"/>
+                </VBox>
+
+                <!-- STATISTICS CARDS -->
+                <HBox spacing="20" style="-fx-wrap-text: true;">
+                    <!-- Total Défis -->
+                    <VBox styleClass="stat-card" spacing="10" style="-fx-padding: 20; -fx-min-width: 200;">
+                        <Label styleClass="stat-icon" text="🚩"/>
+                        <Label styleClass="stat-title" text="TOTAL DÉFIS"/>
+                        <Label styleClass="stat-value" fx:id="totalDefisLabel" text="0"/>
+                    </VBox>
+
+                    <!-- Défis Actifs -->
+                    <VBox styleClass="stat-card" spacing="10" style="-fx-padding: 20; -fx-min-width: 200;">
+                        <Label styleClass="stat-icon" text="▶"/>
+                        <Label styleClass="stat-title" text="DÉFIS ACTIFS"/>
+                        <Label styleClass="stat-value" fx:id="activeDefisLabel" text="0"/>
+                    </VBox>
+
+                    <!-- Participants -->
+                    <VBox styleClass="stat-card" spacing="10" style="-fx-padding: 20; -fx-min-width: 200;">
+                        <Label styleClass="stat-icon" text="👥"/>
+                        <Label styleClass="stat-title" text="PARTICIPANTS"/>
+                        <Label styleClass="stat-value" fx:id="participantsLabel" text="0"/>
+                    </VBox>
+                </HBox>
+
+                <!-- STATUS SUMMARY -->
+                <HBox spacing="20">
+                    <!-- Ouverts -->
+                    <VBox styleClass="status-card-open" spacing="15" style="-fx-padding: 20; -fx-min-width: 250;">
+                        <HBox spacing="15">
+                            <VBox styleClass="status-icon-open" style="-fx-pref-width: 50; -fx-pref-height: 50; -fx-alignment: CENTER;">
+                                <Label text="▶" style="-fx-text-fill: #000; -fx-font-size: 16;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label styleClass="status-label-open" text="OUVERTS"/>
+                                <Label styleClass="status-count" fx:id="openCountLabel" text="0"/>
+                            </VBox>
+                        </HBox>
+                        <ProgressBar fx:id="openProgressBar" style="-fx-pref-height: 4;"/>
+                    </VBox>
+
+                    <!-- Fermés -->
+                    <VBox styleClass="status-card-closed" spacing="15" style="-fx-padding: 20; -fx-min-width: 250;">
+                        <HBox spacing="15">
+                            <VBox styleClass="status-icon-closed" style="-fx-pref-width: 50; -fx-pref-height: 50; -fx-alignment: CENTER;">
+                                <Label text="✓" style="-fx-text-fill: #fff; -fx-font-size: 16;"/>
+                            </VBox>
+                            <VBox spacing="5">
+                                <Label styleClass="status-label-closed" text="FERMÉS"/>
+                                <Label styleClass="status-count" fx:id="closedCountLabel" text="0"/>
+                            </VBox>
+                        </HBox>
+                        <ProgressBar fx:id="closedProgressBar" style="-fx-pref-height: 4;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- CHARTS SECTION -->
+                <HBox spacing="20" style="-fx-wrap-text: true;">
+                    <!-- Status Chart -->
+                    <VBox styleClass="chart-card" spacing="10" style="-fx-padding: 15; -fx-min-width: 350; -fx-pref-height: 300;">
+                        <Label styleClass="chart-title" text="📊 Statut des défis"/>
+                        <PieChart fx:id="statusChart" style="-fx-pref-height: 250;"/>
+                    </VBox>
+
+                    <!-- Evolution Chart -->
+                    <VBox styleClass="chart-card" spacing="10" style="-fx-padding: 15; -fx-min-width: 350; -fx-pref-height: 300;">
+                        <Label styleClass="chart-title" text="📈 Évolution des participations"/>
+                        <LineChart fx:id="evolutionChart" style="-fx-pref-height: 250;">
+                            <xAxis>
+                                <CategoryAxis label="Mois"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Participations"/>
+                            </yAxis>
+                        </LineChart>
+                    </VBox>
+                </HBox>
+
+                <!-- CREATE SECTION -->
+<HBox spacing="15">
+                    <Button styleClass="create-btn" text="➕ Créer un nouveau défi" onAction="#toggleForm"/>
+                    <Button fx:id="aiGenerateButton" styleClass="btn-ai" text="✨ Générer avec IA" onAction="#generateWithAI"/>
+                    <Button fx:id="analyticsButton" styleClass="btn-analytics" text="🔍 Analyser Performance" onAction="#analyzePerformance"/>
+                    <Button fx:id="backToDefisBtn" styleClass="btn-secondary" text="← Retour Défis" onAction="#goBackToDefis"/>
+                </HBox>
+
+                <!-- AI LOADING OVERLAY -->
+                <StackPane fx:id="aiLoadingOverlay" visible="false" managed="false" styleClass="ai-loading-overlay">
+                    <VBox alignment="CENTER" spacing="20" styleClass="ai-loading-box">
+                        <Label text="🤖" styleClass="ai-loading-icon"/>
+                        <Label fx:id="aiLoadingText" text="L'IA réfléchit..." styleClass="ai-loading-text"/>
+                        <ProgressIndicator styleClass="ai-loading-spinner"/>
+                    </VBox>
+                </StackPane>
+
+                <!-- DIFFICULTY LOADING OVERLAY -->
+                <StackPane fx:id="difficultyLoadingOverlay" visible="false" managed="false" styleClass="difficulty-loading-overlay">
+                    <VBox alignment="CENTER" spacing="20" styleClass="difficulty-loading-box">
+                        <Label text="🤖" styleClass="difficulty-ai-icon"/>
+                        <Label text="Analyse de la difficulté..." styleClass="difficulty-loading-text"/>
+                        <ProgressIndicator styleClass="difficulty-loading-spinner"/>
+                    </VBox>
+                </StackPane>
+
+                <!-- CREATE/EDIT FORM -->
+                <VBox fx:id="formContainer" styleClass="form-card" spacing="15" style="-fx-padding: 25; -fx-border-color: #3A424A; -fx-border-width: 1; -fx-display: none;">
+                    <!-- Form Header -->
+                    <HBox spacing="15" style="-fx-padding: 0 0 15 0; -fx-border-color: #3A424A; -fx-border-width: 0 0 1 0;">
+                        <Label text="➕" style="-fx-text-fill: #18E3A4; -fx-font-size: 20;"/>
+                        <VBox spacing="3">
+                            <Label styleClass="form-title" text="Nouveau défi"/>
+                            <Label styleClass="form-subtitle" text="Remplissez les informations du défi"/>
+                        </VBox>
+                     </HBox>
+
+                    <!-- Form Fields -->
+                    <GridPane hgap="15" vgap="15" style="-fx-padding: 0;">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+
+                        <!-- Title -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label styleClass="form-label" text="📝 Titre"/>
+                            <TextField fx:id="titreField" styleClass="form-control" promptText="Ex: Défi Éco-Responsable"/>
+                        </VBox>
+
+                        <!-- Theme -->
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <Label styleClass="form-label" text="🎨 Thème"/>
+                            <TextField fx:id="themeField" styleClass="form-control" promptText="Ex: Environnement, Santé..."/>
+                        </VBox>
+
+                        <!-- Date Start -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <Label styleClass="form-label" text="📅 Date début"/>
+                            <DatePicker fx:id="dateDebutPicker" styleClass="form-control"/>
+                        </VBox>
+
+                        <!-- Date End -->
+                        <VBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <Label styleClass="form-label" text="⏹ Date fin"/>
+                            <DatePicker fx:id="dateFinPicker" styleClass="form-control"/>
+                        </VBox>
+                    </GridPane>
+
+                    <!-- Description -->
+                    <VBox spacing="8">
+                        <Label styleClass="form-label" text="📖 Description"/>
+                        <TextArea fx:id="descriptionArea" styleClass="form-control" promptText="Décrivez le défi en détail..." wrapText="true" prefRowCount="4"/>
+                    </VBox>
+
+                    <!-- Status and Image -->
+                    <GridPane hgap="15" vgap="15" style="-fx-padding: 0;">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+
+                        <!-- Status -->
+                        <VBox spacing="8" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                            <Label styleClass="form-label" text="🔄 Statut"/>
+                            <ComboBox fx:id="statusCombo" styleClass="form-control" promptText="Sélectionner un statut"/>
+                        </VBox>
+
+                        <!-- Difficulte -->
+                        <HBox spacing="8" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                            <VBox spacing="8">
+                                <Label styleClass="form-label" text="⚡ Difficulté"/>
+                                <ComboBox fx:id="difficulteCombo" styleClass="form-control" promptText="Sélectionner une difficulté"/>
+                            </VBox>
+                            <Button fx:id="generateDifficultyButton" styleClass="btn-difficulty" text="🎲 Générer difficulté" onAction="#generateRandomDifficulty"/>
+                        </HBox>
+                    </GridPane>
+
+                    <!-- Buttons -->
+                    <HBox spacing="10">
+                        <Button fx:id="createButton" styleClass="btn-primary" text="✅ Créer le défi" onAction="#createDefi"/>
+                        <Button styleClass="btn-secondary" text="Annuler" onAction="#toggleForm"/>
+                    </HBox>
+                </VBox>
+
+                <!-- DEFIS TABLE -->
+                <VBox fx:id="tableContainer" spacing="15">
+                    <!-- Table Header -->
+                    <HBox alignment="CENTER_LEFT" spacing="15">
+                        <Label text="🏆" style="-fx-font-size: 18; -fx-text-fill: #18E3A4;"/>
+                        <Label styleClass="table-header" text="Liste des défis"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="defi-count" fx:id="defiCountLabel" text="0 défi(s)"/>
+                    </HBox>
+
+                    <!-- Table -->
+                    <TableView fx:id="defisTable" style="-fx-font-family: 'Segoe UI'; -fx-font-size: 11;" prefHeight="400">
+                        <columns>
+                            <TableColumn text="ID" prefWidth="50" editable="false"/>
+                            <TableColumn text="Titre" prefWidth="150" editable="false"/>
+                            <TableColumn text="Thème" prefWidth="120" editable="false"/>
+                            <TableColumn text="Début" prefWidth="100" editable="false"/>
+                            <TableColumn text="Fin" prefWidth="100" editable="false"/>
+                            <TableColumn text="Participants" prefWidth="100" editable="false"/>
+                            <TableColumn text="Difficulté" prefWidth="100" editable="false"/>
+                            <TableColumn text="Statut" prefWidth="100" editable="false"/>
+                            <TableColumn text="Actions" prefWidth="150" editable="false"/>
+                        </columns>
+                    </TableView>
+
+                    <!-- Table Footer -->
+                    <HBox spacing="20" style="-fx-padding: 10 0 0 0; -fx-border-color: #2A3139; -fx-border-width: 1 0 0 0;">
+                        <Label styleClass="table-footer" fx:id="tableFooterLabel" text="Affichage de 0 défi(s)"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label styleClass="table-footer" fx:id="lastUpdateLabel" text="Dernière mise à jour: maintenant"/>
+                    </HBox>
+                </VBox>
+
+                <!-- EMPTY STATE -->
+                <VBox fx:id="emptyState" spacing="15" alignment="CENTER" visible="false" managed="false">
+                    <VBox style="-fx-alignment: CENTER;">
+                        <Label text="🏆" style="-fx-font-size: 50; -fx-text-fill: rgba(26,31,30,0.5);"/>
+                    </VBox>
+                    <Label styleClass="empty-title" text="Aucun défi trouvé"/>
+                    <Label styleClass="empty-subtitle" text="Commencez votre premier défi créatif !"/>
+                    <Button styleClass="create-first-btn" text="🚀 Créer mon premier défi" onAction="#toggleForm"/>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+</BorderPane>
