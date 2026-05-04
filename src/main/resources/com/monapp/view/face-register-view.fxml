@@ -2,56 +2,58 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.text.*?>
-<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.media.MediaView?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.app.controllers.FaceRegisterController"
             style="-fx-background-color: #0a0c10;">
 
-    <StackPane AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" 
-               AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
-        <Rectangle width="1920" height="1080" 
-                   style="-fx-fill: linear-gradient(to bottom, #0a0f0e, #1a1f1e);"/>
-    </StackPane>
+    <VBox alignment="CENTER" spacing="15"
+          AnchorPane.topAnchor="0"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0">
 
-    <VBox style="-fx-background-color: rgba(0,0,0,0.75); 
-                 -fx-border-color: rgba(24,227,164,0.2); -fx-border-width: 0 0 1 0;"
-          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-        <padding><Insets top="12" right="40" bottom="12" left="40"/></padding>
-        <HBox spacing="8" alignment="CENTER_LEFT">
-            <Text text="MIDGAR" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-fill: #18E3A4;"/>
+        <Label text="ENREGISTREMENT FACIAL"
+               style="-fx-text-fill: #18E3A4;
+                      -fx-font-size: 22px;
+                      -fx-font-weight: bold;"/>
+
+        <!-- VIDEO AU LIEU DE CAMERA -->
+        <StackPane prefWidth="640" prefHeight="480"
+                   style="-fx-background-color: #000;
+                          -fx-background-radius: 15;
+                          -fx-border-color: #18E3A4;
+                          -fx-border-width: 2;">
+
+            <MediaView fx:id="videoView"
+                       fitWidth="640"
+                       fitHeight="480"
+                       preserveRatio="true"/>
+        </StackPane>
+
+        <Label fx:id="statusLabel"
+               text="Initialisation..."
+               style="-fx-text-fill: white;"/>
+
+        <HBox spacing="15" alignment="CENTER">
+
+            <Button text="🎥 Démarrer"
+                    onAction="#startCamera"/>
+
+            <Button fx:id="captureBtn"
+                    text="📸 Capturer"
+                    onAction="#capture"
+                    disable="true"/>
+
+            <Button fx:id="saveBtn"
+                    text="💾 Enregistrer"
+                    onAction="#save"
+                    disable="true"/>
+
         </HBox>
+
     </VBox>
 
-    <VBox alignment="CENTER" spacing="20" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" 
-          AnchorPane.topAnchor="70" AnchorPane.bottomAnchor="0">
-        
-        <VBox alignment="CENTER" spacing="15" style="-fx-padding: 30; -fx-background-color: rgba(26,31,30,0.6); -fx-background-radius: 24;">
-            <Label text="ENREGISTREMENT FACIAL" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
-            
-            <Label text="Placez-vous face a la camera et capturez votre visage 5 fois" 
-                   style="-fx-text-fill: #B0B9B6; -fx-font-size: 14px;"/>
-            
-            <ImageView fx:id="cameraPreview" fitWidth="640" fitHeight="480" 
-                      style="-fx-background-color: #0a0c10; -fx-background-radius: 15; -fx-border-color: #18E3A4; -fx-border-radius: 15; -fx-border-width: 2;"/>
-            
-            <Label fx:id="statusLabel" style="-fx-text-fill: #B0B9B6; -fx-font-size: 14px;" text="Initialisation..."/>
-            <Label fx:id="captureCountLabel" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;" visible="false"/>
-            
-            <ProgressIndicator fx:id="progressIndicator" visible="false"/>
-            
-            <HBox spacing="15">
-                <Button fx:id="startCameraBtn" text="ACTIVER LA CONFIGURATION"
-                        style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; -fx-font-weight: bold; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                <Button fx:id="registerFaceBtn" text="ENREGISTRER" visible="false" managed="false"
-                        style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 12 30; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                <Button text="RETOUR" onAction="#goProfile"
-                        style="-fx-background-color: transparent; -fx-border-color: #6a7a8a; -fx-text-fill: #6a7a8a; -fx-padding: 12 30; -fx-border-radius: 25; -fx-cursor: hand;"/>
-            </HBox>
-        </VBox>
-    </VBox>
 </AnchorPane>

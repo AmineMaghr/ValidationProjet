@@ -227,4 +227,9 @@ public List<User> getUsersWithFaceDescriptors() {
             e.printStackTrace();
         }
     }
+
+    public boolean deleteUserById(int id, String password) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'deleteUserById'");
+    }
 }

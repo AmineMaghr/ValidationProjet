@@ -542,4 +542,24 @@ public boolean updateFaceDescriptor(int userId, String faceDescriptor) {
         return false;
     }
 }
+// ================= FACE LABEL =================
+
+public User findByFaceLabel(int label) {
+    String sql = "SELECT * FROM user WHERE face_label = ?";
+
+    try (PreparedStatement ps = connection.prepareStatement(sql)) {
+        ps.setInt(1, label);
+
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            return mapResultSet(rs);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+
+    return null;
+}
 }

@@ -171,4 +171,5 @@ public abstract class BaseController {
             System.err.println("Erreur d'affichage d'erreur: " + e.getMessage());
         }
     }
+    
 }
