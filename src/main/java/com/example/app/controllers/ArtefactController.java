@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-// Constantes de validation
-class ValidationConstants {
+class ArtefactValidationConstants {
     public static final int MAX_SEARCH_LENGTH = 100;
     public static final Pattern SAFE_INPUT_PATTERN = Pattern.compile("^[a-zA-Z0-9\\sÀ-ÿ_-]*$");
 }
@@ -41,7 +40,6 @@ public class ArtefactController extends BaseController {
     @FXML
     private Label resultCountLabel;
 
-    // Header search elements
     @FXML
     private TextField searchInput;
     @FXML
@@ -56,7 +54,6 @@ public class ArtefactController extends BaseController {
         loadArtefacts();
         loadTypes();
 
-        // Ajouter des listeners pour les filtres
         if (searchField != null) {
             searchField.textProperty().addListener((obs, old, newVal) -> filterArtefacts());
         }
@@ -67,61 +64,17 @@ public class ArtefactController extends BaseController {
             myItemsCheckbox.selectedProperty().addListener((obs, old, newVal) -> filterArtefacts());
         }
 
-        // ⭐ Contrôles de saisie - Limiter la longueur du champ de recherche
         if (searchField != null) {
             searchField.textProperty().addListener((obs, oldVal, newVal) -> {
-                if (newVal != null && newVal.length() > ValidationConstants.MAX_SEARCH_LENGTH) {
+                if (newVal != null && newVal.length() > ArtefactValidationConstants.MAX_SEARCH_LENGTH) {
                     searchField.setText(oldVal);
-                    showValidationError("La recherche ne peut pas dépasser " + ValidationConstants.MAX_SEARCH_LENGTH
-                            + " caractères");
+                    showValidationError("La recherche ne peut pas dépasser " 
+                        + ArtefactValidationConstants.MAX_SEARCH_LENGTH + " caractères");
                 }
             });
         }
     }
 
-    // ⭐ MÉTHODES DE VALIDATION DE SAISIE ⭐
-
-    /**
-     * Valide le texte de recherche
-     * 
-     * @return true si valide, false sinon
-     */
-    private boolean validateSearchInput(String searchText) {
-        if (searchText == null) {
-            return true; // Null est acceptable (pas de filtre)
-        }
-
-        // Vérifier la longueur
-        if (searchText.length() > ValidationConstants.MAX_SEARCH_LENGTH) {
-            showValidationError(
-                    "La recherche ne peut pas dépasser " + ValidationConstants.MAX_SEARCH_LENGTH + " caractères");
-            return false;
-        }
-
-        // Vérifier les caractères autorisés
-        if (!ValidationConstants.SAFE_INPUT_PATTERN.matcher(searchText).matches()) {
-            showValidationError("Caractères spéciaux non autorisés dans la recherche");
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Nettoie et valide l'entrée utilisateur
-     */
-    private String sanitizeInput(String input) {
-        if (input == null) {
-            return null;
-        }
-        // Supprimer les espaces multiples et trim
-        String sanitized = input.trim().replaceAll("\\s+", " ");
-        return sanitized;
-    }
-
-    /**
-     * Affiche une erreur de validation
-     */
     private void showValidationError(String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Validation");
@@ -130,9 +83,8 @@ public class ArtefactController extends BaseController {
         alert.showAndWait();
     }
 
-    // ⭐ FIN DES MÉTHODES DE VALIDATION ⭐
-
     private void loadArtefacts() {
+        System.out.println("=== [ARTEFACT] loadArtefacts() appelée ===");
         Task<List<Artefact>> task = new Task<List<Artefact>>() {
             @Override
             protected List<Artefact> call() throws Exception {
@@ -142,56 +94,46 @@ public class ArtefactController extends BaseController {
         task.setOnSucceeded(e -> {
             List<Artefact> artefacts = task.getValue();
             artefactList.setAll(artefacts);
-            filterArtefacts(); // ⭐ Appliquer les filtres après chargement
+            System.out.println("=== [ARTEFACT] " + artefacts.size() + " artefacts chargés");
+            filterArtefacts();
         });
         task.setOnFailed(e -> {
             Throwable ex = e.getSource().getException();
-            showAlert("Erreur", "Erreur lors du chargement: " + (ex != null ? ex.getMessage() : "Unknown"));
+            System.err.println("=== [ARTEFACT] Erreur: " + (ex != null ? ex.getMessage() : "Unknown"));
             ex.printStackTrace();
         });
         new Thread(task).start();
     }
 
-    // ⭐ NOUVELLE MÉTHODE POUR FILTRER LES ARTEFACTS ⭐
     private void filterArtefacts() {
-        String search = (searchField != null && searchField.getText() != null) ? searchField.getText().toLowerCase()
-                : "";
+        String search = (searchField != null && searchField.getText() != null) ? searchField.getText().toLowerCase() : "";
         String type = (typeFilter != null && typeFilter.getValue() != null) ? typeFilter.getValue() : "Tous";
         boolean myItems = (myItemsCheckbox != null) ? myItemsCheckbox.isSelected() : false;
 
-        // ⭐ Valider la saisie avant de filtrer
-        if (!validateSearchInput(searchField != null ? searchField.getText() : null)) {
-            return; // Ne pas filtrer si la validation échoue
-        }
-
-        // ⭐ Nettoyer la recherche
-        String cleanSearch = sanitizeInput(search);
-
-        // ⭐ Créer des variables effectively final pour le lambda
-        final String finalSearch = cleanSearch;
-        final String finalType = type;
-        final boolean finalMyItems = myItems;
+        System.out.println("=== [ARTEFACT] filterArtefacts - myItems=" + myItems + 
+                           ", userId=" + (UserSession.isLoggedIn() ? UserSession.getCurrentUserId() : "non connecté"));
 
         List<Artefact> filtered = artefactList.stream()
                 .filter(artefact -> {
-                    // Filtre par recherche (nom ou univers)
-                    if (!finalSearch.isEmpty()) {
-                        if (!artefact.getName().toLowerCase().contains(finalSearch) &&
-                                !artefact.getUniverse().toLowerCase().contains(finalSearch) &&
-                                !artefact.getOrigins().toLowerCase().contains(finalSearch)) {
+                    if (!search.isEmpty()) {
+                        if (!artefact.getName().toLowerCase().contains(search) &&
+                            !artefact.getUniverse().toLowerCase().contains(search) &&
+                            !artefact.getOrigins().toLowerCase().contains(search)) {
                             return false;
                         }
                     }
 
-                    // Filtre par type
-                    if (!finalType.equals("Tous") && !finalType.equals(artefact.getType())) {
+                    if (!type.equals("Tous") && !type.equals(artefact.getType())) {
                         return false;
                     }
 
-                    // Filtre "Mes artefacts"
-                    if (finalMyItems && UserSession.isLoggedIn()) {
-                        if (artefact.getCreatedBy() != null &&
-                                artefact.getCreatedBy().getId() != UserSession.getCurrentUserId()) {
+                    if (myItems && UserSession.isLoggedIn()) {
+                        int currentUserId = UserSession.getCurrentUserId();
+                        int artefactCreatorId = artefact.getCreatedBy() != null ? artefact.getCreatedBy().getId() : -1;
+                        System.out.println("  - Artefact: " + artefact.getName() + 
+                                           ", creatorId=" + artefactCreatorId + 
+                                           ", currentUserId=" + currentUserId);
+                        if (artefactCreatorId != currentUserId) {
                             return false;
                         }
                     }
@@ -200,23 +142,24 @@ public class ArtefactController extends BaseController {
                 })
                 .collect(Collectors.toList());
 
+        System.out.println("=== [ARTEFACT] " + filtered.size() + " artefacts après filtrage");
         displayArtefactsAsCards(filtered);
         updateStats(filtered);
         if (resultCountLabel != null) {
-            resultCountLabel.setText(filtered.size() + " artefact(s) trouvé(s)");
+            resultCountLabel.setText(filtered.size() + " artefact(s)");
         }
     }
 
     private void displayArtefactsAsCards(List<Artefact> artefacts) {
-        if (artefactGrid == null)
-            return;
+        if (artefactGrid == null) return;
 
         Platform.runLater(() -> {
             artefactGrid.getChildren().clear();
             for (Artefact artefact : artefacts) {
                 ArtefactCard card = new ArtefactCard(artefact, () -> {
                     currentArtefact = artefact;
-                    goToShowArtefact();
+                    setSelectedArtefactForShow(artefact);
+                    navigateTo("/artefact/show");
                 });
                 artefactGrid.getChildren().add(card);
             }
@@ -268,23 +211,20 @@ public class ArtefactController extends BaseController {
 
     @FXML
     private void search() {
-        filterArtefacts(); // ⭐ Appliquer les filtres
+        filterArtefacts();
     }
 
     @FXML
     private void resetFilters() {
-        if (searchField != null)
-            searchField.clear();
-        if (typeFilter != null)
-            typeFilter.setValue("Tous");
-        if (myItemsCheckbox != null)
-            myItemsCheckbox.setSelected(false);
-        filterArtefacts(); // ⭐ Rafraîchir après réinitialisation
+        if (searchField != null) searchField.clear();
+        if (typeFilter != null) typeFilter.setValue("Tous");
+        if (myItemsCheckbox != null) myItemsCheckbox.setSelected(false);
+        filterArtefacts();
     }
 
     @FXML
     private void toggleMyItems() {
-        filterArtefacts(); // ⭐ Appliquer le filtre
+        filterArtefacts();
     }
 
     private static Artefact selectedArtefactForShow;
@@ -303,30 +243,7 @@ public class ArtefactController extends BaseController {
     }
 
     @FXML
-    public void goToShowArtefact() {
-        if (currentArtefact != null) {
-            selectedArtefactForShow = currentArtefact;
-            navigateTo("/artefact/show");
-        } else {
-            showAlert("Erreur", "Veuillez sélectionner un artefact");
-        }
-    }
-
-    protected void showAlert(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.showAndWait();
-    }
-
-    public void refreshList() {
-        loadArtefacts();
-    }
-
-    @FXML
     public void toggleSearchBar() {
-        // Implement search bar toggle if needed
     }
 
     @FXML

@@ -14,28 +14,44 @@ import java.net.URL;
 public abstract class BaseController {
 
     @FXML
-    public void goAccueil() { navigateTo("/"); }
+    public void goAccueil() {
+        navigateTo("/");
+    }
 
     @FXML
-    public void goDiscover() { navigateTo("/discover"); }
+    public void goDiscover() {
+        navigateTo("/discover");
+    }
 
     @FXML
-    public void goUniverses() { navigateTo("/universes"); }
+    public void goUniverses() {
+        navigateTo("/universes");
+    }
 
     @FXML
-    public void goPersonnages() { navigateTo("/personnages"); }
+    public void goPersonnages() {
+        navigateTo("/personnages");
+    }
 
     @FXML
-    public void goOeuvres() { navigateTo("/oeuvre"); }
+    public void goOeuvres() {
+        navigateTo("/oeuvre");
+    }
 
     @FXML
-    public void goShop() { navigateTo("/shop"); }
+    public void goShop() {
+        navigateTo("/shop");
+    }
 
     @FXML
-    public void goChallenges() { navigateTo("/challenges"); }
+    public void goChallenges() {
+        navigateTo("/challenges");
+    }
 
     @FXML
-    public void lancerQuiz() { navigateTo("/quiz"); }
+    public void lancerQuiz() {
+        navigateTo("/quiz");
+    }
 
     @FXML
     public void goAdmin() {
@@ -47,16 +63,24 @@ public abstract class BaseController {
     }
 
     @FXML
-    public void goProfile() { navigateTo("/profile"); }
+    public void goProfile() {
+        navigateTo("/profile");
+    }
 
     @FXML
-    public void goLogin() { navigateTo("/login"); }
-    
+    public void goLogin() {
+        navigateTo("/login");
+    }
+
     @FXML
-    public void goArtefacts() { navigateTo("/artefact"); }
-    
+    public void goArtefacts() {
+        navigateTo("/artefact");
+    }
+
     @FXML
-    public void goRegister() { navigateTo("/register"); }
+    public void goRegister() {
+        navigateTo("/register");
+    }
 
     // ==================== MÉTHODE NAVIGATION STANDARD ====================
     protected void navigateTo(String view) {

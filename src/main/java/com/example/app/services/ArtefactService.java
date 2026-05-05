@@ -1,12 +1,7 @@
 package com.example.app.services;
 
-import com.example.app.entities.Artefact;
 import com.example.app.dao.ArtefactDAO;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import com.example.app.entities.Artefact;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,6 +16,21 @@ public class ArtefactService implements IService<Artefact> {
     @Override
     public void add(Artefact artefact) throws SQLException {
         artefactDAO.add(artefact);
+        
+        // ⭐ Envoyer la notification dans un thread séparé (non bloquant)
+        new Thread(() -> {
+            try {
+                System.out.println("=== [ARTEFACT] Nouvel artefact ajouté: " + artefact.getName());
+                NotificationService notificationService = new NotificationService();
+                notificationService.notifierNouvelArtefactParType(
+                    artefact.getName(),
+                    artefact.getType(),
+                    artefact.getCreatedBy() != null ? artefact.getCreatedBy().getId() : 1
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur notification: " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override
@@ -35,63 +45,89 @@ public class ArtefactService implements IService<Artefact> {
 
     @Override
     public List<Artefact> select() throws SQLException {
-        return artefactDAO.select();
-    }
-
-    public List<Artefact> findByType(String type) throws SQLException {
-        return artefactDAO.findByType(type);
+        List<Artefact> list = artefactDAO.select();
+        System.out.println("=== [ARTEFACT SERVICE] Total artefacts: " + list.size());
+        for (Artefact a : list) {
+            System.out.println("  - ID: " + a.getId() + ", Nom: " + a.getName() + 
+                               ", Creator ID: " + (a.getCreatedBy() != null ? a.getCreatedBy().getId() : "null"));
+        }
+        return list;
     }
 
     public Artefact findById(int id) throws SQLException {
         return artefactDAO.findById(id);
     }
 
-    public java.util.List<Artefact> searchArtefacts(String query, String type, Integer userId) throws SQLException {
-        return artefactDAO.select().stream()
-            .filter(a -> {
-                if (query != null && !query.isEmpty() &&
-                    !a.getName().toLowerCase().contains(query.toLowerCase()) &&
-                    !a.getOrigins().toLowerCase().contains(query.toLowerCase())) {
-                    return false;
-                }
-                if (type != null && !"Tous".equals(type) && !type.equals(a.getType())) {
-                    return false;
-                }
-                if (userId != null && a.getCreatedBy() != null && a.getCreatedBy().getId() != userId) {
-                    return false;
-                }
-                return true;
-            })
-            .collect(java.util.stream.Collectors.toList());
-    }
+    public List<Artefact> searchArtefacts(String search, String type, Integer userId) throws SQLException {
+        List<Artefact> allArtefacts = artefactDAO.select();
+        List<Artefact> filtered = new java.util.ArrayList<>();
 
-    public void saveImage(int id, File imageFile) throws Exception {
-        String uploadDir = "uploads/";
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+        System.out.println("=== [ARTEFACT SERVICE] searchArtefacts - userId: " + userId);
+        System.out.println("=== [ARTEFACT SERVICE] Total artefacts avant filtre: " + allArtefacts.size());
+
+        for (Artefact artefact : allArtefacts) {
+            boolean matches = true;
+
+            if (search != null && !search.trim().isEmpty()) {
+                String lowerSearch = search.toLowerCase();
+                boolean nameMatches = artefact.getName() != null && artefact.getName().toLowerCase().contains(lowerSearch);
+                boolean universeMatches = artefact.getUniverse() != null && artefact.getUniverse().toLowerCase().contains(lowerSearch);
+                if (!nameMatches && !universeMatches) {
+                    matches = false;
+                }
+            }
+
+            if (type != null && !type.trim().isEmpty() && !"Tous les types".equals(type)) {
+                if (artefact.getType() == null || !artefact.getType().equals(type)) {
+                    matches = false;
+                }
+            }
+
+            if (userId != null && userId > 0) {
+                int artefactCreatorId = artefact.getCreatedBy() != null ? artefact.getCreatedBy().getId() : -1;
+                if (artefactCreatorId != userId) {
+                    matches = false;
+                } else {
+                    System.out.println("  - Artefact match: " + artefact.getName() + " (Creator: " + artefactCreatorId + ")");
+                }
+            }
+
+            if (matches) {
+                filtered.add(artefact);
+            }
         }
 
-        String extension = getFileExtension(imageFile.getName());
-        String newFileName = "artefact_" + id + "_" + System.currentTimeMillis() + "." + extension;
-        Path targetPath = uploadPath.resolve(newFileName);
+        System.out.println("=== [ARTEFACT SERVICE] Artefacts après filtre: " + filtered.size());
+        return filtered;
+    }
 
-        Files.copy(imageFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
+    public List<String> getAvailableTypes() throws SQLException {
+        List<Artefact> artefacts = artefactDAO.select();
+        List<String> types = new java.util.ArrayList<>();
+        for (Artefact artefact : artefacts) {
+            if (artefact.getType() != null && !artefact.getType().trim().isEmpty() && !types.contains(artefact.getType())) {
+                types.add(artefact.getType());
+            }
+        }
+        return types;
+    }
 
-        String imageUrl = targetPath.toAbsolutePath().toString();
-
-        Artefact artefact = artefactDAO.findById(id);
+    public void saveImage(int artefactId, java.io.File imageFile) throws Exception {
+        String uploadsDir = "uploads/artefacts";
+        java.io.File dir = new java.io.File(uploadsDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        
+        String extension = imageFile.getName().substring(imageFile.getName().lastIndexOf("."));
+        String fileName = "artefact_" + artefactId + "_" + System.currentTimeMillis() + extension;
+        java.io.File destFile = new java.io.File(dir, fileName);
+        java.nio.file.Files.copy(imageFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+        
+        Artefact artefact = findById(artefactId);
         if (artefact != null) {
-            artefact.setImageUrl(imageUrl);
-            artefactDAO.update(artefact);
+            artefact.setImageUrl(destFile.getAbsolutePath());
+            update(artefact);
         }
-    }
-
-    private String getFileExtension(String fileName) {
-        int lastDot = fileName.lastIndexOf(".");
-        if (lastDot > 0) {
-            return fileName.substring(lastDot + 1);
-        }
-        return "png";
     }
 }

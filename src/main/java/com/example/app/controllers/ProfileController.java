@@ -3,9 +3,11 @@ package com.example.app.controllers;
 import com.example.app.entities.User;
 import com.example.app.entities.Oeuvre;
 import com.example.app.entities.Artefact;
+import com.example.app.entities.Favoris;
 import com.example.app.services.UserService;
 import com.example.app.services.OeuvreService;
 import com.example.app.services.ArtefactService;
+import com.example.app.services.FavorisService;
 import com.example.app.utils.UserSession;
 import com.example.app.views.OeuvreCard;
 import com.example.app.views.ArtefactCard;
@@ -13,19 +15,17 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
-import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileController extends BaseController {
@@ -51,22 +51,23 @@ public class ProfileController extends BaseController {
     private UserService userService;
     private OeuvreService oeuvreService;
     private ArtefactService artefactService;
+    private FavorisService favorisService;
     private User currentUser;
-    private boolean isOwner;
     
     @FXML
     public void initialize() {
         userService = new UserService();
         oeuvreService = new OeuvreService();
         artefactService = new ArtefactService();
+        favorisService = new FavorisService();
         
         currentUser = UserSession.getCurrentUser();
-        isOwner = true;
         
         loadProfileData();
         setupTabs();
+        
         if (adminBtn != null) {
-            adminBtn.setVisible(true);
+            adminBtn.setVisible(UserSession.isAdmin());
         }
     }
     
@@ -214,6 +215,7 @@ public class ProfileController extends BaseController {
     }
 
     private void loadUserCreations() {
+        // Charger les œuvres
         Task<List<Oeuvre>> oeuvreTask = new Task<>() {
             @Override
             protected List<Oeuvre> call() throws Exception {
@@ -226,10 +228,14 @@ public class ProfileController extends BaseController {
                 oeuvresCountLabel.setText(String.valueOf(oeuvres.size()));
             }
             displayOeuvresAsCards(oeuvres, oeuvresGrid);
+            System.out.println("=== [PROFILE] Œuvres chargées: " + oeuvres.size());
         });
-        oeuvreTask.setOnFailed(e -> System.err.println("Erreur chargement œuvres: " + e.getSource().getException()));
+        oeuvreTask.setOnFailed(e -> {
+            System.err.println("Erreur chargement œuvres: " + e.getSource().getException());
+        });
         new Thread(oeuvreTask).start();
         
+        // Charger les artefacts
         Task<List<Artefact>> artefactTask = new Task<>() {
             @Override
             protected List<Artefact> call() throws Exception {
@@ -242,13 +248,91 @@ public class ProfileController extends BaseController {
                 artefactsCountLabel.setText(String.valueOf(artefacts.size()));
             }
             displayArtefactsAsCards(artefacts, artefactsGrid);
+            System.out.println("=== [PROFILE] Artefacts chargés: " + artefacts.size());
         });
-        artefactTask.setOnFailed(e -> System.err.println("Erreur chargement artefacts: " + e.getSource().getException()));
+        artefactTask.setOnFailed(e -> {
+            System.err.println("Erreur chargement artefacts: " + e.getSource().getException());
+            e.getSource().getException().printStackTrace();
+        });
         new Thread(artefactTask).start();
     }
     
     private void loadUserFavorites() {
-        favoritesCountLabel.setText("0");
+        int userId = currentUser.getId();
+
+        Task<List<Oeuvre>> favOeuvreTask = new Task<>() {
+            @Override
+            protected List<Oeuvre> call() throws Exception {
+                List<Oeuvre> favorites = new ArrayList<>();
+                try {
+                    List<Favoris> favList = favorisService.getUserFavoriteOeuvres(userId);
+                    System.out.println("=== [FAVORIS] Œuvres favorites trouvées: " + favList.size());
+                    for (Favoris fav : favList) {
+                        System.out.println("  - fav.getOeuvreId() = " + fav.getOeuvreId());
+                        Oeuvre oeuvre = oeuvreService.findById(fav.getOeuvreId());
+                        if (oeuvre != null) {
+                            favorites.add(oeuvre);
+                            System.out.println("    → Œuvre ajoutée: " + oeuvre.getTitle());
+                        } else {
+                            System.out.println("    → Œuvre NON trouvée pour ID: " + fav.getOeuvreId());
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return favorites;
+            }
+        };
+        favOeuvreTask.setOnSucceeded(e -> {
+            List<Oeuvre> favOeuvres = favOeuvreTask.getValue();
+            if (favoriteOeuvresGrid != null) {
+                displayOeuvresAsCards(favOeuvres, favoriteOeuvresGrid);
+            }
+            updateTotalFavoritesCount();
+        });
+        new Thread(favOeuvreTask).start();
+
+        Task<List<Artefact>> favArtefactTask = new Task<>() {
+            @Override
+            protected List<Artefact> call() throws Exception {
+                List<Artefact> favorites = new ArrayList<>();
+                try {
+                    List<Favoris> favList = favorisService.getUserFavoriteArtefacts(userId);
+                    System.out.println("=== [FAVORIS] Artefacts favoris trouvés: " + favList.size());
+                    for (Favoris fav : favList) {
+                        System.out.println("  - fav.getArtefactId() = " + fav.getArtefactId());
+                        Artefact artefact = artefactService.findById(fav.getArtefactId());
+                        if (artefact != null) {
+                            favorites.add(artefact);
+                            System.out.println("    → Artefact ajouté: " + artefact.getName());
+                        } else {
+                            System.out.println("    → Artefact NON trouvé pour ID: " + fav.getArtefactId());
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return favorites;
+            }
+        };
+        favArtefactTask.setOnSucceeded(e -> {
+            List<Artefact> favArtefacts = favArtefactTask.getValue();
+            if (favoriteArtefactsGrid != null) {
+                displayArtefactsAsCards(favArtefacts, favoriteArtefactsGrid);
+            }
+            updateTotalFavoritesCount();
+        });
+        new Thread(favArtefactTask).start();
+    }
+    
+    private void updateTotalFavoritesCount() {
+        try {
+            int total = favorisService.getUserFavoriteOeuvres(currentUser.getId()).size() +
+                        favorisService.getUserFavoriteArtefacts(currentUser.getId()).size();
+            favoritesCountLabel.setText(String.valueOf(total));
+        } catch (SQLException e) {
+            favoritesCountLabel.setText("0");
+        }
     }
     
     private void displayOeuvresAsCards(List<Oeuvre> oeuvres, TilePane grid) {
@@ -334,6 +418,11 @@ public class ProfileController extends BaseController {
         
         TextField emailField = new TextField(currentUser.getEmail());
         emailField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
+        
+        TextArea bioArea = new TextArea(currentUser.getBio());
+        bioArea.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
+        bioArea.setPrefRowCount(3);
+        bioArea.setWrapText(true);
 
         Button changeAvatarBtn = new Button("Changer l'avatar");
         changeAvatarBtn.setStyle("-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;");
@@ -349,10 +438,12 @@ public class ProfileController extends BaseController {
         grid.add(nomField, 1, 2);
         grid.add(new Label("Email:"), 0, 3);
         grid.add(emailField, 1, 3);
-        grid.add(new Label("Avatar:"), 0, 4);
+        grid.add(new Label("Bio:"), 0, 4);
+        grid.add(bioArea, 1, 4);
+        grid.add(new Label("Avatar:"), 0, 5);
 
         VBox avatarBox = new VBox(5, changeAvatarBtn, avatarStatus);
-        grid.add(avatarBox, 1, 4);
+        grid.add(avatarBox, 1, 5);
         
         for (javafx.scene.Node node : grid.getChildren()) {
             if (node instanceof Label) {
@@ -383,6 +474,7 @@ public class ProfileController extends BaseController {
                 currentUser.setPrenom(prenomField.getText());
                 currentUser.setNom(nomField.getText());
                 currentUser.setEmail(emailField.getText());
+                currentUser.setBio(bioArea.getText());
 
                 if (selectedAvatarFile[0] != null) {
                     try {
@@ -534,6 +626,38 @@ public class ProfileController extends BaseController {
         navigateTo("/");
     }
 
+    @FXML
+    private void openSettings() {
+        // Créer un dialog pour les paramètres
+        Dialog<ButtonType> settingsDialog = new Dialog<>();
+        settingsDialog.setTitle("Paramètres");
+        settingsDialog.setHeaderText("Paramètres du compte");
+        
+        ButtonType passwordButtonType = new ButtonType("Changer le mot de passe", ButtonBar.ButtonData.OTHER);
+        ButtonType deleteButtonType = new ButtonType("Supprimer le compte", ButtonBar.ButtonData.OTHER);
+        ButtonType closeButtonType = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        settingsDialog.getDialogPane().getButtonTypes().addAll(passwordButtonType, deleteButtonType, closeButtonType);
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-background-color: #11161c;");
+        
+        Label infoLabel = new Label("Options de gestion de compte");
+        infoLabel.setStyle("-fx-text-fill: #b0b9b6; -fx-font-size: 14px;");
+        
+        content.getChildren().add(infoLabel);
+        settingsDialog.getDialogPane().setContent(content);
+        settingsDialog.getDialogPane().setStyle("-fx-background-color: #0a0c10;");
+        
+        settingsDialog.showAndWait().ifPresent(response -> {
+            if (response == passwordButtonType) {
+                handleChangePassword();
+            } else if (response == deleteButtonType) {
+                handleDeleteAccount();
+            }
+        });
+    }
+
     protected void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -541,6 +665,7 @@ public class ProfileController extends BaseController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    
     // ================= FACE RECOGNITION METHODS =================
     @FXML
     public void goToFaceRegister() {
@@ -553,12 +678,8 @@ public class ProfileController extends BaseController {
         navigateTo("/face-register", UserSession.getCurrentUser());
     }
 
-@FXML
-public void goToFaceLogin() {
-    navigateTo("/face-login");
-}
-@FXML
-private void openSettings() {
-    showAlert("Paramètres", "Fonctionnalité à venir - Paramètres du compte");
-}
+    @FXML
+    public void goToFaceLogin() {
+        navigateTo("/face-login");
+    }
 }

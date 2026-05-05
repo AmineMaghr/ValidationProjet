@@ -1,15 +1,9 @@
 package com.example.app.services;
 
-import com.example.app.entities.Oeuvre;
 import com.example.app.dao.OeuvreDAO;
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import com.example.app.entities.Oeuvre;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OeuvreService implements IService<Oeuvre> {
 
@@ -22,6 +16,21 @@ public class OeuvreService implements IService<Oeuvre> {
     @Override
     public void add(Oeuvre oeuvre) throws SQLException {
         oeuvreDAO.add(oeuvre);
+        
+        // ⭐ Envoyer la notification dans un thread séparé (non bloquant)
+        new Thread(() -> {
+            try {
+                System.out.println("=== [OEUVRE] Nouvelle œuvre ajoutée: " + oeuvre.getTitle());
+                NotificationService notificationService = new NotificationService();
+                notificationService.notifierNouvelleOeuvreParType(
+                    oeuvre.getTitle(),
+                    oeuvre.getType(),
+                    oeuvre.getCreateurId()
+                );
+            } catch (Exception e) {
+                System.err.println("Erreur notification: " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override
@@ -39,46 +48,51 @@ public class OeuvreService implements IService<Oeuvre> {
         return oeuvreDAO.select();
     }
 
-    public List<Oeuvre> searchOeuvres(String search, String type, Integer userId) throws SQLException {
-        return oeuvreDAO.searchOeuvres(search, type, userId);
+    public Oeuvre findById(int id) throws SQLException {
+        return oeuvreDAO.findById(id);
+    }
+    
+    public List<Oeuvre> getCreationsRecentes() throws SQLException {
+        return oeuvreDAO.select();
     }
 
-    public List<Oeuvre> getCreationsRecentes() throws SQLException {
-        return oeuvreDAO.select().stream().limit(4).collect(Collectors.toList());
+    public List<Oeuvre> searchOeuvres(String search, String type, Integer userId) throws SQLException {
+        System.out.println("=== [OEUVRE SERVICE] searchOeuvres - userId: " + userId);
+        if (userId != null) {
+            List<Oeuvre> all = oeuvreDAO.select();
+            List<Oeuvre> filtered = all.stream()
+                    .filter(o -> o.getCreateurId() == userId)
+                    .collect(java.util.stream.Collectors.toList());
+            System.out.println("=== [OEUVRE SERVICE] " + filtered.size() + " œuvres pour userId " + userId);
+            return filtered;
+        }
+        return oeuvreDAO.select();
     }
 
     public List<String> getAvailableTypes() throws SQLException {
-        return oeuvreDAO.getAvailableTypes();
+        List<Oeuvre> all = oeuvreDAO.select();
+        return all.stream()
+                .map(Oeuvre::getType)
+                .distinct()
+                .toList();
     }
 
-    public void saveImage(int id, File imageFile) throws Exception {
-        String uploadDir = "uploads/";
-        Path uploadPath = Paths.get(uploadDir);
-        if (!Files.exists(uploadPath)) {
-            Files.createDirectories(uploadPath);
+    public void saveImage(int oeuvreId, java.io.File imageFile) throws Exception {
+        String uploadsDir = "uploads/oeuvres";
+        java.io.File dir = new java.io.File(uploadsDir);
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
         
-        String extension = getFileExtension(imageFile.getName());
-        String newFileName = "oeuvre_" + id + "_" + System.currentTimeMillis() + "." + extension;
-        Path targetPath = uploadPath.resolve(newFileName);
+        String extension = imageFile.getName().substring(imageFile.getName().lastIndexOf("."));
+        String fileName = "oeuvre_" + oeuvreId + "_" + System.currentTimeMillis() + extension;
+        java.io.File destFile = new java.io.File(dir, fileName);
+        java.nio.file.Files.copy(imageFile.toPath(), destFile.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
         
-        Files.copy(imageFile.toPath(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        
-        // Store absolute path for direct file loading
-        String imageUrl = targetPath.toAbsolutePath().toString();
-        
-        Oeuvre oeuvre = oeuvreDAO.findById(id);
+        Oeuvre oeuvre = findById(oeuvreId);
         if (oeuvre != null) {
-            oeuvre.setImageUrl(imageUrl);
-            oeuvreDAO.update(oeuvre);
+            oeuvre.setImageUrl(destFile.getAbsolutePath());
+            update(oeuvre);
         }
-    }
-    
-    private String getFileExtension(String fileName) {
-        int lastDot = fileName.lastIndexOf(".");
-        if (lastDot > 0) {
-            return fileName.substring(lastDot + 1);
-        }
-        return "png";
     }
 }
