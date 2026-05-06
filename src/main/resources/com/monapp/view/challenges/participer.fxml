@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.ParticipationController"
+            style="-fx-background-color: #0d1117;">
+
+    <!-- Inclusion du header -->
+    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0">
+
+        <!-- Bouton retour -->
+        <HBox style="-fx-padding: 20 100 0 100;">
+            <Button text="← Retour aux défis" onAction="#goBack"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 8 15; -fx-cursor: hand;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+        </HBox>
+
+        <!-- Carte du défi -->
+        <VBox style="-fx-padding: 20 100 0 100;" spacing="20">
+
+            <!-- Image du défi (cliquable) -->
+            <ImageView fx:id="defiImageView" fitWidth="Infinity" fitHeight="200" preserveRatio="true"
+                       style="-fx-cursor: hand; -fx-border-radius: 10; -fx-background-radius: 10;"
+                       onMouseClicked="#openImageModal" visible="false" managed="false"/>
+
+            <VBox style="-fx-background-color: rgba(26,31,30,0.7); -fx-background-radius: 12; -fx-padding: 25; -fx-border-color: rgba(24,227,164,0.1); -fx-border-radius: 12;">
+
+                <!-- Titre et thème -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label fx:id="defiTitreLabel" text="Titre du défi"
+                           style="-fx-text-fill: #18E3A4; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                    <Label fx:id="defiThemeLabel" text="Thème"
+                           style="-fx-background-color: rgba(24,227,164,0.2); -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-radius: 20; -fx-padding: 4 12; -fx-font-size: 12px;"/>
+                </HBox>
+
+                <!-- Description -->
+                <Label fx:id="defiDescriptionLabel" text="Description..."
+                       style="-fx-text-fill: #B0B9B6; -fx-font-size: 14px;" wrapText="true"/>
+
+                <!-- Dates -->
+                <Label fx:id="defiDatesLabel" text="📅 Du ... au ..."
+                       style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+            </VBox>
+
+            <!-- Formulaire de participation -->
+            <VBox style="-fx-background-color: rgba(26,31,30,0.7); -fx-background-radius: 12; -fx-padding: 25; -fx-border-color: rgba(24,227,164,0.1); -fx-border-radius: 12;" spacing="20">
+
+                <Label text="Participer à ce défi"
+                       style="-fx-text-fill: #18E3A4; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+                <Label text="Indiquez l'ID d'une œuvre déjà en ligne ou peignez une œuvre dans l'éditeur."
+                       style="-fx-text-fill: #888; -fx-font-size: 12px;" wrapText="true"/>
+
+                <!-- Options -->
+                <VBox spacing="10">
+                    <Label text="Vous avez deux options :" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+                    <VBox style="-fx-padding: 0 0 0 15;" spacing="5">
+                        <Label text="• Utiliser une œuvre déjà en ligne en indiquant son ID ci-dessous."
+                               style="-fx-text-fill: #888; -fx-font-size: 12px;" wrapText="true"/>
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="• Ou" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+                            <Button text="Peindre une œuvre" onAction="#openPainter"
+                                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 6 12; -fx-font-size: 12px; -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+                </VBox>
+
+                <!-- Description de la création -->
+                <VBox spacing="8">
+                    <Label text="Description de votre création"
+                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <TextArea fx:id="descriptionArea"
+                              style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 8; -fx-padding: 12;"
+                              promptText="Décrivez votre création..." prefHeight="100"/>
+                </VBox>
+
+                <!-- ID de l'œuvre -->
+                <VBox spacing="8">
+                    <Label text="ID de l'œuvre (optionnel)"
+                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <TextField fx:id="artworkIdField"
+                               style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 8; -fx-padding: 12;"
+                               promptText="Entrez l'ID d'une œuvre existante"/>
+                </VBox>
+
+                <!-- Zone d'upload d'image -->
+                <VBox spacing="8">
+                    <Label text="Soumettre votre création"
+                           style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                    <VBox fx:id="uploadZone"
+                          style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 10; -fx-padding: 30; -fx-cursor: hand;"
+                          alignment="CENTER" onMouseClicked="#selectImage">
+                        <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 36px;"/>
+                        <Label text="Cliquez pour sélectionner une image" style="-fx-text-fill: #888; -fx-font-size: 12px;"/>
+                    </VBox>
+                    <ImageView fx:id="imagePreview" fitWidth="200" fitHeight="150" preserveRatio="true"
+                               style="-fx-border-radius: 8; -fx-background-radius: 8;" visible="false" managed="false"/>
+                    <Label fx:id="fileNameLabel" style="-fx-text-fill: #18E3A4; -fx-font-size: 12px;" visible="false" managed="false"/>
+                </VBox>
+
+                <!-- Message d'erreur -->
+                <Label fx:id="errorLabel" style="-fx-text-fill: #ff6b6b;" visible="false" wrapText="true"/>
+
+                <!-- Boutons d'action -->
+                <HBox spacing="15" alignment="CENTER">
+                    <Button text="Envoyer ma participation" onAction="#soumettre"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                    <Button text="Annuler" onAction="#goBack"
+                            style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-padding: 12 25; -fx-background-radius: 10; -fx-cursor: hand;"/>
+                </HBox>
+
+            </VBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

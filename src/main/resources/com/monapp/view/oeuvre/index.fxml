@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.OeuvreController"
+            style="-fx-background-color: #0d1117;">
+
+    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+
+    <VBox spacing="15" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0">
+
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
+
+        <Label text="MES ŒUVRES"
+               style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+        <!-- Barre de recherche -->
+        <HBox spacing="10">
+            <TextField fx:id="searchField" promptText="Rechercher une œuvre..." HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="typeFilter" promptText="Type"/>
+            <CheckBox fx:id="myItemsCheckbox" text="Mes œuvres" style="-fx-text-fill: white;"/>
+            <Button text="Rechercher" onAction="#search"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+            <Button text="Réinitialiser" onAction="#resetFilters"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+            <Button text="Créer" onAction="#goToCreateOeuvre"
+                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+        </HBox>
+
+        <!-- Liste et formulaire -->
+        <SplitPane dividerPositions="0.5" VBox.vgrow="ALWAYS">
+            <!-- Liste des œuvres -->
+            <ListView fx:id="oeuvreList" style="-fx-background-color: #1a1f1e; -fx-background-radius: 10;"/>
+
+            <!-- Formulaire d'édition -->
+            <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #1a1f1e; -fx-background-radius: 10;">
+                <Label text="DÉTAILS" style="-fx-text-fill: #18E3A4; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+
+                <TextField fx:id="titleField" promptText="Titre" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
+                <TextField fx:id="typeField" promptText="Type" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
+                <TextField fx:id="authorField" promptText="Auteur" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
+                <TextArea fx:id="descriptionArea" promptText="Description" prefHeight="100"
+                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
+                <DatePicker fx:id="datePublicationPicker" promptText="Date de publication"
+                            style="-fx-background-color: #2a3139; -fx-text-fill: white;"/>
+
+                <HBox spacing="10">
+                    <Button fx:id="selectImageBtn" text="Choisir image" onAction="#selectImage"
+                            style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+                    <Button fx:id="saveBtn" text="Sauvegarder" onAction="#createOeuvre"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15; -fx-font-weight: bold;"/>
+                    <Button fx:id="deleteBtn" text="Supprimer" onAction="#deleteOeuvre"
+                            style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+                </HBox>
+
+                <ImageView fx:id="imageView" fitWidth="200" fitHeight="150" preserveRatio="true"
+                           style="-fx-background-color: #2a3139; -fx-background-radius: 10;"/>
+
+                <Separator style="-fx-background-color: rgba(24,227,164,0.2);"/>
+
+                <Label text="COMMENTAIRES" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                <TextArea fx:id="commentArea" promptText="Ajouter un commentaire..." prefHeight="60"
+                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
+                <Button fx:id="addCommentBtn" text="Ajouter commentaire" onAction="#addComment"
+                        style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+                <ListView fx:id="commentList" prefHeight="100" style="-fx-background-color: #2a3139; -fx-background-radius: 10;"/>
+
+                <Button text="Retour à l'accueil" onAction="#goAccueil"
+                        style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 10;"/>
+            </VBox>
+        </SplitPane>
+
+    </VBox>
+
+</AnchorPane>

@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.AdminQuizQuestionsController"
+            prefWidth="1440.0"
+            prefHeight="920.0"
+            stylesheets="@quiz_question.css"
+            styleClass="root-pane">
+
+    <left>
+        <VBox prefWidth="280.0" minWidth="280.0" maxWidth="280.0" styleClass="admin-sidebar">
+            <padding>
+                <Insets top="24" right="0" bottom="24" left="0"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="14" styleClass="sidebar-logo-box" onMouseClicked="#goAccueil">
+                <padding>
+                    <Insets top="0" right="24" bottom="24" left="24"/>
+                </padding>
+                <Label text="⚡" styleClass="logo-icon"/>
+                <Label text="Midgar Admin" styleClass="logo-text"/>
+            </HBox>
+
+            <VBox spacing="4" VBox.vgrow="ALWAYS">
+                <Button text="Utilisateurs" styleClass="sidebar-link" maxWidth="Infinity" onAction="#goUsers"/>
+                <Button text="Œuvres" styleClass="sidebar-link" maxWidth="Infinity" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="sidebar-link" maxWidth="Infinity" onAction="#goArtefacts"/>
+                <Button text="Quiz" styleClass="sidebar-link,active" maxWidth="Infinity" onAction="#goQuiz"/>
+                <Button text="Shop" styleClass="sidebar-link" maxWidth="Infinity" onAction="#goShop"/>
+                <Button text="Défis" styleClass="sidebar-link" maxWidth="Infinity" onAction="#goChallenges"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <StackPane styleClass="content-wrapper">
+            <ScrollPane fx:id="mainScrollPane" fitToWidth="true" fitToHeight="false" hbarPolicy="NEVER" styleClass="content-scroll">
+                <content>
+                    <VBox spacing="28" styleClass="admin-content">
+                        <padding>
+                            <Insets top="34" right="40" bottom="34" left="40"/>
+                        </padding>
+
+                        <VBox spacing="6" styleClass="page-header">
+                            <Label text="Gestion des questions Quiz" styleClass="page-title"/>
+                            <Label text="Créez et gérez les questions du questionnaire de préférences" styleClass="page-subtitle"/>
+                        </VBox>
+
+                        <GridPane hgap="20" vgap="20" styleClass="dashboard-stats">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+                                <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+                                <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+                                <ColumnConstraints percentWidth="25" hgrow="ALWAYS"/>
+                            </columnConstraints>
+
+                            <VBox GridPane.columnIndex="0" styleClass="stat-card" spacing="10">
+                                <Label text="❓" styleClass="stat-icon"/>
+                                <Label text="Questions Total" styleClass="stat-title"/>
+                                <Label fx:id="questionsTotalLabel" text="24" styleClass="stat-value"/>
+                            </VBox>
+
+                            <VBox GridPane.columnIndex="1" styleClass="stat-card" spacing="10">
+                                <Label text="📝" styleClass="stat-icon"/>
+                                <Label text="Réponses Total" styleClass="stat-title"/>
+                                <Label fx:id="answersTotalLabel" text="96" styleClass="stat-value"/>
+                            </VBox>
+
+                            <VBox GridPane.columnIndex="2" styleClass="stat-card" spacing="10">
+                                <Label text="🏷" styleClass="stat-icon"/>
+                                <Label text="Tags Uniques" styleClass="stat-title"/>
+                                <Label fx:id="tagsTotalLabel" text="12" styleClass="stat-value"/>
+                            </VBox>
+
+                            <VBox GridPane.columnIndex="3" styleClass="stat-card" spacing="10">
+                                <Label text="📈" styleClass="stat-icon"/>
+                                <Label text="Moyenne/Réponse" styleClass="stat-title"/>
+                                <Label fx:id="averageLabel" text="4.0" styleClass="stat-value"/>
+                            </VBox>
+                        </GridPane>
+
+                        <HBox fx:id="successAlert" visible="false" managed="false" alignment="CENTER_LEFT" spacing="12" styleClass="alert,alert-success">
+                            <Label text="✓" styleClass="alert-icon"/>
+                            <Label fx:id="successAlertText" text="Opération réussie" wrapText="true"/>
+                        </HBox>
+
+                        <HBox fx:id="errorAlert" visible="false" managed="false" alignment="CENTER_LEFT" spacing="12" styleClass="alert,alert-danger">
+                            <Label text="!" styleClass="alert-icon"/>
+                            <Label fx:id="errorAlertText" text="Une erreur est survenue" wrapText="true"/>
+                        </HBox>
+
+                        <HBox alignment="CENTER_LEFT" styleClass="create-section">
+                            <Button text="+ Ajouter une question" styleClass="create-btn" onAction="#toggleQuestionForm"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Button text="Générer PDF" styleClass="btn,btn-secondary" style="-fx-font-weight: bold; -fx-padding: 8 16;" onAction="#generatePdf"/>
+                        </HBox>
+
+                        <VBox fx:id="questionFormCard" visible="false" managed="false" spacing="22" styleClass="form-card">
+                            <HBox alignment="CENTER_LEFT" spacing="14" styleClass="form-header">
+                                <Label fx:id="formHeaderIcon" text="⊕" styleClass="form-header-icon"/>
+                                <VBox spacing="3">
+                                    <Label fx:id="formTitleLabel" text="Nouvelle question" styleClass="form-title"/>
+                                    <Label fx:id="formSubtitleLabel" text="Créez une nouvelle question pour le quiz" styleClass="form-subtitle"/>
+                                </VBox>
+                            </HBox>
+
+                            <VBox spacing="8">
+                                <Label text="Question" styleClass="form-label"/>
+                                <TextArea fx:id="questionTextArea" promptText="Saisissez la question..." prefRowCount="3" wrapText="true" styleClass="form-control,form-textarea"/>
+                            </VBox>
+
+                            <HBox spacing="14" styleClass="btn-group">
+                                <Button fx:id="saveQuestionButton" text="Ajouter la question" styleClass="btn,btn-primary" onAction="#saveQuestion"/>
+                                <Button text="Annuler" styleClass="btn,btn-secondary" onAction="#hideQuestionForm"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="18" styleClass="search-section">
+                            <GridPane hgap="16" vgap="12" styleClass="search-form-grid">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="55" hgrow="ALWAYS"/>
+                                    <ColumnConstraints percentWidth="20"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                </columnConstraints>
+
+                                <VBox GridPane.columnIndex="0" spacing="8">
+                                    <Label text="Rechercher" styleClass="form-label"/>
+                                    <TextField fx:id="searchField" promptText="Rechercher une question, option ou tag" styleClass="form-input"/>
+                                </VBox>
+
+                                <VBox GridPane.columnIndex="1" spacing="8">
+                                    <Label text="Trier par" styleClass="form-label"/>
+                                    <ComboBox fx:id="sortComboBox" styleClass="form-select" promptText="Choisir">
+                                        <items>
+                                            <FXCollections fx:factory="observableArrayList">
+                                                <String fx:value="Plus récent"/>
+                                                <String fx:value="Plus ancien"/>
+                                            </FXCollections>
+                                        </items>
+                                    </ComboBox>
+                                </VBox>
+
+                                <VBox GridPane.columnIndex="2" spacing="10" alignment="BOTTOM_CENTER">
+                                    <Button text="Rechercher" maxWidth="Infinity" styleClass="btn,btn-primary" onAction="#searchQuestions"/>
+                                    <Button text="Réinitialiser" maxWidth="Infinity" styleClass="btn,btn-secondary,btn-sm" onAction="#resetSearch"/>
+                                </VBox>
+                            </GridPane>
+                        </VBox>
+
+                        <VBox spacing="0" styleClass="table-container" prefHeight="300" minHeight="200">
+                            <TableView fx:id="questionsTable" styleClass="admin-table">
+                                <columns>
+                                    <TableColumn fx:id="idColumn" text="ID" prefWidth="90"/>
+                                    <TableColumn fx:id="questionColumn" text="Question" prefWidth="550"/>
+                                    <TableColumn fx:id="createdAtColumn" text="Créée le" prefWidth="170"/>
+                                    <TableColumn fx:id="actionsColumn" text="Actions" prefWidth="220"/>
+                                </columns>
+                                <placeholder>
+                                    <VBox alignment="CENTER" spacing="10" styleClass="empty-state">
+                                        <Label text="❔" styleClass="empty-icon"/>
+                                        <Label text="Aucune question trouvée" styleClass="empty-title"/>
+                                        <Label text="Commencez par créer votre première question !" styleClass="empty-text"/>
+                                    </VBox>
+                                </placeholder>
+                            </TableView>
+                        </VBox>
+
+                        <VBox spacing="18" styleClass="responses-section">
+                            <HBox alignment="CENTER_LEFT">
+                                <Label text="Gestion des réponses" styleClass="section-heading"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button text="+ Ajouter une réponse" styleClass="create-btn" onAction="#toggleResponseForm"/>
+                            </HBox>
+
+                            <VBox fx:id="responseFormCard" visible="false" managed="false" spacing="18" styleClass="form-card">
+                                <HBox alignment="CENTER_LEFT" spacing="14" styleClass="form-header">
+                                    <Label text="⊕" styleClass="form-header-icon"/>
+                                    <VBox spacing="3">
+                                        <Label fx:id="responseFormTitleLabel" text="Nouvelle réponse" styleClass="form-title"/>
+                                        <Label text="Ajoutez une nouvelle réponse à une question" styleClass="form-subtitle"/>
+                                    </VBox>
+                                </HBox>
+
+                                <GridPane hgap="16" vgap="16">
+                                    <columnConstraints>
+                                        <ColumnConstraints percentWidth="100" hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="8">
+                                        <Label text="Option" styleClass="form-label"/>
+                                        <TextField fx:id="responseOptionTextArea" promptText="Ex: Épic, Sombre, Magique..." styleClass="form-input"/>
+                                    </VBox>
+
+                                    <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="8">
+                                        <Label text="Tag" styleClass="form-label"/>
+                                        <TextField fx:id="tagField" promptText="Ex: action, aventure, magie..." styleClass="form-input"/>
+                                        <Label text="Séparez les tags par des virgules pour en ajouter plusieurs" styleClass="form-label" style="-fx-font-size:11px; -fx-text-fill:#7A8580;"/>
+                                    </VBox>
+
+                                    <VBox GridPane.columnIndex="0" GridPane.rowIndex="2" spacing="8">
+                                        <Label text="Question associée" styleClass="form-label"/>
+                                        <ComboBox fx:id="questionComboBox" styleClass="form-select" promptText="-- Sélectionner une question --" maxWidth="Infinity"/>
+                                    </VBox>
+
+                                </GridPane>
+
+                                <HBox spacing="14" styleClass="btn-group">
+                                    <Button fx:id="saveResponseButton" text="Ajouter la réponse" styleClass="btn,btn-primary" onAction="#saveResponse"/>
+                                    <Button text="Annuler" styleClass="btn,btn-secondary" onAction="#hideResponseForm"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="0" styleClass="table-container" prefHeight="350">
+                                <TableView fx:id="reponsesTable" styleClass="admin-table">
+                                    <columns>
+                                        <TableColumn fx:id="repIdColumn" text="ID" prefWidth="90"/>
+                                        <TableColumn fx:id="repOptionColumn" text="Option" prefWidth="300"/>
+                                        <TableColumn fx:id="repTagColumn" text="Tag" prefWidth="250"/>
+                                        <TableColumn fx:id="repQuestionColumn" text="Question" prefWidth="420"/>
+                                        <TableColumn fx:id="repActionsColumn" text="Actions" prefWidth="220"/>
+                                    </columns>
+                                    <placeholder>
+                                        <VBox alignment="CENTER" spacing="10" styleClass="empty-state">
+                                            <Label text="❔" styleClass="empty-icon"/>
+                                            <Label text="Aucune réponse trouvée" styleClass="empty-title"/>
+                                        </VBox>
+                                    </placeholder>
+                                </TableView>
+                            </VBox>
+                        </VBox>
+                    </VBox>
+                </content>
+            </ScrollPane>
+        </StackPane>
+    </center>
+</BorderPane>
