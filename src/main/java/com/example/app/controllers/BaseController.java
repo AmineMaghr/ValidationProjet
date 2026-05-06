@@ -1,5 +1,6 @@
 package com.example.app.controllers;
 
+import com.example.app.entities.User;
 import com.example.app.utils.SceneManager;
 import com.example.app.utils.UserSession;
 import javafx.fxml.FXML;
@@ -13,51 +14,95 @@ import java.net.URL;
 public abstract class BaseController {
 
     @FXML
-    public void goAccueil() { navigateTo("/"); }
+    public void goAccueil() {
+        navigateTo("/");
+    }
 
     @FXML
-    public void goDiscover() { navigateTo("/discover"); }
+    public void goDiscover() {
+        navigateTo("/discover");
+    }
 
     @FXML
-    public void goUniverses() { navigateTo("/universes"); }
+    public void goUniverses() {
+        navigateTo("/universes");
+    }
 
     @FXML
-    public void goPersonnages() { navigateTo("/personnages"); }
+    public void goPersonnages() {
+        navigateTo("/personnages");
+    }
 
     @FXML
-    public void goOeuvres() { navigateTo("/oeuvre"); }
+    public void goOeuvres() {
+        navigateTo("/oeuvre");
+    }
 
     @FXML
-    public void goShop() { navigateTo("/shop"); }
+    public void goShop() {
+        navigateTo("/shop");
+    }
 
     @FXML
-    public void goChallenges() { navigateTo("/challenges"); }
+    public void goChallenges() {
+        navigateTo("/challenges");
+    }
 
     @FXML
-    public void lancerQuiz() { navigateTo("/quiz"); }
+    public void lancerQuiz() {
+        navigateTo("/quiz");
+    }
 
     @FXML
     public void goAdmin() {
         if (UserSession.isLoggedIn() && UserSession.getCurrentUser().isAdmin()) {
-            navigateTo("/admin");  // Changé de "/admin" à "/admin/users" ou gardez "/admin"
+            navigateTo("/admin");
         } else {
             showAlert("Accès refusé", "Vous n'êtes pas administrateur");
         }
     }
 
     @FXML
-    public void goProfile() { navigateTo("/profile"); }
+    public void goProfile() {
+        navigateTo("/profile");
+    }
 
     @FXML
-    public void goLogin() { navigateTo("/login"); }
-    
-    @FXML
-    public void goArtefacts() { navigateTo("/artefact"); }
-    
-    @FXML
-    public void goRegister() { navigateTo("/register"); }
+    public void goLogin() {
+        navigateTo("/login");
+    }
 
+    @FXML
+    public void goArtefacts() {
+        navigateTo("/artefact");
+    }
+
+    @FXML
+    public void goRegister() {
+        navigateTo("/register");
+    }
+
+    // ==================== MÉTHODE NAVIGATION STANDARD ====================
     protected void navigateTo(String view) {
+        navigateTo(view, null);
+    }
+
+    // ==================== MÉTHODE NAVIGATION AVEC UTILISATEUR ====================
+    protected void navigateTo(String view, User user) {
+
+        // Java-view routes — always delegate to SceneManager (no FXML involved)
+        switch (view) {
+            case "/universes":
+            case "/universes/create":
+            case "/personnages":
+            case "/personnages/create":
+            case "/battle":
+            case "/admin/universes":
+            case "/admin/personnages":
+                SceneManager.getInstance().loadScene(view);
+                return;
+        }
+
         try {
             String fxmlPath;
 
@@ -75,14 +120,38 @@ public abstract class BaseController {
                 case "/register":
                     fxmlPath = "/com/monapp/view/register-view.fxml";
                     break;
+                case "/forgot-password":
+                    fxmlPath = "/com/monapp/view/forgot-password-view.fxml";
+                    break;
+                case "/reset-password":
+                    fxmlPath = "/com/monapp/view/reset-password-view.fxml";
+                    break;
                 case "/oeuvre":
                     fxmlPath = "/com/monapp/view/oeuvre/index.fxml";
                     break;
                 case "/artefact":
                     fxmlPath = "/com/monapp/view/artefact/index.fxml";
                     break;
+                case "/shop":
+                    fxmlPath = "/com/monapp/view/shop/index.fxml";
+                    break;
+                case "/discover":
+                    fxmlPath = "/com/monapp/view/discover.fxml";
+                    break;
+                case "/challenges":
+                    fxmlPath = "/com/monapp/view/challenges.fxml";
+                    break;
+                case "/quiz":
+                    fxmlPath = "/com/monapp/view/quiz.fxml";
+                    break;
                 case "/":
                     fxmlPath = "/com/monapp/view/index.fxml";
+                    break;
+                case "/face-register":
+                    fxmlPath = "/com/monapp/view/face-register-view.fxml";
+                    break;
+                case "/face-login":
+                    fxmlPath = "/com/monapp/view/face-login-view.fxml";
                     break;
                 default:
                     fxmlPath = "/com/monapp/view" + view + ".fxml";
@@ -100,6 +169,15 @@ public abstract class BaseController {
 
             FXMLLoader loader = new FXMLLoader(resource);
             Scene scene = new Scene(loader.load());
+            
+            // Passer l'utilisateur au contrôleur si c'est FaceRegisterController
+            if (user != null) {
+                Object controller = loader.getController();
+                if (controller instanceof FaceRegisterController) {
+                    ((FaceRegisterController) controller).setCurrentUser(user);
+                    System.out.println("✅ Utilisateur transmis à FaceRegisterController: " + user.getUsername());
+                }
+            }
 
             try {
                 URL cssResource = getClass().getResource("/css/modern-style.css");
@@ -143,4 +221,5 @@ public abstract class BaseController {
             System.err.println("Erreur d'affichage d'erreur: " + e.getMessage());
         }
     }
+    
 }

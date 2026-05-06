@@ -58,7 +58,8 @@ public class CommentaireDAO implements IDAO<Commentaire> {
     @Override
     public List<Commentaire> select() throws SQLException {
         List<Commentaire> list = new ArrayList<>();
-        String sql = "SELECT * FROM commentaires ORDER BY created_at DESC";
+        // ⭐ CORRECTION: users → user
+        String sql = "SELECT c.*, u.username FROM commentaires c LEFT JOIN user u ON c.user_id = u.id ORDER BY c.created_at DESC";
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery(sql);
         while (rs.next()) {
@@ -69,7 +70,8 @@ public class CommentaireDAO implements IDAO<Commentaire> {
 
     public List<Commentaire> findByOeuvre(int oeuvreId) throws SQLException {
         List<Commentaire> list = new ArrayList<>();
-        String sql = "SELECT * FROM commentaires WHERE oeuvre_id = ? ORDER BY created_at DESC";
+        // ⭐ CORRECTION: users → user
+        String sql = "SELECT c.*, u.username FROM commentaires c LEFT JOIN user u ON c.user_id = u.id WHERE c.oeuvre_id = ? ORDER BY c.created_at DESC";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, oeuvreId);
         ResultSet rs = ps.executeQuery();
@@ -81,7 +83,8 @@ public class CommentaireDAO implements IDAO<Commentaire> {
 
     public List<Commentaire> findByArtefact(int artefactId) throws SQLException {
         List<Commentaire> list = new ArrayList<>();
-        String sql = "SELECT * FROM commentaires WHERE artefact_id = ? ORDER BY created_at DESC";
+        // ⭐ CORRECTION: users → user
+        String sql = "SELECT c.*, u.username FROM commentaires c LEFT JOIN user u ON c.user_id = u.id WHERE c.artefact_id = ? ORDER BY c.created_at DESC";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setInt(1, artefactId);
         ResultSet rs = ps.executeQuery();
@@ -90,28 +93,22 @@ public class CommentaireDAO implements IDAO<Commentaire> {
         }
         return list;
     }
-
-    public List<Commentaire> findAllWithPagination(int page, int limit) throws SQLException {
-        List<Commentaire> list = new ArrayList<>();
-        String sql = "SELECT * FROM commentaires ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    
+    public boolean isProprietaireDeLElement(int userId, int commentaireId) throws SQLException {
+        String sql = "SELECT c.*, o.created_by_id as oeuvre_owner, a.created_by_id as artefact_owner " +
+                     "FROM commentaires c " +
+                     "LEFT JOIN oeuvres o ON c.oeuvre_id = o.id " +
+                     "LEFT JOIN artefacts a ON c.artefact_id = a.id " +
+                     "WHERE c.id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, limit);
-        ps.setInt(2, (page - 1) * limit);
+        ps.setInt(1, commentaireId);
         ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
-        }
-        return list;
-    }
-
-    public int countAll() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM commentaires";
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(sql);
         if (rs.next()) {
-            return rs.getInt(1);
+            int oeuvreOwner = rs.getInt("oeuvre_owner");
+            int artefactOwner = rs.getInt("artefact_owner");
+            return (oeuvreOwner == userId) || (artefactOwner == userId);
         }
-        return 0;
+        return false;
     }
 
     private Commentaire mapResultSet(ResultSet rs) throws SQLException {
@@ -121,6 +118,10 @@ public class CommentaireDAO implements IDAO<Commentaire> {
         commentaire.setUserId(rs.getInt("user_id"));
         commentaire.setOeuvreId(rs.getInt("oeuvre_id"));
         commentaire.setArtefactId(rs.getInt("artefact_id"));
+        commentaire.setUsername(rs.getString("username"));
+        if (rs.getTimestamp("created_at") != null) {
+            commentaire.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        }
         return commentaire;
     }
 }

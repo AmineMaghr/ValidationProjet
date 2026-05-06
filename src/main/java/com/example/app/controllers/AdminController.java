@@ -29,6 +29,8 @@ public class AdminController extends BaseController {
     @FXML private TableView<User> userTable;
     @FXML private TableView<Oeuvre> oeuvreTable;
     @FXML private TableView<Artefact> artefactTable;
+    @FXML private TableView<Universe> universeTable;
+    @FXML private TableView<Personnage> personnageTable;
     @FXML private TabPane adminTabPane;
     @FXML private Label pageTitle;
     @FXML private Label totalUsersLabel;
@@ -44,10 +46,14 @@ public class AdminController extends BaseController {
     private UserService userService = new UserService();
     private OeuvreService oeuvreService = new OeuvreService();
     private ArtefactService artefactService = new ArtefactService();
+    private UniverseService universeService = new UniverseService();
+    private PersonnageService personnageService = new PersonnageService();
 
     private ObservableList<User> users = FXCollections.observableArrayList();
     private ObservableList<Oeuvre> oeuvres = FXCollections.observableArrayList();
     private ObservableList<Artefact> artefacts = FXCollections.observableArrayList();
+    private ObservableList<Universe> universes = FXCollections.observableArrayList();
+    private ObservableList<Personnage> personnages = FXCollections.observableArrayList();
 
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -62,10 +68,14 @@ public class AdminController extends BaseController {
         setupUserTable();
         setupOeuvreTable();
         setupArtefactTable();
+        setupUniverseTable();
+        setupPersonnageTable();
 
         loadUsers();
         loadOeuvres();
         loadArtefacts();
+        loadUniverses();
+        loadPersonnages();
         updateStats();
 
         sortCombo.setItems(FXCollections.observableArrayList("username", "nom", "prenom", "createdAt"));
@@ -211,6 +221,24 @@ public class AdminController extends BaseController {
         }
     }
 
+    @FXML
+    public void showUniversesTab() {
+        if (adminTabPane != null) {
+            adminTabPane.getSelectionModel().select(3);
+            pageTitle.setText("Gestion des univers");
+            loadUniverses();
+        }
+    }
+
+    @FXML
+    public void showPersonnagesTab() {
+        if (adminTabPane != null) {
+            adminTabPane.getSelectionModel().select(4);
+            pageTitle.setText("Gestion des personnages");
+            loadPersonnages();
+        }
+    }
+
     // ⭐ MÉTHODES DE RECHERCHE ⭐
     
     @FXML
@@ -334,6 +362,40 @@ public class AdminController extends BaseController {
             artefacts.setAll(task.getValue());
             artefactTable.setItems(artefacts);
             artefactTable.refresh();
+        });
+        new Thread(task).start();
+    }
+
+    private void loadUniverses() {
+        Task<List<Universe>> task = new Task<>() {
+            @Override
+            protected List<Universe> call() throws SQLException {
+                return universeService.select();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            universes.setAll(task.getValue());
+            if (universeTable != null) {
+                universeTable.setItems(universes);
+                universeTable.refresh();
+            }
+        });
+        new Thread(task).start();
+    }
+
+    private void loadPersonnages() {
+        Task<List<Personnage>> task = new Task<>() {
+            @Override
+            protected List<Personnage> call() throws SQLException {
+                return personnageService.select();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            personnages.setAll(task.getValue());
+            if (personnageTable != null) {
+                personnageTable.setItems(personnages);
+                personnageTable.refresh();
+            }
         });
         new Thread(task).start();
     }
@@ -568,7 +630,73 @@ private void setupOeuvreTable() {
         artefactTable.setItems(artefacts);
     }
 
-    // ⭐ ACTIONS SUR LES UTILISATEURS ⭐
+    @SuppressWarnings("unchecked")
+    private void setupUniverseTable() {
+        if (universeTable == null) return;
+        TableColumn<Universe, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idCol.setPrefWidth(50);
+        
+        TableColumn<Universe, String> nameCol = new TableColumn<>("Nom");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
+        nameCol.setPrefWidth(200);
+        
+        TableColumn<Universe, String> genreCol = new TableColumn<>("Genre");
+        genreCol.setCellValueFactory(new PropertyValueFactory<>("genre"));
+        genreCol.setPrefWidth(150);
+
+        TableColumn<Universe, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(150);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("🗑️ Supprimer");
+            {
+                deleteBtn.setStyle("-fx-background-color: #EF5350; -fx-text-fill: #fff; -fx-background-radius: 5; -fx-padding: 5 10; -fx-cursor: hand;");
+                deleteBtn.setOnAction(e -> deleteUniverse(getTableView().getItems().get(getIndex())));
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
+
+        universeTable.getColumns().setAll(idCol, nameCol, genreCol, actionsCol);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void setupPersonnageTable() {
+        if (personnageTable == null) return;
+        TableColumn<Personnage, Integer> idCol = new TableColumn<>("ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idCol.setPrefWidth(50);
+        
+        TableColumn<Personnage, String> nameCol = new TableColumn<>("Nom");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        nameCol.setPrefWidth(200);
+        
+        TableColumn<Personnage, String> classCol = new TableColumn<>("Classe");
+        classCol.setCellValueFactory(new PropertyValueFactory<>("classRole"));
+        classCol.setPrefWidth(150);
+
+        TableColumn<Personnage, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(150);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("🗑️ Supprimer");
+            {
+                deleteBtn.setStyle("-fx-background-color: #EF5350; -fx-text-fill: #fff; -fx-background-radius: 5; -fx-padding: 5 10; -fx-cursor: hand;");
+                deleteBtn.setOnAction(e -> deletePersonnageAdmin(getTableView().getItems().get(getIndex())));
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
+
+        personnageTable.getColumns().setAll(idCol, nameCol, classCol, actionsCol);
+    }
+
+    //  ACTIONS SUR LES UTILISATEURS ⭐
     
     @FXML
     public void deleteUser(User user) {
@@ -680,6 +808,42 @@ private void setupOeuvreTable() {
         });
     }
 
+    public void deleteUniverse(Universe universe) {
+        if (universe == null) return;
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setContentText("Supprimer l'univers \"" + universe.getName() + "\" ?");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                Task<Void> task = new Task<>() {
+                    protected Void call() throws SQLException {
+                        universeService.delete(universe.getId());
+                        return null;
+                    }
+                };
+                task.setOnSucceeded(e -> loadUniverses());
+                new Thread(task).start();
+            }
+        });
+    }
+
+    public void deletePersonnageAdmin(Personnage personnage) {
+        if (personnage == null) return;
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setContentText("Supprimer le personnage \"" + personnage.getNom() + "\" ?");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                Task<Void> task = new Task<>() {
+                    protected Void call() throws SQLException {
+                        personnageService.delete(personnage.getId());
+                        return null;
+                    }
+                };
+                task.setOnSucceeded(e -> loadPersonnages());
+                new Thread(task).start();
+            }
+        });
+    }
+
     protected void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -688,3 +852,4 @@ private void setupOeuvreTable() {
         alert.showAndWait();
     }
 }
+

@@ -27,16 +27,13 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import com.example.app.services.DefiService;
 
-
 import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class AccueilController {
 
-    // FXML Injections
     @FXML private MediaView mediaView;
     @FXML private HBox authContainer;
     @FXML private VBox searchBarContainer;
@@ -46,16 +43,13 @@ public class AccueilController {
     @FXML private HBox creationsSlider;
     @FXML private TilePane defisGrid;
     @FXML private StackPane defiModal;
-    @FXML private StackPane faceModal;
     @FXML private Label modalTitre, modalTheme, modalDescription, modalDebut, modalFin, modalStatut;
 
-    // Services
     private UniverseService universService = new UniverseService();
     private OeuvreService oeuvreService = new OeuvreService();
     private DefiService defiService = new DefiService();
     private UserService userService = new UserService();
 
-    // Sliders
     private int universIndex = 0;
     private int creationsIndex = 0;
     private ObservableList<Universe> universList = FXCollections.observableArrayList();
@@ -73,6 +67,16 @@ public class AccueilController {
         loadCreationsRecentes();
         loadDefis();
         setupSearchBar();
+        
+        // Debug de la session
+        System.out.println("=== ACCUEIL INITIALISÉ ===");
+        System.out.println("UserSession.isLoggedIn(): " + UserSession.isLoggedIn());
+        if (UserSession.isLoggedIn()) {
+            User user = UserSession.getCurrentUser();
+            System.out.println("Utilisateur connecté: " + user.getUsername() + " (ID: " + user.getId() + ")");
+        } else {
+            System.out.println("Aucun utilisateur connecté");
+        }
     }
 
     private void setupVideoBackground() {
@@ -90,8 +94,11 @@ public class AccueilController {
 
     private void setupAuthButtons() {
         authContainer.getChildren().clear();
+        
         if (UserSession.isLoggedIn()) {
             User user = UserSession.getCurrentUser();
+            System.out.println(">>> Affichage des boutons pour utilisateur connecté: " + user.getUsername());
+            
             HBox profileBox = new HBox(8);
             profileBox.setAlignment(javafx.geometry.Pos.CENTER);
 
@@ -131,6 +138,8 @@ public class AccueilController {
                 authContainer.getChildren().addAll(profileBtn, logoutBtn);
             }
         } else {
+            System.out.println(">>> Affichage des boutons pour utilisateur non connecté");
+            
             Button loginBtn = new Button("Connexion");
             loginBtn.getStyleClass().addAll("btn-secondary", "btn-glow");
             loginBtn.setOnAction(e -> navigateTo("/login"));
@@ -322,10 +331,6 @@ public class AccueilController {
 
         Region imageRegion = new Region();
         imageRegion.getStyleClass().add("card-image");
-       /* if (defi.getImageCover() != null) {
-            String imageUrl = new File("uploads/defis/" + defi.getImageCover()).toURI().toString();
-            imageRegion.setStyle("-fx-background-image: url('" + imageUrl + "'); -fx-background-size: cover;");
-        }*/
 
         VBox body = new VBox(8);
         body.getStyleClass().add("card-body");
@@ -427,7 +432,6 @@ public class AccueilController {
         }
     }
 
-    // Navigation
     @FXML private void goAccueil() { navigateTo("/"); }
     @FXML private void goDiscover() { navigateTo("/discover"); }
     @FXML private void goUniverses() { navigateTo("/universes"); }

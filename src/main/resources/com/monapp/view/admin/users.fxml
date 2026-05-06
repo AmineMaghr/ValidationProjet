@@ -22,14 +22,18 @@
         </VBox>
         
         <VBox spacing="8" style="-fx-padding: 10 20 0 20;">
-            <Button text="🏠 Dashboard" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+            <Button text="Ÿ Dashboard" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;"
                     onAction="#goHome"/>
-            <Button text="👥 Utilisateurs" style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;" 
+            <Button text="Ÿ‘ Utilisateurs" style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"
                     onAction="#showUsersTab"/>
-            <Button text="📚 Œuvres" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+            <Button text="Ÿ“š ’uvres" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;"
                     onAction="#showOeuvresTab"/>
-            <Button text="⚡ Artefacts" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;" 
+            <Button text="š Artefacts" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;"
                     onAction="#showArtefactsTab"/>
+            <Button text="Univers" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;"
+                    onAction="#showUniversesTab"/>
+            <Button text="Personnages" style="-fx-background-color: transparent; -fx-text-fill: #b0b9b6; -fx-padding: 12 15; -fx-alignment: CENTER_LEFT; -fx-background-radius: 10; -fx-cursor: hand;"
+                    onAction="#showPersonnagesTab"/>
         </VBox>
         
         <Region VBox.vgrow="ALWAYS"/>
@@ -128,23 +132,37 @@
             </Tab>
             
             <!-- TAB ARTEFACTS -->
-            <Tab text="⚡ Artefacts" closable="false">
+            <Tab text="š Artefacts" closable="false">
                 <VBox spacing="15" style="-fx-padding: 20;">
                     <HBox spacing="10">
                         <HBox spacing="10" style="-fx-background-color: #1a2530; -fx-background-radius: 25; -fx-padding: 5 15;" HBox.hgrow="ALWAYS">
-                            <Label text="🔍" style="-fx-text-fill: #6a7a8a;"/>
+                            <Label text="Ÿ”" style="-fx-text-fill: #6a7a8a;"/>
                             <TextField fx:id="searchArtefactField" promptText="Rechercher un artefact..."
                                        style="-fx-background-color: transparent; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a;"/>
                         </HBox>
                         <Button text="Rechercher" onAction="#searchArtefacts"
                                 style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
-                        <Button text="Réinitialiser" onAction="#resetArtefactFilters"
+                        <Button text="Rinitialiser" onAction="#resetArtefactFilters"
                                 style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-padding: 8 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
                     </HBox>
                     <TableView fx:id="artefactTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
                 </VBox>
             </Tab>
-            
+
+            <!-- TAB UNIVERS -->
+            <Tab text="Univers" closable="false">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <TableView fx:id="universeTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+
+            <!-- TAB PERSONNAGES -->
+            <Tab text="Personnages" closable="false">
+                <VBox spacing="15" style="-fx-padding: 20;">
+                    <TableView fx:id="personnageTable" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" VBox.vgrow="ALWAYS"/>
+                </VBox>
+            </Tab>
+
         </TabPane>
 
     </VBox>

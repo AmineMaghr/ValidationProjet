@@ -124,6 +124,12 @@ public class PersonnageController extends BaseController {
                 System.out.println("Erreur chargement image: " + e.getMessage());
             }
         }
+        
+        boolean canEdit = com.example.app.utils.UserSession.isAdmin() || 
+            (com.example.app.utils.UserSession.isLoggedIn() && personnage.getCreatorId() == com.example.app.utils.UserSession.getCurrentUserId());
+            
+        saveBtn.setDisable(!canEdit);
+        deleteBtn.setDisable(!canEdit);
     }
 
     @FXML
@@ -242,6 +248,9 @@ public class PersonnageController extends BaseController {
         personnage.setDescription(descriptionArea.getText());
         personnage.setClassRole(classRoleCombo.getValue());
         personnage.setUnivers(universeCombo.getValue());
+        if (personnage.getId() == 0 && com.example.app.utils.UserSession.isLoggedIn()) {
+            personnage.setCreatorId(com.example.app.utils.UserSession.getCurrentUserId());
+        }
     }
 
     private void clearForm() {
@@ -252,5 +261,10 @@ public class PersonnageController extends BaseController {
         universeCombo.setValue(null);
         portraitView.setImage(null);
         selectedImageFile = null;
+    }
+
+    @FXML
+    public void goAccueil() {
+        navigateTo("/");
     }
 }

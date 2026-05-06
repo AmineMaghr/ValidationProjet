@@ -1,9 +1,9 @@
 package com.example.app.dao;
 
 import com.example.app.entities.Artefact;
+import com.example.app.entities.User;
 import com.example.app.utils.MyDatabase;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +97,7 @@ public class ArtefactDAO implements IDAO<Artefact> {
         return list;
     }
 
+    // ⭐ MÉTHODE CORRIGÉE - Récupère le created_by_id
     private Artefact mapResultSet(ResultSet rs) throws SQLException {
         Artefact artefact = new Artefact();
         artefact.setId(rs.getInt("id"));
@@ -107,8 +108,21 @@ public class ArtefactDAO implements IDAO<Artefact> {
         artefact.setPowers(rs.getString("powers"));
         artefact.setRarity(rs.getString("rarity"));
         artefact.setImageUrl(rs.getString("image_url"));
-        artefact.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        artefact.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        
+        // ⭐ RÉCUPÉRER LE CRÉATEUR (CREATED_BY_ID)
+        int createdById = rs.getInt("created_by_id");
+        if (createdById > 0) {
+            User creator = new User();
+            creator.setId(createdById);
+            artefact.setCreatedBy(creator);
+        }
+        
+        if (rs.getTimestamp("created_at") != null) {
+            artefact.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        }
+        if (rs.getTimestamp("updated_at") != null) {
+            artefact.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        }
         return artefact;
     }
 }

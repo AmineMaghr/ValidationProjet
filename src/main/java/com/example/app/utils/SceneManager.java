@@ -22,24 +22,61 @@ public class SceneManager {
     public void setPrimaryStage(Stage stage) {
         this.primaryStage = stage;
     }
-    
+
     public Stage getPrimaryStage() {
         return primaryStage;
     }
 
+    public void loadScene(String path, String param) {
+        // Store param for controllers that need it, then delegate
+        loadScene(path);
+    }
+
     public void loadScene(String path) {
         try {
-            String fxmlFile = getFxmlPath(path);
-            System.out.println("Chargement: " + fxmlFile);
+            System.out.println("Chargement: " + path);
 
-            if (getClass().getResource(fxmlFile) == null) {
-                System.err.println("FICHIER NON TROUVÉ: " + fxmlFile);
-                return;
+            Parent root = null;
+
+            // Handle pure Java UI views
+            if ("/universes".equals(path)) {
+                root = new com.example.app.views.UniverseListView();
+            } else if ("/universes/create".equals(path)) {
+                root = new com.example.app.views.UniverseCreateView();
+            } else if ("/personnages".equals(path)) {
+                root = new com.example.app.views.PersonnageListView();
+            } else if ("/personnages/create".equals(path)) {
+                root = new com.example.app.views.PersonnageCreateView();
+            } else if ("/battle".equals(path)) {
+                root = new com.example.app.views.BattleSimulatorView();
+            } else if ("/admin/universes".equals(path)) {
+                root = new com.example.app.views.AdminUniverseDashboardView();
+            } else if ("/admin/personnages".equals(path)) {
+                root = new com.example.app.views.AdminPersonnageDashboardView();
+            } else {
+                String fxmlFile = getFxmlPath(path);
+                System.out.println("Chargement FXML: " + fxmlFile);
+
+                if (getClass().getResource(fxmlFile) == null) {
+                    System.err.println("FICHIER NON TROUVÉ: " + fxmlFile);
+                    return;
+                }
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
+                root = loader.load();
             }
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlFile));
-            Parent root = loader.load();
-            primaryStage.getScene().setRoot(root);
+            // First load: create the scene. Subsequent loads: swap the root.
+            if (primaryStage.getScene() == null) {
+                Scene scene = new Scene(root, 1280, 800);
+                primaryStage.setScene(scene);
+                primaryStage.setTitle("Midgar");
+                primaryStage.setMaximized(true);
+                primaryStage.show();
+            } else {
+                primaryStage.getScene().setRoot(root);
+            }
+
         } catch (IOException e) {
             System.err.println("Erreur lors du chargement de " + path + ": " + e.getMessage());
             e.printStackTrace();
@@ -51,26 +88,22 @@ public class SceneManager {
             case "/" -> "/com/monapp/view/index.fxml";
             case "/discover" -> "/com/monapp/view/discover.fxml";
             case "/universes" -> "/com/monapp/view/universes.fxml";
+            case "/universes/create" -> "/com/monapp/view/universe_create.fxml";
             case "/personnages" -> "/com/monapp/view/personnages.fxml";
 
             // Œuvres - tes fichiers existent
             case "/oeuvre" -> "/com/monapp/view/oeuvre/index.fxml";
             case "/oeuvre/create" -> "/com/monapp/view/oeuvre/create.fxml";
-            case "/oeuvre/show" -> "/com/monapp/view/oeuvre/show.fxml";
 
-            // Artefacts
             case "/artefact" -> "/com/monapp/view/artefact/index.fxml";
-            case "/artefact/create" -> "/com/monapp/view/artefact/create.fxml";
-            case "/artefact/show" -> "/com/monapp/view/artefact/show.fxml";
-            case "/shop" -> "/com/monapp/view/shop/shop.fxml";
+            case "/shop" -> "/com/monapp/view/shop/index.fxml";
             case "/challenges" -> "/com/monapp/view/challenges.fxml";
             case "/quiz" -> "/com/monapp/view/quiz.fxml";
 
+            case "/admin", "/admin/users" -> "/com/monapp/view/admin/users.fxml";
             case "/login" -> "/com/monapp/view/login-view.fxml";
             case "/register" -> "/com/monapp/view/register-view.fxml";
             case "/profile" -> "/com/monapp/view/profile-view.fxml";
-            case "/admin" -> "/com/monapp/view/admin/users.fxml";
-            case "/admin/users" -> "/com/monapp/view/admin/users.fxml";
 
             default -> "/com/monapp/view/index.fxml";
         };

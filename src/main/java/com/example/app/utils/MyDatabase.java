@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class MyDatabase {
     // Configuration MySQL (correspond à votre DATABASE_URL)
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/midgar?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private static final String URL = "jdbc:mysql://127.0.0.1:4306/midgar37?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 

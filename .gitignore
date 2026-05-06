@@ -36,3 +36,7 @@ build/
 
 ### Mac OS ###
 .DS_Store
+src/main/resources/openrouter.key
+target/
+*.key
+${project.build.directory}/

@@ -17,6 +17,7 @@ public class Personnage {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Universe universe;
+    private int creatorId;
 
     public Personnage() {
         this.createdAt = LocalDateTime.now();
@@ -70,6 +71,9 @@ public class Personnage {
 
     public Universe getUniverse() { return universe; }
     public void setUniverse(Universe universe) { this.universe = universe; }
+
+    public int getCreatorId() { return creatorId; }
+    public void setCreatorId(int creatorId) { this.creatorId = creatorId; }
 
     public String getPortraitBase64() {
         if (portraitImage == null || portraitImage.length == 0) return null;

@@ -1,0 +1,124 @@
+[33mcommit d42240610b42d478df77e289c9a9f2fb5619ff4b[m
+Author: amrouj37 <MohammedAmrou.Jemai@esprit.tn>
+Date:   Wed May 6 15:09:24 2026 +0100
+
+    integration user oeuvre universe
+
+ ${project.build.directory}/classes/anthropic.key   |     1 [32m+[m
+ .../classes/com/monapp/view/404.fxml               |    18 [32m+[m
+ .../classes/com/monapp/view/accueil.css            |   564 [32m+[m
+ .../classes/com/monapp/view/admin-view.fxml        |    90 [32m+[m
+ .../classes/com/monapp/view/admin/artefacts.fxml   |   118 [32m+[m
+ .../classes/com/monapp/view/admin/base_admin.fxml  |    44 [32m+[m
+ .../classes/com/monapp/view/admin/challenges.fxml  |    49 [32m+[m
+ .../classes/com/monapp/view/admin/commandes.fxml   |    34 [32m+[m
+ .../classes/com/monapp/view/admin/dashboard.fxml   |    87 [32m+[m
+ .../classes/com/monapp/view/admin/oeuvres.fxml     |   118 [32m+[m
+ .../com/monapp/view/admin/participations.fxml      |    32 [32m+[m
+ .../classes/com/monapp/view/admin/personnages.fxml |    32 [32m+[m
+ .../classes/com/monapp/view/admin/produits.fxml    |    66 [32m+[m
+ .../classes/com/monapp/view/admin/quiz.fxml        |    57 [32m+[m
+ .../classes/com/monapp/view/admin/univers.fxml     |    36 [32m+[m
+ .../classes/com/monapp/view/admin/users.fxml       |   151 [32m+[m
+ .../classes/com/monapp/view/artefact.fxml          |    38 [32m+[m
+ .../classes/com/monapp/view/artefact/create.fxml   |   120 [32m+[m
+ .../classes/com/monapp/view/artefact/index.fxml    |   132 [32m+[m
+ .../classes/com/monapp/view/artefact/show.fxml     |    94 [32m+[m
+ .../classes/com/monapp/view/base.fxml              |    81 [32m+[m
+ .../classes/com/monapp/view/challenges.fxml        |   106 [32m+[m
+ .../com/monapp/view/challenges/participer.fxml     |   125 [32m+[m
+ .../classes/com/monapp/view/defis.css              |   142 [32m+[m
+ .../classes/com/monapp/view/discover.fxml          |    73 [32m+[m
+ .../classes/com/monapp/view/face-login-view.fxml   |    62 [32m+[m
+ .../com/monapp/view/face-register-view.fxml        |    59 [32m+[m
+ .../com/monapp/view/forgot-password-view.fxml      |    99 [32m+[m
+ .../classes/com/monapp/view/image/upload.fxml      |    24 [32m+[m
+ .../classes/com/monapp/view/index.fxml             |   158 [32m+[m
+ .../classes/com/monapp/view/login-view.fxml        |   112 [32m+[m
+ .../classes/com/monapp/view/login.fxml             |    77 [32m+[m
+ .../classes/com/monapp/view/midgar.css             |   167 [32m+[m
+ .../classes/com/monapp/view/oeuvre/create.fxml     |    86 [32m+[m
+ .../classes/com/monapp/view/oeuvre/index.fxml      |   132 [32m+[m
+ .../classes/com/monapp/view/oeuvre/show.fxml       |    81 [32m+[m
+ .../classes/com/monapp/view/partials/header.fxml   |    34 [32m+[m
+ .../com/monapp/view/participations/index.fxml      |   101 [32m+[m
+ .../classes/com/monapp/view/personnage_detail.fxml |    73 [32m+[m
+ .../classes/com/monapp/view/personnages.fxml       |    95 [32m+[m
+ .../classes/com/monapp/view/profile-view.fxml      |   186 [32m+[m
+ .../classes/com/monapp/view/profile/profile.fxml   |     0
+ .../classes/com/monapp/view/profile/settings.fxml  |    57 [32m+[m
+ .../classes/com/monapp/view/quiz.fxml              |    59 [32m+[m
+ .../classes/com/monapp/view/register-view.fxml     |   128 [32m+[m
+ .../com/monapp/view/registration/register.fxml     |    73 [32m+[m
+ .../com/monapp/view/reset-password-view.fxml       |    64 [32m+[m
+ .../com/monapp/view/security/face_login.fxml       |    54 [32m+[m
+ .../com/monapp/view/security/face_setup.fxml       |    59 [32m+[m
+ .../com/monapp/view/security/forgot_password.fxml  |     0
+ .../classes/com/monapp/view/shop/cart.fxml         |    99 [32m+[m
+ .../classes/com/monapp/view/shop/checkout.fxml     |    93 [32m+[m
+ .../com/monapp/view/shop/commandes/list.fxml       |    33 [32m+[m
+ .../classes/com/monapp/view/shop/detail.fxml       |    65 [32m+[m
+ .../classes/com/monapp/view/shop/index.fxml        |    99 [32m+[m
+ .../classes/com/monapp/view/universe_detail.fxml   |    76 [32m+[m
+ .../classes/com/monapp/view/universes.fxml         |    68 [32m+[m
+ .../classes/config.properties                      |     7 [32m+[m
+ .../classes/css/modern-style.css                   |   188 [32m+[m
+ .../classes/haarcascade_frontalface_default.xml    | 33314 [32m+++++++++++++++++++[m
+ .../classes/models/face_landmark_68_model-shard1   |   Bin [31m0[m -> [32m356840[m bytes
+ .../face_landmark_68_model-weights_manifest.json   |     1 [32m+[m
+ .../classes/models/face_recognition_model-shard1   |   Bin [31m0[m -> [32m4194304[m bytes
+ .../classes/models/face_recognition_model-shard2   |     6 [32m+[m
+ .../face_recognition_model-weights_manifest.json   |     1 [32m+[m
+ .../models/haarcascade_frontalface_default.xml     | 33314 [32m+++++++++++++++++++[m
+ .../classes/models/tiny_face_detector_model-shard1 |   Bin [31m0[m -> [32m193321[m bytes
+ .../tiny_face_detector_model-weights_manifest.json |     1 [32m+[m
+ ${project.build.directory}/classes/openrouter.key  |     1 [32m+[m
+ .../classes/org/example/midgarpd/hello-view.fxml   |    16 [32m+[m
+ .../classes/videos/dragon.mp4                      |   Bin [31m0[m -> [32m12684614[m bytes
+ .../classes/videos/face-auth.mp4                   |   Bin [31m0[m -> [32m18760092[m bytes
+ .../classes/videos/face-login.mp4                  |   Bin [31m0[m -> [32m8597159[m bytes
+ .idea/copilotDiffState.xml                         |    23 [32m+[m[31m-[m
+ .idea/vcs.xml                                      |     6 [32m+[m
+ face-model.xml                                     | 20534 [32m++++++[m[31m------[m
+ migration_add_creator_id.sql                       |   Bin [31m0[m -> [32m252[m bytes
+ migration_add_tables.sql                           |   136 [32m+[m
+ .../example/app/controllers/AdminController.java   |   169 [32m+[m[31m-[m
+ .../example/app/controllers/BaseController.java    |    26 [32m+[m
+ .../app/controllers/DiscoverController.java        |    12 [32m+[m
+ .../app/controllers/PersonnageController.java      |    16 [32m+[m[31m-[m
+ .../example/app/controllers/ProfileController.java |   107 [32m+[m[31m-[m
+ .../app/controllers/UniversesController.java       |     9 [32m+[m[31m-[m
+ .../java/com/example/app/dao/PersonnageDAO.java    |    11 [32m+[m[31m-[m
+ src/main/java/com/example/app/dao/UniverseDAO.java |    21 [32m+[m[31m-[m
+ .../java/com/example/app/entities/Personnage.java  |     4 [32m+[m
+ .../java/com/example/app/entities/Universe.java    |    65 [32m+[m[31m-[m
+ .../example/app/services/CharacterAPIService.java  |    61 [32m+[m
+ .../com/example/app/services/ChatbotService.java   |   419 [32m+[m
+ .../app/services/ImageGenerationService.java       |    67 [32m+[m
+ .../example/app/services/PersonnageService.java    |   150 [32m+[m[31m-[m
+ .../app/services/PortraitGenerationService.java    |    54 [32m+[m
+ .../com/example/app/services/UniverseService.java  |   111 [32m+[m[31m-[m
+ .../example/app/services/VideoPlayerService.java   |    78 [32m+[m
+ .../com/example/app/services/WeatherService.java   |   160 [32m+[m
+ .../java/com/example/app/utils/MyDatabase.java     |     2 [32m+[m[31m-[m
+ .../java/com/example/app/utils/SceneManager.java   |   158 [32m+[m[31m-[m
+ .../java/com/example/app/utils/TokenReceiver.java  |    24 [32m+[m[31m-[m
+ .../app/views/AdminPersonnageDashboardView.java    |   217 [32m+[m
+ .../app/views/AdminUniverseDashboardView.java      |   172 [32m+[m
+ .../com/example/app/views/BattleSimulatorView.java |   760 [32m+[m
+ .../java/com/example/app/views/HeaderView.java     |   108 [32m+[m
+ .../example/app/views/PersonnageCreateView.java    |   399 [32m+[m
+ .../example/app/views/PersonnageDetailView.java    |   340 [32m+[m
+ .../com/example/app/views/PersonnageListView.java  |   233 [32m+[m
+ .../com/example/app/views/PersonnageTableView.java |   153 [32m+[m
+ .../com/example/app/views/UniverseCreateView.java  |   297 [32m+[m
+ .../com/example/app/views/UniverseDetailView.java  |   465 [32m+[m
+ .../com/example/app/views/UniverseListView.java    |   251 [32m+[m
+ .../com/example/app/views/UniverseTableView.java   |   131 [32m+[m
+ src/main/resources/anthropic.key                   |     1 [32m+[m
+ .../resources/com/monapp/view/admin/users.fxml     |    34 [32m+[m[31m-[m
+ .../resources/com/monapp/view/face-login-view.fxml |     5 [32m+[m[31m-[m
+ .../com/monapp/view/face-register-view.fxml        |     4 [32m+[m[31m-[m
+ src/main/resources/com/monapp/view/login.fxml      |     2 [32m+[m[31m-[m
+ .../resources/com/monapp/view/profile-view.fxml    |    32 [32m+[m[31m-[m
+ 117 files changed, 87369 insertions(+), 10488 deletions(-)

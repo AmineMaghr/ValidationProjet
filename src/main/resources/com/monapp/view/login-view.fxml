@@ -78,19 +78,20 @@
 
                     <Separator style="-fx-background-color: rgba(24,227,164,0.15);"/>
 
-                    <!-- Connexion sociale -->
+                                        <!-- Connexion sociale -->
                     <VBox spacing="12">
                         <!-- Reconnaissance faciale -->
-                        <Button text="👤 Reconnaissance faciale" onAction="#facialRecognition"
-                                style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"/>
+                                                <!-- Connexion par visage -->
+                        <Button text="👤 Connexion par visage" onAction="#goToFaceLogin"
+                                    style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; 
+                                        -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
+                                    maxWidth="Infinity"/>
 
                         <!-- Google -->
-                        <HBox spacing="10" alignment="CENTER">
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Button text="Continuer avec Google" onAction="#googleLogin"
-                                    style="-fx-background-color: #fff; -fx-text-fill: #333; -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12 20; -fx-cursor: hand; -fx-font-size: 14px;"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                        <Button text="G Continuer avec Google" onAction="#googleLogin"
+                                style="-fx-background-color: #fff; -fx-text-fill: #333; -fx-font-weight: bold; 
+                                    -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
+                                maxWidth="Infinity"/>
                     </VBox>
 
                     <!-- Lien vers inscription -->

@@ -3,9 +3,11 @@ package com.example.app.controllers;
 import com.example.app.entities.User;
 import com.example.app.entities.Oeuvre;
 import com.example.app.entities.Artefact;
+import com.example.app.entities.Favoris;
 import com.example.app.services.UserService;
 import com.example.app.services.OeuvreService;
 import com.example.app.services.ArtefactService;
+import com.example.app.services.FavorisService;
 import com.example.app.utils.UserSession;
 import com.example.app.views.OeuvreCard;
 import com.example.app.views.ArtefactCard;
@@ -13,18 +15,17 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProfileController extends BaseController {
@@ -33,6 +34,7 @@ public class ProfileController extends BaseController {
     @FXML private Label fullNameLabel;
     @FXML private Label emailLabel;
     @FXML private Label memberSinceLabel;
+    @FXML private Label bioLabel;
     @FXML private ImageView avatarImage;
     @FXML private Button editProfileBtn;
     @FXML private Button logoutBtn;
@@ -40,33 +42,40 @@ public class ProfileController extends BaseController {
     @FXML private TabPane contentTabPane;
     @FXML private TilePane oeuvresGrid;
     @FXML private TilePane artefactsGrid;
+    @FXML private TilePane universesGrid;
+    @FXML private TilePane personnagesGrid;
     @FXML private TilePane favoriteOeuvresGrid;
     @FXML private TilePane favoriteArtefactsGrid;
     @FXML private Label oeuvresCountLabel;
     @FXML private Label artefactsCountLabel;
+    @FXML private Label universesCountLabel;
+    @FXML private Label personnagesCountLabel;
     @FXML private Label favoritesCountLabel;
     
     private UserService userService;
     private OeuvreService oeuvreService;
     private ArtefactService artefactService;
+    private com.example.app.services.UniverseService universeService;
+    private com.example.app.services.PersonnageService personnageService;
+    private FavorisService favorisService;
     private User currentUser;
-    private boolean isOwner;
     
     @FXML
     public void initialize() {
         userService = new UserService();
         oeuvreService = new OeuvreService();
         artefactService = new ArtefactService();
+        universeService = new com.example.app.services.UniverseService();
+        personnageService = new com.example.app.services.PersonnageService();
+        favorisService = new FavorisService();
         
-        // Vérifier si c'est le propriétaire du profil
         currentUser = UserSession.getCurrentUser();
-        isOwner = true; // Pour le profil personnel
         
         loadProfileData();
         setupTabs();
-        // Temporarily show admin button for testing
+        
         if (adminBtn != null) {
-            adminBtn.setVisible(true);
+            adminBtn.setVisible(UserSession.isAdmin());
         }
     }
     
@@ -77,7 +86,6 @@ public class ProfileController extends BaseController {
             return;
         }
         
-        // Afficher les informations de base
         usernameLabel.setText("@" + currentUser.getUsername());
         fullNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         emailLabel.setText(currentUser.getEmail());
@@ -85,16 +93,17 @@ public class ProfileController extends BaseController {
             (currentUser.getCreatedAt() != null ? 
              currentUser.getCreatedAt().toLocalDate().toString() : "récemment"));
         
-        // ⭐ CHARGER L'AVATAR ⭐
+        // Afficher la bio
+        if (currentUser.getBio() != null && !currentUser.getBio().isEmpty()) {
+            bioLabel.setText(currentUser.getBio());
+        } else {
+            bioLabel.setText("Aucune bio pour le moment");
+        }
+        
         loadAvatar();
-        
-        // Charger les créations
         loadUserCreations();
-        
-        // Charger les favoris
         loadUserFavorites();
         
-        // Afficher/Masquer le bouton admin
         if (adminBtn != null) {
             adminBtn.setVisible(UserSession.isAdmin());
         }
@@ -105,90 +114,68 @@ public class ProfileController extends BaseController {
      */
     private void loadAvatar() {
         String avatarPath = currentUser.getAvatar();
-        System.out.println("🔍 Chargement avatar - Chemin stocké: " + avatarPath);
+        System.out.println("🔍 Chargement avatar - Chemin: " + avatarPath);
 
         if (avatarPath != null && !avatarPath.isEmpty()) {
-            File avatarFile = findAvatarFile(avatarPath);
-
-            if (avatarFile != null && avatarFile.exists()) {
+            String fileName = new File(avatarPath).getName();
+            File avatarFile = new File("uploads/avatars/" + fileName);
+            
+            if (!avatarFile.exists()) {
+                avatarFile = new File(avatarPath);
+            }
+            
+            if (avatarFile.exists()) {
                 try {
-                    System.out.println("✅ Avatar trouvé: " + avatarFile.getAbsolutePath());
                     Image avatar = new Image(avatarFile.toURI().toString(), 120, 120, true, true);
                     avatarImage.setImage(avatar);
+                    
+                    // Appliquer le clip cercle
+                    Circle clip = new Circle(60);
+                    clip.setCenterX(60);
+                    clip.setCenterY(60);
+                    avatarImage.setClip(clip);
+                    
+                    System.out.println("✅ Avatar chargé");
                     return;
                 } catch (Exception e) {
-                    System.err.println("Erreur chargement image: " + e.getMessage());
+                    System.err.println("Erreur: " + e.getMessage());
                 }
-            } else {
-                System.out.println("❌ Avatar non trouvé pour: " + avatarPath);
             }
-        } else {
-            System.out.println("ℹ️ Aucun avatar défini pour l'utilisateur");
         }
-
-        // Si on arrive ici, afficher le placeholder
+        
         setPlaceholderAvatar();
     }
 
     /**
-     * Cherche le fichier avatar dans différents emplacements possibles
-     */
-    private File findAvatarFile(String avatarPath) {
-        String userDir = System.getProperty("user.dir");
-        String fileName = new File(avatarPath).getName();
-
-        // Liste des chemins possibles
-        String[] possiblePaths = {
-            avatarPath,                                           // Chemin absolu direct
-            userDir + "/" + avatarPath,                          // Relatif depuis projet
-            "uploads/avatars/" + fileName,                       // Dossier uploads/avatars/
-            userDir + "/uploads/avatars/" + fileName,            // Chemin complet vers uploads
-            "src/main/resources/uploads/avatars/" + fileName,    // Dans resources
-            userDir + "/src/main/resources/uploads/avatars/" + fileName
-        };
-
-        for (String path : possiblePaths) {
-            File file = new File(path);
-            if (file.exists()) {
-                System.out.println("  ✅ Trouvé: " + path);
-                return file;
-            }
-        }
-
-        System.out.println("  ❌ Non trouvé dans aucun chemin");
-        return null;
-    }
-
-    /**
-     * Crée un placeholder avec les initiales de l'utilisateur
+     * Crée un placeholder avec les initiales
      */
     private void setPlaceholderAvatar() {
         String initials = getInitials();
         System.out.println("📷 Affichage placeholder pour: " + initials);
 
-        // Créer une image avec les initiales
         javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(120, 120);
         javafx.scene.canvas.GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        // Dessiner un cercle de fond
         gc.setFill(javafx.scene.paint.Color.web("#18E3A4"));
         gc.fillOval(0, 0, 120, 120);
 
-        // Dessiner une bordure
         gc.setStroke(javafx.scene.paint.Color.web("#0a0c10"));
         gc.setLineWidth(3);
         gc.strokeOval(2, 2, 116, 116);
 
-        // Dessiner le texte (initiales)
         gc.setFill(javafx.scene.paint.Color.web("#0a0c10"));
         gc.setFont(javafx.scene.text.Font.font("Arial", 40));
         gc.setTextAlign(javafx.scene.text.TextAlignment.CENTER);
-        gc.fillText(initials, 60, 75);
+        gc.fillText(initials, 60, 78);
 
-        // Convertir en image
-        javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage(120, 120);
-        canvas.snapshot(null, writableImage);
-        avatarImage.setImage(writableImage);
+        javafx.scene.image.WritableImage image = canvas.snapshot(null, null);
+        avatarImage.setImage(image);
+        
+        // Appliquer le clip cercle
+        Circle clip = new Circle(60);
+        clip.setCenterX(60);
+        clip.setCenterY(60);
+        avatarImage.setClip(clip);
     }
 
     /**
@@ -212,18 +199,15 @@ public class ProfileController extends BaseController {
      * Sauvegarde l'image avatar sélectionnée
      */
     private String saveAvatarImage(File sourceFile) throws Exception {
-        // Créer le dossier uploads s'il n'existe pas
         File uploadsDir = new File("uploads/avatars");
         if (!uploadsDir.exists()) {
             uploadsDir.mkdirs();
         }
 
-        // Générer un nom unique pour l'avatar
         String extension = getFileExtension(sourceFile);
         String fileName = "avatar_" + currentUser.getId() + "_" + System.currentTimeMillis() + "." + extension;
         File destFile = new File(uploadsDir, fileName);
 
-        // Copier le fichier
         Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         return destFile.getAbsolutePath();
@@ -252,8 +236,11 @@ public class ProfileController extends BaseController {
                 oeuvresCountLabel.setText(String.valueOf(oeuvres.size()));
             }
             displayOeuvresAsCards(oeuvres, oeuvresGrid);
+            System.out.println("=== [PROFILE] Œuvres chargées: " + oeuvres.size());
         });
-        oeuvreTask.setOnFailed(e -> System.err.println("Erreur chargement œuvres: " + e.getSource().getException()));
+        oeuvreTask.setOnFailed(e -> {
+            System.err.println("Erreur chargement œuvres: " + e.getSource().getException());
+        });
         new Thread(oeuvreTask).start();
         
         // Charger les artefacts
@@ -269,14 +256,123 @@ public class ProfileController extends BaseController {
                 artefactsCountLabel.setText(String.valueOf(artefacts.size()));
             }
             displayArtefactsAsCards(artefacts, artefactsGrid);
+            System.out.println("=== [PROFILE] Artefacts chargés: " + artefacts.size());
         });
-        artefactTask.setOnFailed(e -> System.err.println("Erreur chargement artefacts: " + e.getSource().getException()));
+        artefactTask.setOnFailed(e -> {
+            System.err.println("Erreur chargement artefacts: " + e.getSource().getException());
+            e.getSource().getException().printStackTrace();
+        });
         new Thread(artefactTask).start();
+        
+        // Charger les univers
+        Task<List<com.example.app.entities.Universe>> universeTask = new Task<>() {
+            @Override
+            protected List<com.example.app.entities.Universe> call() throws Exception {
+                return universeService.searchUniverses(null, null, "newest", currentUser.getId());
+            }
+        };
+        universeTask.setOnSucceeded(e -> {
+            List<com.example.app.entities.Universe> universes = universeTask.getValue();
+            if (universesCountLabel != null) {
+                universesCountLabel.setText(String.valueOf(universes.size()));
+            }
+            displayUniversesAsCards(universes, universesGrid);
+        });
+        new Thread(universeTask).start();
+
+        // Charger les personnages
+        Task<List<com.example.app.entities.Personnage>> personnageTask = new Task<>() {
+            @Override
+            protected List<com.example.app.entities.Personnage> call() throws Exception {
+                return personnageService.searchPersonnages(null, null, null, "newest", currentUser.getId());
+            }
+        };
+        personnageTask.setOnSucceeded(e -> {
+            List<com.example.app.entities.Personnage> personnages = personnageTask.getValue();
+            if (personnagesCountLabel != null) {
+                personnagesCountLabel.setText(String.valueOf(personnages.size()));
+            }
+            displayPersonnagesAsCards(personnages, personnagesGrid);
+        });
+        new Thread(personnageTask).start();
     }
     
     private void loadUserFavorites() {
-        // TODO: Implémenter la récupération des favoris depuis la base de données
-        favoritesCountLabel.setText("0");
+        int userId = currentUser.getId();
+
+        Task<List<Oeuvre>> favOeuvreTask = new Task<>() {
+            @Override
+            protected List<Oeuvre> call() throws Exception {
+                List<Oeuvre> favorites = new ArrayList<>();
+                try {
+                    List<Favoris> favList = favorisService.getUserFavoriteOeuvres(userId);
+                    System.out.println("=== [FAVORIS] Œuvres favorites trouvées: " + favList.size());
+                    for (Favoris fav : favList) {
+                        System.out.println("  - fav.getOeuvreId() = " + fav.getOeuvreId());
+                        Oeuvre oeuvre = oeuvreService.findById(fav.getOeuvreId());
+                        if (oeuvre != null) {
+                            favorites.add(oeuvre);
+                            System.out.println("    → Œuvre ajoutée: " + oeuvre.getTitle());
+                        } else {
+                            System.out.println("    → Œuvre NON trouvée pour ID: " + fav.getOeuvreId());
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return favorites;
+            }
+        };
+        favOeuvreTask.setOnSucceeded(e -> {
+            List<Oeuvre> favOeuvres = favOeuvreTask.getValue();
+            if (favoriteOeuvresGrid != null) {
+                displayOeuvresAsCards(favOeuvres, favoriteOeuvresGrid);
+            }
+            updateTotalFavoritesCount();
+        });
+        new Thread(favOeuvreTask).start();
+
+        Task<List<Artefact>> favArtefactTask = new Task<>() {
+            @Override
+            protected List<Artefact> call() throws Exception {
+                List<Artefact> favorites = new ArrayList<>();
+                try {
+                    List<Favoris> favList = favorisService.getUserFavoriteArtefacts(userId);
+                    System.out.println("=== [FAVORIS] Artefacts favoris trouvés: " + favList.size());
+                    for (Favoris fav : favList) {
+                        System.out.println("  - fav.getArtefactId() = " + fav.getArtefactId());
+                        Artefact artefact = artefactService.findById(fav.getArtefactId());
+                        if (artefact != null) {
+                            favorites.add(artefact);
+                            System.out.println("    → Artefact ajouté: " + artefact.getName());
+                        } else {
+                            System.out.println("    → Artefact NON trouvé pour ID: " + fav.getArtefactId());
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return favorites;
+            }
+        };
+        favArtefactTask.setOnSucceeded(e -> {
+            List<Artefact> favArtefacts = favArtefactTask.getValue();
+            if (favoriteArtefactsGrid != null) {
+                displayArtefactsAsCards(favArtefacts, favoriteArtefactsGrid);
+            }
+            updateTotalFavoritesCount();
+        });
+        new Thread(favArtefactTask).start();
+    }
+    
+    private void updateTotalFavoritesCount() {
+        try {
+            int total = favorisService.getUserFavoriteOeuvres(currentUser.getId()).size() +
+                        favorisService.getUserFavoriteArtefacts(currentUser.getId()).size();
+            favoritesCountLabel.setText(String.valueOf(total));
+        } catch (SQLException e) {
+            favoritesCountLabel.setText("0");
+        }
     }
     
     private void displayOeuvresAsCards(List<Oeuvre> oeuvres, TilePane grid) {
@@ -299,6 +395,45 @@ public class ProfileController extends BaseController {
                 ArtefactCard card = new ArtefactCard(artefact, () -> {
                     ArtefactController.setSelectedArtefactForShow(artefact);
                     navigateTo("/artefact/show");
+                });
+                grid.getChildren().add(card);
+            }
+        });
+    }
+
+    private void displayUniversesAsCards(List<com.example.app.entities.Universe> universes, TilePane grid) {
+        Platform.runLater(() -> {
+            if (grid == null) return;
+            grid.getChildren().clear();
+            for (com.example.app.entities.Universe universe : universes) {
+                VBox card = new VBox(5);
+                card.setPadding(new Insets(10));
+                card.setStyle("-fx-background-color: #1a2530; -fx-background-radius: 8; -fx-cursor: hand;");
+                Label name = new Label(universe.getName());
+                name.setStyle("-fx-text-fill: #18E3A4; -fx-font-weight: bold;");
+                card.getChildren().add(name);
+                card.setOnMouseClicked(e -> {
+                    // Navigate to universe detail view or edit
+                    navigateTo("/universes");
+                });
+                grid.getChildren().add(card);
+            }
+        });
+    }
+
+    private void displayPersonnagesAsCards(List<com.example.app.entities.Personnage> personnages, TilePane grid) {
+        Platform.runLater(() -> {
+            if (grid == null) return;
+            grid.getChildren().clear();
+            for (com.example.app.entities.Personnage personnage : personnages) {
+                VBox card = new VBox(5);
+                card.setPadding(new Insets(10));
+                card.setStyle("-fx-background-color: #1a2530; -fx-background-radius: 8; -fx-cursor: hand;");
+                Label name = new Label(personnage.getNom());
+                name.setStyle("-fx-text-fill: #18E3A4; -fx-font-weight: bold;");
+                card.getChildren().add(name);
+                card.setOnMouseClicked(e -> {
+                    navigateTo("/personnages");
                 });
                 grid.getChildren().add(card);
             }
@@ -362,6 +497,11 @@ public class ProfileController extends BaseController {
         
         TextField emailField = new TextField(currentUser.getEmail());
         emailField.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
+        
+        TextArea bioArea = new TextArea(currentUser.getBio());
+        bioArea.setStyle("-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-padding: 10; -fx-background-radius: 8;");
+        bioArea.setPrefRowCount(3);
+        bioArea.setWrapText(true);
 
         Button changeAvatarBtn = new Button("Changer l'avatar");
         changeAvatarBtn.setStyle("-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-background-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;");
@@ -377,10 +517,12 @@ public class ProfileController extends BaseController {
         grid.add(nomField, 1, 2);
         grid.add(new Label("Email:"), 0, 3);
         grid.add(emailField, 1, 3);
-        grid.add(new Label("Avatar:"), 0, 4);
+        grid.add(new Label("Bio:"), 0, 4);
+        grid.add(bioArea, 1, 4);
+        grid.add(new Label("Avatar:"), 0, 5);
 
         VBox avatarBox = new VBox(5, changeAvatarBtn, avatarStatus);
-        grid.add(avatarBox, 1, 4);
+        grid.add(avatarBox, 1, 5);
         
         for (javafx.scene.Node node : grid.getChildren()) {
             if (node instanceof Label) {
@@ -411,6 +553,7 @@ public class ProfileController extends BaseController {
                 currentUser.setPrenom(prenomField.getText());
                 currentUser.setNom(nomField.getText());
                 currentUser.setEmail(emailField.getText());
+                currentUser.setBio(bioArea.getText());
 
                 if (selectedAvatarFile[0] != null) {
                     try {
@@ -562,6 +705,63 @@ public class ProfileController extends BaseController {
         navigateTo("/");
     }
 
+    @FXML
+    public void goDiscover() {
+        navigateTo("/discover");
+    }
+
+    @FXML
+    public void goUniverses() {
+        navigateTo("/universes");
+    }
+
+    @FXML
+    public void goPersonnages() {
+        navigateTo("/personnages");
+    }
+
+    @FXML
+    public void goOeuvres() {
+        navigateTo("/oeuvre");
+    }
+
+    @FXML
+    public void goArtefacts() {
+        navigateTo("/artefact");
+    }
+
+    @FXML
+    private void openSettings() {
+        // Créer un dialog pour les paramètres
+        Dialog<ButtonType> settingsDialog = new Dialog<>();
+        settingsDialog.setTitle("Paramètres");
+        settingsDialog.setHeaderText("Paramètres du compte");
+        
+        ButtonType passwordButtonType = new ButtonType("Changer le mot de passe", ButtonBar.ButtonData.OTHER);
+        ButtonType deleteButtonType = new ButtonType("Supprimer le compte", ButtonBar.ButtonData.OTHER);
+        ButtonType closeButtonType = new ButtonType("Fermer", ButtonBar.ButtonData.CANCEL_CLOSE);
+        settingsDialog.getDialogPane().getButtonTypes().addAll(passwordButtonType, deleteButtonType, closeButtonType);
+        
+        VBox content = new VBox(15);
+        content.setPadding(new Insets(20));
+        content.setStyle("-fx-background-color: #11161c;");
+        
+        Label infoLabel = new Label("Options de gestion de compte");
+        infoLabel.setStyle("-fx-text-fill: #b0b9b6; -fx-font-size: 14px;");
+        
+        content.getChildren().add(infoLabel);
+        settingsDialog.getDialogPane().setContent(content);
+        settingsDialog.getDialogPane().setStyle("-fx-background-color: #0a0c10;");
+        
+        settingsDialog.showAndWait().ifPresent(response -> {
+            if (response == passwordButtonType) {
+                handleChangePassword();
+            } else if (response == deleteButtonType) {
+                handleDeleteAccount();
+            }
+        });
+    }
+
     protected void showAlert(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
@@ -569,4 +769,22 @@ public class ProfileController extends BaseController {
         alert.setContentText(content);
         alert.showAndWait();
     }
+    
+    // ================= FACE RECOGNITION METHODS =================
+    @FXML
+    public void goToFaceRegister() {
+        if (currentUser == null) {
+            showAlert("Erreur", "Utilisateur non connecté");
+            return;
+        }
+
+        UserSession.setCurrentUser(currentUser);
+        navigateTo("/face-register", UserSession.getCurrentUser());
+    }
+
+    @FXML
+    public void goToFaceLogin() {
+        navigateTo("/face-login");
+    }
 }
+

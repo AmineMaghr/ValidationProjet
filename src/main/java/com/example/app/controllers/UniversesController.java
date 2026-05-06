@@ -32,7 +32,14 @@ public class UniversesController extends BaseController {
 
         universeList.getSelectionModel().selectedItemProperty().addListener((obs, old, selected) -> {
             if (selected != null) {
-                showUniverseDetails(selected);
+                // showUniverseDetails est déjà dans UniverseListView ou autre s'il existe. 
+                // Dans le code FXML : ListView universeList, puis click sur un item
+                // wait, if we click, we want to go back to UniverseDetailView.
+                try {
+                    universeList.getScene().setRoot(new com.example.app.views.UniverseDetailView(selected));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
