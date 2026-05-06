@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.media.*?>
+<?import javafx.scene.image.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.app.controllers.QuizController"
+           stylesheets="@quiz.css">
+
+    <!-- ===== GRADIENT BACKGROUND ===== -->
+    <Pane fx:id="gradientBackground" styleClass="gradient-background" />
+
+    <!-- ===== VIDEO OVERLAY ===== -->
+    <Pane styleClass="video-overlay" />
+
+    <!-- ===== MAIN SITE CONTENT ===== -->
+    <VBox styleClass="site-content" spacing="0">
+
+        <!-- ===== HEADER FIXE (From Accueil) ===== -->
+        <VBox styleClass="header">
+            <HBox styleClass="header-content" spacing="20" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="15" right="30" bottom="15" left="30"/>
+                </padding>
+
+                <!-- Logo -->
+                <HBox styleClass="logo" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                    <Label text="⚜" style="-fx-font-size: 24px; -fx-text-fill: #18E3A4;"/>
+                    <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+                </HBox>
+
+                <!-- Navigation -->
+                <HBox styleClass="nav-menu" spacing="5" alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                    <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                    <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                    <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                    <Button text="Œuvre" styleClass="magic-btn" onAction="#goOeuvres"/>
+                    <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                    <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                    <Button text="Défis" styleClass="magic-btn" onAction="#goChallenges"/>
+                </HBox>
+
+                <!-- Auth Buttons -->
+                <HBox fx:id="authButtons" spacing="10" alignment="CENTER_RIGHT">
+                    <HBox fx:id="profileBox" styleClass="profile-link magic-btn" alignment="CENTER" spacing="8"
+                          onMouseClicked="#goProfile" visible="false" managed="false">
+                        <StackPane styleClass="avatar">
+                            <ImageView fx:id="avatarImage" fitWidth="32" fitHeight="32" preserveRatio="true" />
+                        </StackPane>
+                        <Label fx:id="usernameLabel" styleClass="username-label" />
+                    </HBox>
+                    <Button fx:id="logoutBtn" text="Déconnexion" styleClass="btn,btn-secondary,btn-sm"
+                            onAction="#goAccueil" visible="false" managed="false" />
+
+                    <Button fx:id="loginBtn" text="Connexion" styleClass="btn,btn-secondary,btn-sm"
+                            onAction="#goLogin" />
+                    <Button fx:id="registerBtn" text="S'inscrire" styleClass="btn,btn-primary,btn-sm"
+                            onAction="#goRegister" />
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <ScrollPane fitToWidth="true" fitToHeight="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
+            <VBox styleClass="main" spacing="0" alignment="TOP_CENTER">
+                <padding><Insets top="20" /></padding>
+
+                <!-- Section -->
+                <VBox styleClass="section" alignment="TOP_CENTER" maxWidth="700" spacing="0">
+                    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+                    <!-- Page Title -->
+                    <Label text="Quiz de Prfrences"
+                           styleClass="page-title" wrapText="true" />
+                    <Label text="Dcouvrez vos prfrences en cration fantasy"
+                           styleClass="page-subtitle" wrapText="true" />
+
+                    <!-- ===== QUIZ CONTAINER ===== -->
+                    <VBox styleClass="quiz-container" spacing="20">
+                        <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+                        <!-- Question -->
+                        <VBox styleClass="quiz-question" spacing="16">
+                            <Label fx:id="questionTextLabel"
+                                   text="[Question texte inject par le contrleur]"
+                                   styleClass="question-text" wrapText="true" />
+
+                            <!-- Options Area -->
+                            <GridPane fx:id="answersContainer" hgap="12" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50" />
+                                    <ColumnConstraints percentWidth="50" />
+                                </columnConstraints>
+                                <!-- Options are dynamically appended here as ToggleButtons by the QuizController -->
+                            </GridPane>
+                        </VBox>
+
+                        <!-- Progress Bar -->
+                        <VBox spacing="6">
+                            <ProgressBar fx:id="progressBar" progress="0.0"
+                                         maxWidth="Infinity" styleClass="progress-bar" />
+                            <Label fx:id="progressTextLabel" text="Question 1 de 10"
+                                   styleClass="progress-text" />
+                        </VBox>
+
+                        <!-- Navigation Buttons -->
+                        <HBox spacing="12" alignment="CENTER">
+                            <VBox.margin><Insets top="10"/></VBox.margin>
+                            <Button fx:id="previousButton" text="Précédent"
+                                    styleClass="btn,btn-secondary,magic-btn"
+                                    onAction="#goToPreviousQuestion"
+                                    disable="true" />
+                            <Region HBox.hgrow="ALWAYS" />
+                            <Button fx:id="nextButton" text="Suivant"
+                                    styleClass="btn,btn-primary,magic-btn"
+                                    onAction="#goToNextQuestion" />
+                            <!-- "Terminer" button shown on last question -->
+                            <Button fx:id="submitBtn" text="Terminer"
+                                    styleClass="btn,btn-primary,magic-btn"
+                                    onAction="#goToNextQuestion"
+                                    visible="false" managed="false" />
+                        </HBox>
+
+                        <!-- Personalize Feed Link -->
+                        <HBox alignment="CENTER" spacing="4">
+                            <Label text="ou" styleClass="personalize-label" />
+                            <Hyperlink text="personnaliser ton feed"
+                                       styleClass="personalize-link"
+                                       onAction="#goAdvancedPreferences" />
+                        </HBox>
+
+                    </VBox>
+                    <!-- end quiz-container -->
+
+                </VBox>
+                <!-- end section -->
+
+            </VBox>
+        </ScrollPane>
+
+    </VBox>
+    <!-- end site-content -->
+
+</StackPane>

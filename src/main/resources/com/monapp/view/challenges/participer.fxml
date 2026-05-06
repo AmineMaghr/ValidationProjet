@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.midgar.controller.ParticiperController"
+            stylesheets="@participe.css"
+            styleClass="root">
+
+    <!-- ===== TOP (HEADER) ===== -->
+    <top>
+        <HBox styleClass="header" spacing="20">
+
+            <!-- Logo -->
+            <HBox styleClass="logo" spacing="8" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 22px;"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+            </HBox>
+
+            <!-- Navigation -->
+            <HBox spacing="10" styleClass="nav" HBox.hgrow="ALWAYS">
+                <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                <Button text="Œuvres" styleClass="magic-btn" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                <Button text="Défis" styleClass="magic-btn active" onAction="#goChallenges"/>
+            </HBox>
+
+            <!-- Static Auth buttons (example for connected user) -->
+            <HBox spacing="10" styleClass="auth" alignment="CENTER_RIGHT" fx:id="authContainer">
+                <Button text="Utilisateur" styleClass="magic-btn" onAction="#goToProfile"/>
+                <Button text="Déconnexion" styleClass="btn-secondary" onAction="#handleLogout"/>
+            </HBox>
+
+        </HBox>
+    </top>
+
+    <!-- ===== CENTER ===== -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="scroll">
+
+            <VBox spacing="20" styleClass="container">
+
+                <!-- Challenge Details Card (Static Example) -->
+                <VBox styleClass="card">
+
+                    <!-- Challenge Image (using a placeholder) -->
+                    <ImageView fx:id="challengeImageView"
+                               fitWidth="400" fitHeight="200"
+                               preserveRatio="true"
+                               styleClass="challenge-image"/>
+
+                    <!-- Challenge Info (Static Example Data) -->
+                    <VBox spacing="12">
+                        <Label fx:id="challengeTitleLabel"
+                               text="Défi de Création Artististique"
+                               styleClass="title"/>
+                        <Label fx:id="challengeThemeLabel"
+                               text="Art numérique"
+                               styleClass="badge"/>
+                        <Label fx:id="challengeDescriptionLabel"
+                               text="Crée une œuvre originale représentant l'esprit de Midgar à travers l'art numérique. Tu peux utiliser n'importe quel medium numérique : dessin, peinture 3D, photomanipulation, animation, etc."
+                               wrapText="true"
+                               styleClass="description"/>
+                        <HBox spacing="15" alignment="CENTER_LEFT">
+                            <Label fx:id="challengeDatesLabel"
+                                   text="📅 01/05/2026 → 31/05/2026"
+                                   style="-fx-text-fill: #8b949e; -fx-font-size: 13px;"/>
+                            <Label fx:id="challengeStatusLabel"
+                                   text="Actif"
+                                   styleClass="tag-status"/>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+
+                <!-- Participation Form Card -->
+                <VBox styleClass="card">
+
+                    <Label text="Participer à ce défi"
+                           styleClass="title"/>
+
+                    <!-- Form Hint -->
+                    <Label text="Indiquez l'ID d'une œuvre déjà en ligne ou peignez une œuvre dans l'éditeur."
+                           styleClass="form-hint"
+                           wrapText="true"/>
+
+                    <!-- Description Field -->
+                    <VBox spacing="8">
+                        <Label text="📝 Description de votre participation"
+                               styleClass="form-label"/>
+                        <TextArea fx:id="descriptionField"
+                                  promptText="Décrivez votre participation..."
+                                  styleClass="form-control"
+                                  prefRowCount="5"/>
+                    </VBox>
+
+                    <!-- Options -->
+                    <VBox spacing="12">
+                        <Label text="Vous avez deux options :"
+                               styleClass="form-hint"/>
+                        <VBox spacing="6" style="-fx-padding: 0 0 0 20;">
+                            <Label text="• Utiliser une œuvre déjà en ligne en indiquant son ID ci-dessous."
+                                   styleClass="form-hint"/>
+                            <Label text="• Ou peindre une nouvelle œuvre dans l'éditeur en ligne."
+                                   styleClass="form-hint"/>
+                        </VBox>
+                        <Button fx:id="peindreButton" text="🎨 Peindre une œuvre"
+                                styleClass="btn-secondary magic-btn"
+                                onAction="#goToPaintEditor"/>
+
+                    </VBox>
+
+                    <!-- Artwork ID Field -->
+                    <VBox spacing="8">
+                        <Label text="🖼️ ID de l'œuvre (optionnel)"
+                               styleClass="form-label"/>
+                        <TextField fx:id="artworkIdField"
+                                   promptText="Ex: 1"
+                                   styleClass="form-control"/>
+                        <Label text="Laissez vide si vous n'avez pas d'œuvre existante"
+                               styleClass="form-hint"/>
+                    </VBox>
+
+                    <!-- Validation Hint -->
+                    <Label text="💡 Remplissez tous les champs correctement pour activer le bouton de soumission"
+                           styleClass="hint"/>
+
+                    <!-- Buttons -->
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Button text="Annuler"
+                                styleClass="btn-secondary"
+                                onAction="#annuler"/>
+                        <Button text="Envoyer ma participation"
+                                fx:id="submitBtn"
+                                styleClass="btn-primary"
+                                onAction="#soumettre"/>
+                    </HBox>
+
+                </VBox>
+
+            </VBox>
+
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <Label text="Developed by Kilo" styleClass="version-label" alignment="center"/>
+    </bottom>
+</BorderPane>

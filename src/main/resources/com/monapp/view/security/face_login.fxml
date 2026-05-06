@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.midgar.controller.FaceLoginController" style="-fx-background-color: #0d1117;">
+
+    <VBox alignment="CENTER" spacing="30" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        
+        <!-- Header -->
+        <HBox alignment="CENTER" style="-fx-background-color: #0b0f10; -fx-padding: 20;">
+            <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 28; -fx-font-weight: bold;"/>
+        </HBox>
+
+        <!-- Face Login Card -->
+        <VBox style="-fx-background-color: #1a1f1e; -fx-padding: 40; -fx-background-radius: 10;" 
+              spacing="25" alignment="CENTER" maxWidth="500">
+            <Label text="Connexion Faciale" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+            
+            <!-- Camera Preview Placeholder -->
+            <VBox style="-fx-background-color: #0b0f10; -fx-border-color: #2a3139; -fx-border-width: 2; -fx-border-radius: 10;" 
+                  alignment="CENTER" minWidth="300" minHeight="250">
+                <Label text="📷" style="-fx-font-size: 64;"/>
+                <Label text="Caméra non active" style="-fx-text-fill: #666;"/>
+            </VBox>
+
+            <!-- Instructions -->
+            <VBox spacing="10" alignment="CENTER">
+                <Label text="Positionnez votre visage dans le cadre" style="-fx-text-fill: #b0b9b6;" textAlignment="CENTER"/>
+                <Label text="La reconnaissance faciale se fera automatiquement" style="-fx-text-fill: #888;" textAlignment="CENTER"/>
+            </VBox>
+
+            <!-- Status Indicator -->
+            <Label fx:id="statusLabel" text="En attente..." style="-fx-text-fill: #18E3A4; -fx-font-size: 16;"/>
+
+            <!-- Action Buttons -->
+            <HBox spacing="15" alignment="CENTER">
+                <Button text="Activer la caméra" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 20; -fx-background-radius: 5;"/>
+                <Button text="Annuler" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 12 20; -fx-background-radius: 5;"/>
+            </HBox>
+
+            <!-- Alternative Login -->
+            <HBox spacing="5" alignment="CENTER">
+                <Label text="Préférez-vous" style="-fx-text-fill: #b0b9b6;"/>
+                <Button text="connexion par mot de passe" styleClass="link-button"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

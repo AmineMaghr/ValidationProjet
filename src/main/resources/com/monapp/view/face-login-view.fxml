@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.media.MediaView?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.FaceLoginController"
+            prefWidth="900" prefHeight="600"
+            style="-fx-background-color: linear-gradient(to bottom right, #0f172a, #1e293b);">
+
+    <VBox alignment="CENTER" spacing="20"
+          layoutX="200" layoutY="60"
+          prefWidth="500" prefHeight="480"
+          style="-fx-background-color: rgba(255,255,255,0.08);
+                 -fx-background-radius: 25;
+                 -fx-padding: 30;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.4), 20, 0.3, 0, 6);">
+
+        <Label text="Face Login"
+               style="-fx-text-fill: white; -fx-font-size: 26px; -fx-font-weight: bold;" />
+
+        <Label text="Regardez la vidéo et restez prêt"
+               style="-fx-text-fill: #cbd5e1; -fx-font-size: 14px;" />
+
+        <!-- CAMERA PREVIEW -->
+        <StackPane style="-fx-background-color: #0b1220;
+                          -fx-background-radius: 15;
+                          -fx-border-radius: 15;
+                          -fx-border-color: #334155;"
+                   prefWidth="420" prefHeight="300">
+
+            <ImageView fx:id="cameraPreview"
+                       fitWidth="420"
+                       fitHeight="300"
+                       preserveRatio="true"/>
+        </StackPane>
+
+        <Label fx:id="statusLabel"
+               text="Clique pour démarrer"
+               style="-fx-text-fill: #facc15; -fx-font-size: 14px;" />
+
+        <Button text="Démarrer reconnaissance"
+                onAction="#startCamera"
+                style="-fx-background-color: #22c55e;
+                       -fx-text-fill: white;
+                       -fx-font-size: 14px;
+                       -fx-font-weight: bold;
+                       -fx-background-radius: 12;
+                       -fx-padding: 10 25;" />
+
+        <Button text="Retour login"
+                onAction="#goLogin"
+                style="-fx-background-color: transparent;
+                       -fx-text-fill: #ffffff;
+                       -fx-border-color: #02110d;
+                       -fx-border-radius: 10;
+                       -fx-padding: 8 20;" />
+    </VBox>
+
+</AnchorPane>

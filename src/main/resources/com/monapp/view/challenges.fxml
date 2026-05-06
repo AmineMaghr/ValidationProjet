@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.DefiController"
+            stylesheets="@defis.css"
+            style="-fx-background-color: #0d1117;">
+
+    <fx:define>
+        <ToggleGroup fx:id="statusGroup"/>
+        <ToggleGroup fx:id="sortGroup"/>
+    </fx:define>
+
+    <!-- HEADER -->
+    <VBox styleClass="header"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0"
+          AnchorPane.topAnchor="0">
+
+        <HBox spacing="20" alignment="CENTER_LEFT" styleClass="header-content">
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
+
+            <Label text="⚔️ Midgar"
+                   style="-fx-font-size:20px; -fx-text-fill:#18E3A4; -fx-font-weight:bold;"/>
+
+            <HBox spacing="10" HBox.hgrow="ALWAYS">
+                <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                <Button text="Œuvre" styleClass="magic-btn" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                <Button text="Défis" styleClass="magic-btn active" onAction="#goChallenges"/>
+            </HBox>
+
+            <HBox fx:id="authContainer"/>
+        </HBox>
+    </VBox>
+
+    <!-- BODY -->
+    <HBox AnchorPane.topAnchor="60"
+          AnchorPane.bottomAnchor="0"
+          AnchorPane.leftAnchor="0"
+          AnchorPane.rightAnchor="0">
+
+        <!-- SIDEBAR -->
+        <VBox styleClass="sidebar" spacing="15" prefWidth="230">
+
+            <padding>
+                <Insets top="20" right="15" bottom="20" left="15"/>
+            </padding>
+
+            <TextField fx:id="searchField"
+                       promptText="Chercher..."
+                       styleClass="sidebar-search"
+                       onAction="#search"/>
+
+            <Separator/>
+
+            <Label text="Statut" styleClass="sidebar-section-title"/>
+
+            <RadioButton text="Ouvert" toggleGroup="$statusGroup" styleClass="sidebar-radio"/>
+            <RadioButton text="Fermé" toggleGroup="$statusGroup" styleClass="sidebar-radio"/>
+            <RadioButton text="Tous" toggleGroup="$statusGroup" selected="true" styleClass="sidebar-radio"/>
+
+            <Separator/>
+
+            <Label text="Tri" styleClass="sidebar-section-title"/>
+            
+            <RadioButton text="Récents" toggleGroup="$sortGroup" selected="true" styleClass="sidebar-radio"/>
+            <RadioButton text="Anciens" toggleGroup="$sortGroup" styleClass="sidebar-radio"/>
+            
+            <Separator/>
+
+            <Button text="Filtrer" styleClass="btn-filter" maxWidth="Infinity"/>
+            <Button text="Reset" styleClass="btn-reset" maxWidth="Infinity"/>
+
+        </VBox>
+
+        <!-- MAIN -->
+        <ScrollPane fitToWidth="true"
+                    fitToHeight="false"
+                    styleClass="main-scroll">
+
+            <VBox spacing="25" styleClass="main-content">
+
+                <padding>
+                    <Insets top="25" right="30" bottom="30" left="30"/>
+                </padding>
+
+                <!-- TITLE -->
+                <HBox spacing="10" alignment="CENTER_LEFT">
+
+                    <Label text="Défis"
+                           styleClass="page-title"
+                           HBox.hgrow="ALWAYS"/>
+
+                    <Label fx:id="countLabel"
+                           text="0 défi(s)"
+                           styleClass="count-badge"/>
+                </HBox>
+
+                <Separator/>
+
+                <!-- ACTIVE -->
+                <VBox spacing="10">
+                    <Label text="🔥 Défis Actifs" styleClass="section-title"/>
+
+                    <TilePane fx:id="activeDefisGrid"
+                              prefColumns="2"
+                              hgap="15"
+                              vgap="15"
+                              prefTileWidth="340"
+                              tileAlignment="TOP_LEFT"/>
+                </VBox>
+
+                <!-- PAST -->
+                <VBox spacing="10">
+                    <Label text="✨ Défis Passés" styleClass="section-title"/>
+
+                    <TilePane fx:id="pastDefisGrid"
+                              prefColumns="2"
+                              hgap="15"
+                              vgap="15"
+                              prefTileWidth="340"
+                              tileAlignment="TOP_LEFT"/>
+                </VBox>
+
+                <Label fx:id="emptyMessage"
+                       text="Aucun défi trouvé"
+                       visible="false"
+                       managed="false"
+                       styleClass="empty-message"/>
+
+            </VBox>
+        </ScrollPane>
+    </HBox>
+
+</AnchorPane>

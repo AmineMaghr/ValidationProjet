@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.effect.DropShadow?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.monapp.view.challenges.PaintDesignerController" spacing="20" style="-fx-background-color: linear-gradient(to bottom, #1e1e2e, #2a2a3e); -fx-padding: 40;">
+   <children>
+      <Label text="🎨 Éditeur de Dessin" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.5), 10, 0, 0, 0);">
+         <VBox.margin>
+            <Insets top="20.0" />
+         </VBox.margin>
+      </Label>
+      
+      <!-- Tools Panel -->
+      <HBox spacing="15" alignment="CENTER_LEFT" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 15; -fx-padding: 15;">
+         <children>
+            <!-- Color Picker -->
+            <ColorPicker fx:id="colorPicker" style="-fx-color-label-visible: false; -fx-background-radius: 10;" prefWidth="50.0" />
+            
+            <!-- Brush Size Slider -->
+            <VBox spacing="5">
+               <Label text="Taille" style="-fx-text-fill: white; -fx-font-size: 12px;" />
+               <Slider fx:id="brushSizeSlider" min="1" max="50" value="10" prefWidth="100.0" style="-fx-control-inner-background: rgba(255,255,255,0.2);" />
+            </VBox>
+            
+            <!-- Tools Buttons -->
+            <ToggleButton fx:id="brushButton" text="🖌️ Pinceau" style="-fx-background-radius: 10; -fx-text-fill: white; -fx-font-size: 12px;" selected="true" />
+            <ToggleButton fx:id="eraserButton" text="✂️ Gomme" style="-fx-background-radius: 10; -fx-text-fill: white; -fx-font-size: 12px;" />
+            <Button fx:id="clearButton" text="🗑️ Effacer" style="-fx-background-color: #ef5350; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 12px;" />
+            <Separator orientation="VERTICAL" style="-fx-background-color: rgba(255,255,255,0.3);" />
+            
+            <!-- Undo -->
+            <Button fx:id="undoButton" text="↶ Annuler" style="-fx-background-color: rgba(255,255,255,0.2); -fx-text-fill: white; -fx-background-radius: 10; -fx-font-size: 12px;" />
+            
+            <!-- Save Button -->
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="saveButton" text="💾 Enregistrer" onAction="#saveDrawing" style="-fx-background-color: linear-gradient(to right, #18e3a4, #00d4aa); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 15; -fx-font-size: 14px; -fx-padding: 12 24;" />
+         </children>
+      </HBox>
+      
+      <!-- Canvas Container -->
+      <BorderPane style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 20; -fx-border-color: rgba(255,255,255,0.2); -fx-border-radius: 20; -fx-border-width: 2;">
+         <center>
+            <Canvas fx:id="canvas" width="800.0" height="500.0" style="-fx-background-color: white; -fx-background-radius: 15;" />
+         </center>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+         </padding>
+      </BorderPane>
+      
+      <!-- Status -->
+      <Label fx:id="statusLabel" text="Prêt à dessiner !" style="-fx-text-fill: #18e3a4; -fx-font-size: 14px;" />
+   </children>
+</VBox>

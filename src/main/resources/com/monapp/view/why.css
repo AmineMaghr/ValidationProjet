@@ -1,0 +1,192 @@
+/* ═══════════════════════════════════════════════════════════════
+   why.css
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Root / scroll container ───────────────────────────────────── */
+.root-scroll {
+    -fx-background: #0D0F0F;
+    -fx-background-color: #0D0F0F;
+}
+
+.root-scroll > .viewport {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1A1F1E, #0D0F0F);
+}
+
+/* ── Page wrapper ────────────────────────────────────────────────── */
+.page-wrap {
+    -fx-max-width: 1080px;
+    -fx-padding: 24 24 36 24;
+    -fx-background-color: transparent;
+}
+
+/* ── Back row ────────────────────────────────────────────────────── */
+.back-row {
+    -fx-alignment: center-left;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.why-header {
+    -fx-alignment: top-left;
+}
+
+.why-title {
+    -fx-text-fill: #18E3A4;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.22), 18, 0, 0, 0);
+}
+
+.why-subtitle {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 14px;
+}
+
+/* ── Grid row ────────────────────────────────────────────────────── */
+.why-grid {
+    -fx-alignment: top-left;
+}
+
+/* ── Shared card ─────────────────────────────────────────────────── */
+.card {
+    -fx-background-color: rgba(26, 31, 30, 0.85);
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: rgba(24, 227, 164, 0.18);
+    -fx-border-width: 1;
+    -fx-padding: 14;
+    /* FIX: allow cards to grow to fill their HBox cell */
+    -fx-max-width: Infinity;
+    -fx-min-width: 260px;
+}
+
+.card:hover {
+    -fx-border-color: rgba(24, 227, 164, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.32), 28, 0, 0, 0),
+    dropshadow(gaussian, rgba(24,227,164,0.16), 16, 0, 0, 0);
+    -fx-translate-y: -2;
+}
+
+/* ── Universe / post card ─────────────────────────────────────────
+   FIX: labels must wrap and not clip text
+   ──────────────────────────────────────────────────────────────── */
+.universe-card .card-type {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.universe-card .card-title {
+    -fx-text-fill: #E6FFF6;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-max-width: Infinity;
+}
+
+.universe-card .card-description {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 13px;
+    -fx-wrap-text: true;
+    -fx-max-width: Infinity;
+}
+
+/* ── AI panel ────────────────────────────────────────────────────── */
+.ai-panel {
+    -fx-border-color: rgba(24, 227, 164, 0.42);
+    -fx-effect: innershadow(gaussian, rgba(24,227,164,0.15), 20, 0, 0, 0),
+    dropshadow(gaussian, rgba(24,227,164,0.16), 20, 0, 0, 0);
+}
+
+.ai-text {
+    -fx-text-fill: #E6FFF6;
+    -fx-font-size: 13.5px;
+    -fx-line-spacing: 3;
+    -fx-wrap-text: true;
+}
+
+/* ── Section title ───────────────────────────────────────────────── */
+.section-title {
+    -fx-text-fill: #18E3A4;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+/* ── Signal rows ─────────────────────────────────────────────────── */
+.signal-row {
+    -fx-padding: 0 0 6 0;
+    /* FIX: row must stretch to full panel width so track fills correctly */
+    -fx-max-width: Infinity;
+}
+
+.signal-label {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 13px;
+}
+
+.signal-subtext {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 11.5px;
+    -fx-opacity: 0.9;
+}
+
+/* FIX: track must stretch to full available width */
+.signal-track {
+    -fx-background-color: rgba(255, 255, 255, 0.08);
+    -fx-background-radius: 999;
+    -fx-pref-height: 8;
+    -fx-max-height: 8;
+    -fx-min-height: 8;
+    -fx-max-width: Infinity;
+    -fx-pref-width: Infinity;
+}
+
+/* FIX: fill stays left-aligned; width is driven by Timeline in controller */
+.signal-fill {
+    -fx-background-color: linear-gradient(to right, #18E3A4, #13c891);
+    -fx-background-radius: 999;
+    -fx-pref-height: 8;
+    -fx-max-height: 8;
+    -fx-min-height: 8;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+}
+
+/* ── Chips ───────────────────────────────────────────────────────── */
+.chips {
+    -fx-background-color: transparent;
+}
+
+.chip {
+    -fx-text-fill: #18E3A4;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-background-color: rgba(24, 227, 164, 0.1);
+    -fx-background-radius: 999;
+    -fx-border-radius: 999;
+    -fx-border-color: rgba(24, 227, 164, 0.35);
+    -fx-border-width: 1;
+    -fx-padding: 4 10 4 10;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────── */
+.btn-secondary {
+    -fx-background-color: transparent;
+    -fx-border-color: #18E3A4;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-border-width: 1;
+    -fx-text-fill: #18E3A4;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16 8 16;
+    -fx-cursor: hand;
+}
+
+.btn-secondary:hover {
+    -fx-background-color: rgba(24, 227, 164, 0.1);
+}
+
+/* ── Empty state label ───────────────────────────────────────────── */
+.empty-label {
+    -fx-text-fill: #B0B9B6;
+    -fx-font-size: 12px;
+}
