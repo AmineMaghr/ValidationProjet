@@ -2,52 +2,85 @@
 
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.OeuvreController" style="-fx-background-color: #0d1117;">
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.OeuvreFormController"
+            style="-fx-background-color: #0a0c10;">
 
-    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
-
-    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100">
-
-        <StackPane style="-fx-background-color: linear-gradient(to bottom, #1a1f1e, #0d1117); -fx-min-height: 200;">
-            <VBox alignment="CENTER">
-                <Label text="CRÉER UNE ŒUVRE" style="-fx-text-fill: #fff; -fx-font-size: 36; -fx-font-weight: bold;"/>
-            </VBox>
-        </StackPane>
-
-        <VBox style="-fx-padding: 40 100;" spacing="30" maxWidth="800">
-            <VBox spacing="15">
-                <Label text="Titre" style="-fx-text-fill: #b0b9b6;"/>
-                <TextField fx:id="titleField" promptText="Titre de l'œuvre" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-border-radius: 5; -fx-background-radius: 5; -fx-padding: 12;"/>
-            </VBox>
-            
-            <VBox spacing="15">
-                <Label text="Description" style="-fx-text-fill: #b0b9b6;"/>
-                <TextArea promptText="Description de votre œuvre..." style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff; -fx-border-color: #2a3139; -fx-background-radius: 5; -fx-padding: 12;" minHeight="150"/>
-            </VBox>
-            
-            <VBox spacing="15">
-                <Label text="Type" style="-fx-text-fill: #b0b9b6;"/>
-                <ComboBox promptText="Sélectionner un type" style="-fx-background-color: #1a1f1e; -fx-text-fill: #fff;"/>
-            </VBox>
-            
-            <VBox spacing="15">
-                <Label text="Image" style="-fx-text-fill: #b0b9b6;"/>
-                <VBox style="-fx-background-color: #1a1f1e; -fx-border-color: #2a3139; -fx-border-width: 2; -fx-border-style: dashed; -fx-border-radius: 10; -fx-padding: 40;" alignment="CENTER">
-                    <Label text="+" style="-fx-text-fill: #18E3A4; -fx-font-size: 36;"/>
-                    <Label text="Glissez une image ou cliquez pour parcourir" style="-fx-text-fill: #888;"/>
-                </VBox>
-            </VBox>
-            
-            <HBox spacing="20">
-                <Button text="Annuler" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-padding: 12 25;"/>
-                <Button text="Créer l'œuvre" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 12 25;"/>
+    <VBox spacing="20" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+        
+        <!-- Header -->
+        <VBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10);">
+            <HBox spacing="30" style="-fx-padding: 15 30;" alignment="CENTER_LEFT">
+                <Label text="⚡ MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="← Retour" onAction="#handleCancel"
+                        style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
             </HBox>
         </VBox>
 
+        <!-- Formulaire -->
+        <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent;">
+            <VBox spacing="20" alignment="TOP_CENTER" style="-fx-padding: 30;">
+                
+                <Label text="📝 Créer une nouvelle œuvre" style="-fx-text-fill: #18E3A4; -fx-font-size: 24px; -fx-font-weight: bold;"/>
+                <Label text="Partagez votre création avec la communauté Midgar" style="-fx-text-fill: #6a7a8a; -fx-font-size: 14px;"/>
+                
+                <GridPane hgap="20" vgap="15" style="-fx-padding: 20;">
+                    
+                    <Label text="Titre :" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <TextField fx:id="titleField" GridPane.columnIndex="1" GridPane.rowIndex="0" promptText="Ex: Le Secret des Anciens..."
+                               style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 8;"/>
+                    <Label fx:id="titleError" GridPane.columnIndex="1" GridPane.rowIndex="1" style="-fx-text-fill: #ff6666; -fx-font-size: 11px;" visible="false"/>
+                    
+                    <Label text="Type :" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="typeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" promptText="Sélectionner un type"
+                              style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 5;"/>
+                    
+                    <Label text="Auteur :" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <TextField fx:id="authorField" GridPane.columnIndex="1" GridPane.rowIndex="3" promptText="Votre nom ou pseudonyme"
+                               style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 8;"/>
+                    <Label fx:id="authorError" GridPane.columnIndex="1" GridPane.rowIndex="4" style="-fx-text-fill: #ff6666; -fx-font-size: 11px;" visible="false"/>
+                    
+                    <Label text="Image :" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                        <TextField fx:id="imageUrlField" promptText="URL de l'image ou chemin local"
+                                   style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 8; HBox.hgrow: ALWAYS;"/>
+                        <Button text="📁 Parcourir" onAction="#parcourirImage"
+                                style="-fx-background-color: #2a3540; -fx-text-fill: #fff; -fx-background-radius: 20; -fx-padding: 8 15; -fx-cursor: hand;"/>
+                    </HBox>
+                    <Label fx:id="imageUrlError" GridPane.columnIndex="1" GridPane.rowIndex="6" style="-fx-text-fill: #ff6666; -fx-font-size: 11px;" visible="false"/>
+                    
+                    <Label text="Description :" GridPane.columnIndex="0" GridPane.rowIndex="7" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <VBox spacing="5" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                        <TextArea fx:id="descriptionArea" prefHeight="150" wrapText="true" promptText="Décrivez votre œuvre..."
+                                  style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 8;"/>
+                        <HBox spacing="10">
+                            <Button fx:id="generateAIBtn" text="🤖 Générer description avec IA" onAction="#genererAvecAI"
+                                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 8 15; -fx-cursor: hand;"/>
+                            <ProgressIndicator fx:id="loadingIndicator" visible="false" maxWidth="25" maxHeight="25"/>
+                        </HBox>
+                    </VBox>
+                    <Label fx:id="descriptionError" GridPane.columnIndex="1" GridPane.rowIndex="8" style="-fx-text-fill: #ff6666; -fx-font-size: 11px;" visible="false"/>
+                    
+                    <Label text="Univers :" GridPane.columnIndex="0" GridPane.rowIndex="9" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                    <ComboBox fx:id="universeComboBox" GridPane.columnIndex="1" GridPane.rowIndex="9" promptText="Univers (optionnel)"
+                              style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 8; -fx-padding: 5;"/>
+                    
+                </GridPane>
+                
+                <HBox spacing="20" alignment="CENTER">
+                    <Button text="💾 Enregistrer" onAction="#handleSave"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 12 30; -fx-cursor: hand;"/>
+                    <Button text="❌ Annuler" onAction="#handleCancel"
+                            style="-fx-background-color: #c62828; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 12 30; -fx-cursor: hand;"/>
+                </HBox>
+                
+            </VBox>
+        </ScrollPane>
+        
     </VBox>
-
 </AnchorPane>

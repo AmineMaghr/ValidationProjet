@@ -27,15 +27,13 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import com.example.app.services.DefiService;
 
-
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+public class AccueilController {
 
-public class AccueilController extends BaseController {
-
-    // FXML Injections
     @FXML private MediaView mediaView;
     @FXML private HBox authContainer;
     @FXML private VBox searchBarContainer;
@@ -45,17 +43,13 @@ public class AccueilController extends BaseController {
     @FXML private HBox creationsSlider;
     @FXML private TilePane defisGrid;
     @FXML private StackPane defiModal;
-    @FXML private StackPane faceModal;
-    @FXML private StackPane globalSuccessBanner;
     @FXML private Label modalTitre, modalTheme, modalDescription, modalDebut, modalFin, modalStatut;
 
-    // Services
     private UniverseService universService = new UniverseService();
     private OeuvreService oeuvreService = new OeuvreService();
     private DefiService defiService = new DefiService();
     private UserService userService = new UserService();
 
-    // Sliders
     private int universIndex = 0;
     private int creationsIndex = 0;
     private ObservableList<Universe> universList = FXCollections.observableArrayList();
@@ -65,8 +59,6 @@ public class AccueilController extends BaseController {
     private MediaPlayer mediaPlayer;
     private Defi currentDefi;
 
-    public static boolean showSuccessFromPreferences = false;
-
     @FXML
     public void initialize() {
         setupVideoBackground();
@@ -75,23 +67,15 @@ public class AccueilController extends BaseController {
         loadCreationsRecentes();
         loadDefis();
         setupSearchBar();
-
-        if (showSuccessFromPreferences) {
-            showSuccessBanner();
-            showSuccessFromPreferences = false; // Reset
-        }
-    }
-
-    private void showSuccessBanner() {
-        if (globalSuccessBanner != null) {
-            globalSuccessBanner.setVisible(true);
-            globalSuccessBanner.setManaged(true);
-            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(3));
-            delay.setOnFinished(e -> {
-                globalSuccessBanner.setVisible(false);
-                globalSuccessBanner.setManaged(false);
-            });
-            delay.play();
+        
+        // Debug de la session
+        System.out.println("=== ACCUEIL INITIALISÉ ===");
+        System.out.println("UserSession.isLoggedIn(): " + UserSession.isLoggedIn());
+        if (UserSession.isLoggedIn()) {
+            User user = UserSession.getCurrentUser();
+            System.out.println("Utilisateur connecté: " + user.getUsername() + " (ID: " + user.getId() + ")");
+        } else {
+            System.out.println("Aucun utilisateur connecté");
         }
     }
 
@@ -110,41 +94,52 @@ public class AccueilController extends BaseController {
 
     private void setupAuthButtons() {
         authContainer.getChildren().clear();
+        
         if (UserSession.isLoggedIn()) {
             User user = UserSession.getCurrentUser();
+            System.out.println(">>> Affichage des boutons pour utilisateur connecté: " + user.getUsername());
+            
             HBox profileBox = new HBox(8);
             profileBox.setAlignment(javafx.geometry.Pos.CENTER);
 
             ImageView avatar = new ImageView();
-            avatar.setFitHeight(40);
-            avatar.setFitWidth(40);
+            avatar.setFitWidth(32);
+            avatar.setFitHeight(32);
             avatar.setStyle("-fx-border-radius: 50%; -fx-border-color: #18E3A4; -fx-border-width: 2;");
             try {
                 if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
-                    avatar.setImage(new javafx.scene.image.Image("file:uploads/avatars/" + user.getAvatar()));
-                } else {
-                    java.net.URL url = getClass().getResource("/com/monapp/images/default-avatar.png");
-                    if (url != null) {
-                        avatar.setImage(new javafx.scene.image.Image(url.toExternalForm()));
+                    File imgFile = new File("uploads/avatars/" + user.getAvatar());
+                    if (imgFile.exists()) {
+                        avatar.setImage(new Image(imgFile.toURI().toString()));
                     }
                 }
             } catch (Exception e) {
-                java.net.URL url = getClass().getResource("/com/monapp/images/default-avatar.png");
-                if (url != null) {
-                    avatar.setImage(new javafx.scene.image.Image(url.toExternalForm()));
-                }
+                // No image loaded
             }
 
-            javafx.scene.control.Button profileBtn = new javafx.scene.control.Button(user.getUsername(), avatar);
+            Button profileBtn = new Button(user.getUsername(), avatar);
             profileBtn.getStyleClass().addAll("magic-btn");
             profileBtn.setOnAction(e -> navigateTo("/profile"));
+
+            Button adminBtn = null;
+            if (UserSession.isAdmin()) {
+                adminBtn = new Button("Admin");
+                adminBtn.getStyleClass().addAll("btn-warning");
+                adminBtn.setOnAction(e -> navigateTo("/admin"));
+            }
 
             Button logoutBtn = new Button("Déconnexion");
             logoutBtn.getStyleClass().addAll("btn-secondary");
             logoutBtn.setOnAction(e -> logout());
 
-            authContainer.getChildren().addAll(profileBtn, logoutBtn);
+            if (adminBtn != null) {
+                authContainer.getChildren().addAll(profileBtn, adminBtn, logoutBtn);
+            } else {
+                authContainer.getChildren().addAll(profileBtn, logoutBtn);
+            }
         } else {
+            System.out.println(">>> Affichage des boutons pour utilisateur non connecté");
+            
             Button loginBtn = new Button("Connexion");
             loginBtn.getStyleClass().addAll("btn-secondary", "btn-glow");
             loginBtn.setOnAction(e -> navigateTo("/login"));
@@ -336,9 +331,6 @@ public class AccueilController extends BaseController {
 
         Region imageRegion = new Region();
         imageRegion.getStyleClass().add("card-image");
-       /* if (defi.getImageCover() != null) {
-            imageRegion.setStyle("-fx-background-image: url('file:uploads/defis/" + defi.getImageCover() + "'); -fx-background-size: cover;");
-        }*/
 
         VBox body = new VBox(8);
         body.getStyleClass().add("card-body");
@@ -440,22 +432,17 @@ public class AccueilController extends BaseController {
         }
     }
 
-    // Navigation
-    @FXML public void goAccueil() { navigateTo("/"); }
-    @FXML public void goDiscover() { navigateTo("/discover"); }
-    @FXML public void goUniverses() { navigateTo("/universes"); }
-    @FXML public void goPersonnages() { navigateTo("/personnages"); }
-    @FXML public void goOeuvres() { navigateTo("/oeuvre"); }
-    @FXML public void goArtefacts() { navigateTo("/artefact"); }
-    @FXML public void goShop() { navigateTo("/shop"); }
-    @FXML public void goChallenges() { navigateTo("/challenges"); }
+    @FXML private void goAccueil() { navigateTo("/"); }
+    @FXML private void goDiscover() { navigateTo("/discover"); }
+    @FXML private void goUniverses() { navigateTo("/universes"); }
+    @FXML private void goPersonnages() { navigateTo("/personnages"); }
+    @FXML private void goOeuvres() { navigateTo("/oeuvre"); }
+    @FXML private void goArtefacts() { navigateTo("/artefact"); }
+    @FXML private void goShop() { navigateTo("/shop"); }
+    @FXML private void goChallenges() { navigateTo("/challenges"); }
+    @FXML private void lancerQuiz() { navigateTo("/quiz"); }
 
-    @FXML
-    public void lancerQuiz(javafx.event.ActionEvent event) {
-        navigateTo("/quiz");
-    }
-
-    @Override protected void navigateTo(String path) {
+    private void navigateTo(String path) {
         SceneManager.getInstance().loadScene(path);
     }
 

@@ -17,7 +17,7 @@ public class PersonnageDAO implements IDAO<Personnage> {
 
     @Override
     public void add(Personnage personnage) throws SQLException {
-        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, portrait_image, universe_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, portrait_image, universe_id, creator_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
         PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, personnage.getName());
         ps.setString(2, personnage.getClassRole());
@@ -28,7 +28,8 @@ public class PersonnageDAO implements IDAO<Personnage> {
         ps.setInt(7, personnage.getMagic());
         ps.setInt(8, personnage.getDefense());
         ps.setBytes(9, personnage.getPortraitImage());
-        ps.setInt(10, personnage.getUniverse() != null ? personnage.getUniverse().getId() : null);
+        ps.setObject(10, personnage.getUniverse() != null ? personnage.getUniverse().getId() : null);
+        ps.setInt(11, personnage.getCreatorId());
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -144,6 +145,12 @@ public class PersonnageDAO implements IDAO<Personnage> {
         personnage.setMagic(rs.getInt("magic"));
         personnage.setDefense(rs.getInt("defense"));
         personnage.setPortraitImage(rs.getBytes("portrait_image"));
+
+        try {
+            personnage.setCreatorId(rs.getInt("creator_id"));
+        } catch (SQLException e) {
+            // Ignore if column doesn't exist yet
+        }
 
         Universe universe = new Universe();
         universe.setId(rs.getInt("universe_id"));

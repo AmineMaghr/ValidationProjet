@@ -1,6 +1,7 @@
 package com.example.app.dao;
 
 import com.example.app.entities.Artefact;
+import com.example.app.entities.User;
 import com.example.app.utils.MyDatabase;
 import java.sql.*;
 import java.util.ArrayList;
@@ -25,7 +26,11 @@ public class ArtefactDAO implements IDAO<Artefact> {
         ps.setString(5, artefact.getPowers());
         ps.setString(6, artefact.getRarity());
         ps.setString(7, artefact.getImageUrl());
-        ps.setInt(8, artefact.getCreatedBy() != null ? artefact.getCreatedBy().getId() : null);
+        if (artefact.getCreatedBy() != null) {
+            ps.setInt(8, artefact.getCreatedBy().getId());
+        } else {
+            ps.setNull(8, java.sql.Types.INTEGER);
+        }
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -69,6 +74,17 @@ public class ArtefactDAO implements IDAO<Artefact> {
         return list;
     }
 
+    public Artefact findById(int id) throws SQLException {
+        String sql = "SELECT * FROM artefacts WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            return mapResultSet(rs);
+        }
+        return null;
+    }
+
     public List<Artefact> findByType(String type) throws SQLException {
         List<Artefact> list = new ArrayList<>();
         String sql = "SELECT * FROM artefacts WHERE type = ? ORDER BY created_at DESC";
@@ -81,30 +97,7 @@ public class ArtefactDAO implements IDAO<Artefact> {
         return list;
     }
 
-    public List<Artefact> findByUniverse(String universe) throws SQLException {
-        List<Artefact> list = new ArrayList<>();
-        String sql = "SELECT * FROM artefacts WHERE universe = ? ORDER BY created_at DESC";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, universe);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
-        }
-        return list;
-    }
-
-    public List<Artefact> findByRarity(String rarity) throws SQLException {
-        List<Artefact> list = new ArrayList<>();
-        String sql = "SELECT * FROM artefacts WHERE rarity = ? ORDER BY created_at DESC";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, rarity);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
-        }
-        return list;
-    }
-
+    // ⭐ MÉTHODE CORRIGÉE - Récupère le created_by_id
     private Artefact mapResultSet(ResultSet rs) throws SQLException {
         Artefact artefact = new Artefact();
         artefact.setId(rs.getInt("id"));
@@ -115,6 +108,21 @@ public class ArtefactDAO implements IDAO<Artefact> {
         artefact.setPowers(rs.getString("powers"));
         artefact.setRarity(rs.getString("rarity"));
         artefact.setImageUrl(rs.getString("image_url"));
+        
+        // ⭐ RÉCUPÉRER LE CRÉATEUR (CREATED_BY_ID)
+        int createdById = rs.getInt("created_by_id");
+        if (createdById > 0) {
+            User creator = new User();
+            creator.setId(createdById);
+            artefact.setCreatedBy(creator);
+        }
+        
+        if (rs.getTimestamp("created_at") != null) {
+            artefact.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        }
+        if (rs.getTimestamp("updated_at") != null) {
+            artefact.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+        }
         return artefact;
     }
 }

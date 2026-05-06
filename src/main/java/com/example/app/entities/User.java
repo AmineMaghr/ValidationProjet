@@ -24,6 +24,10 @@ public class User {
     private final SimpleBooleanProperty faceEnabled = new SimpleBooleanProperty(false);
     private LocalDateTime createdAt;
     private LocalDateTime resetTokenExpiresAt;
+    private LocalDateTime updatedAt;
+
+    // Liste d'erreurs de validation
+    private java.util.List<String> validationErrors = new java.util.ArrayList<>();
 
     // Pour l'affichage dans les tableaux
     private final SimpleStringProperty createdAtDisplay = new SimpleStringProperty();
@@ -31,6 +35,7 @@ public class User {
 
     public User() {
         this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
         updateDisplayDates();
     }
 
@@ -39,6 +44,57 @@ public class User {
         if (createdAt != null) {
             createdAtDisplay.set(createdAt.format(formatter));
         }
+    }
+
+    // Validation complète
+    public boolean isValid() {
+        validationErrors.clear();
+
+        if (getPrenom() == null || getPrenom().trim().isEmpty()) {
+            validationErrors.add("Le prénom est requis");
+        } else if (getPrenom().length() < 2) {
+            validationErrors.add("Le prénom doit contenir au moins 2 caractères");
+        } else if (!getPrenom().matches("^[a-zA-ZÀ-ÿ\\s-]+$")) {
+            validationErrors.add("Le prénom ne doit contenir que des lettres");
+        }
+
+        if (getNom() == null || getNom().trim().isEmpty()) {
+            validationErrors.add("Le nom est requis");
+        } else if (getNom().length() < 2) {
+            validationErrors.add("Le nom doit contenir au moins 2 caractères");
+        }
+
+        if (getUsername() == null || getUsername().trim().isEmpty()) {
+            validationErrors.add("Le nom d'utilisateur est requis");
+        } else if (getUsername().length() < 3) {
+            validationErrors.add("Le nom d'utilisateur doit contenir au moins 3 caractères");
+        } else if (getUsername().length() > 20) {
+            validationErrors.add("Le nom d'utilisateur ne doit pas dépasser 20 caractères");
+        } else if (!getUsername().matches("^[a-zA-Z0-9]+$")) {
+            validationErrors.add("Le nom d'utilisateur ne doit contenir que des lettres et chiffres");
+        }
+
+        if (getEmail() == null || getEmail().trim().isEmpty()) {
+            validationErrors.add("L'email est requis");
+        } else if (!getEmail().matches("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")) {
+            validationErrors.add("Format d'email invalide");
+        }
+
+        if (getPassword() == null || getPassword().isEmpty()) {
+            validationErrors.add("Le mot de passe est requis");
+        } else if (getPassword().length() < 6) {
+            validationErrors.add("Le mot de passe doit contenir au moins 6 caractères");
+        }
+
+        return validationErrors.isEmpty();
+    }
+
+    public java.util.List<String> getValidationErrors() {
+        return validationErrors;
+    }
+
+    public String getValidationErrorsAsString() {
+        return String.join("\n", validationErrors);
     }
 
     // ===== ID =====
@@ -142,6 +198,10 @@ public class User {
     public String getCreatedAtDisplay() {
         return createdAtDisplay.get();
     }
+
+    // ===== UPDATED AT =====
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 
     // ===== RESET TOKEN EXPIRES AT =====
     public LocalDateTime getResetTokenExpiresAt() { return resetTokenExpiresAt; }

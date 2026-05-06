@@ -31,20 +31,20 @@
 
             <!-- Logo -->
             <HBox styleClass="logo" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
-                <Label text="⚔️" style="-fx-font-size: 24px;"/>
+                <Label text="⚔️" style="-fx-font-size: 24px;" styleClass="float"/>
                 <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
             </HBox>
 
             <!-- Navigation -->
-            <HBox styleClass="nav-menu" spacing="5" alignment="CENTER" HBox.hgrow="ALWAYS">
+            <HBox styleClass="nav-menu" spacing="5" HBox.hgrow="ALWAYS">
                 <Button text="Accueil" styleClass="magic-btn, active" onAction="#goAccueil"/>
                 <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
                 <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
                 <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
                 <Button text="Œuvre" styleClass="magic-btn" onAction="#goOeuvres"/>
                 <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
                 <Button text="Défis" styleClass="magic-btn" onAction="#goChallenges"/>
-                <Button text="Admin" styleClass="magic-btn" onAction="#goAdmin"/>
             </HBox>
 
             <!-- Auth buttons -->
@@ -69,12 +69,11 @@
         <VBox spacing="0" style="-fx-background-color: transparent;">
 
             <!-- HERO SECTION -->
-            <StackPane styleClass="hero">
+            <StackPane styleClass="hero, gradient-bg">
                 <VBox alignment="CENTER" spacing="20" styleClass="hero-content">
                     <Label text="Midgar" styleClass="hero-title"/>
                     <Label text="Créez, partagez et faites vivre vos univers fantasy" styleClass="hero-tagline" wrapText="true" textAlignment="CENTER"/>
-                    <!-- HERE: bouton Commencer le Quiz -->
-                    <Button text="Commencer le Quiz" styleClass="btn-primary, btn-glow" onAction="#lancerQuiz"/>
+                    <Button text="✨ Commencer le Quiz" styleClass="btn-primary, btn-glow, pulse" onAction="#lancerQuiz"/>
                 </VBox>
             </StackPane>
 
@@ -139,18 +138,6 @@
             </HBox>
             <Button text="Participer" styleClass="btn-primary" onAction="#participerDefi"/>
         </VBox>
-    </StackPane>
-
-    <!-- BANNIÈRE DE SUCCÈS GLOBALE (Ex: retour de préférences) -->
-    <StackPane fx:id="globalSuccessBanner" visible="false" managed="false"
-               AnchorPane.topAnchor="95" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
-               mouseTransparent="true">
-        <HBox alignment="CENTER" maxWidth="300" style="-fx-background-color: #0B0F0E; -fx-border-color: #18E3A4; -fx-border-radius: 8px; -fx-background-radius: 8px; -fx-border-width: 1px; -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.2), 10, 0, 0, 0);">
-            <padding>
-                <Insets top="12" right="30" bottom="12" left="30"/>
-            </padding>
-            <Label text="✓ Enregistré avec succès" style="-fx-text-fill: #18E3A4; -fx-font-size: 15px; -fx-font-weight: bold;"/>
-        </HBox>
     </StackPane>
 
     <!--

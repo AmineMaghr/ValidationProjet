@@ -36,7 +36,11 @@ build/
 
 ### Mac OS ###
 .DS_Store
-
-# Ignore personal config and IDE state that may contain secrets
-/.idea/copilotDiffState.xml
-src/main/resources/config.properties
+src/main/resources/openrouter.key
+target/
+*.key
+${project.build.directory}/
+".env" 
+"src/main/resources/config.properties" 
+".idea/copilotDiffState.xml" 
+"uploads/" 

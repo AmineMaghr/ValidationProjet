@@ -8,24 +8,6 @@ echo  Midgar JavaFX - Script de lancement
 echo ====================================
 echo.
 
-REM Set JAVA_HOME and PATH to IntelliJ's downloaded JDK 17
-FOR /D %%I IN ("%USERPROFILE%\.jdks\*") DO (
-    IF EXIST "%%I\bin\java.exe" (
-        set "JAVA_HOME=%%I"
-        goto :foundJdk
-    )
-)
-
-:foundJdk
-if "%JAVA_HOME%"=="" (
-    echo ERREUR: Aucun JDK trouve dans %USERPROFILE%\.jdks
-    pause
-    exit /b 1
-)
-
-echo Utilisation de JAVA_HOME : %JAVA_HOME%
-set "PATH=%JAVA_HOME%\bin;%PATH%"
-
 REM Vérifier Java
 java -version >nul 2>&1
 if errorlevel 1 (
@@ -81,3 +63,4 @@ echo.
 echo L'application s'est fermée.
 echo.
 pause
+

@@ -11,85 +11,142 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
     private Connection connection;
 
     public OeuvreDAO() {
-        connection = MyDatabase.getInstance().getConnection();
+        connection = MyDatabase.getConnection();
+        if (connection == null) {
+            System.err.println("❌ ERREUR: Connexion NULL dans OeuvreDAO");
+        }
     }
 
     @Override
     public void add(Oeuvre oeuvre) throws SQLException {
-        String sql = "INSERT INTO oeuvres (title, type, description, date_publication, image_url, author, created_by_id, universe_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
-        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-        ps.setString(1, oeuvre.getTitle());
-        ps.setString(2, oeuvre.getType());
-        ps.setString(3, oeuvre.getDescription());
-        ps.setDate(4, oeuvre.getDatePublication() != null ? Date.valueOf(oeuvre.getDatePublication()) : null);
-        ps.setString(5, oeuvre.getImageUrl());
-        ps.setString(6, oeuvre.getAuthor());
-        ps.setInt(7, oeuvre.getCreateurId());
-        ps.setInt(8, oeuvre.getUniverse() != null ? oeuvre.getUniverse().getId() : null);
-        ps.executeUpdate();
+        // ✅ CORRECTION: oeuvre → oeuvres
+        String sql = "INSERT INTO oeuvres (title, type, description, date_publication, image_url, author, created_by_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
 
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) {
-            oeuvre.setId(rs.getInt(1));
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, oeuvre.getTitle());
+            ps.setString(2, oeuvre.getType());
+            ps.setString(3, oeuvre.getDescription());
+            ps.setDate(4, oeuvre.getDatePublication() != null ? Date.valueOf(oeuvre.getDatePublication())
+                    : Date.valueOf(java.time.LocalDate.now()));
+            ps.setString(5, oeuvre.getImageUrl());
+            ps.setString(6, oeuvre.getAuthor());
+            ps.setInt(7, oeuvre.getCreateurId() > 0 ? oeuvre.getCreateurId() : 1);
+
+            ps.executeUpdate();
+
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    oeuvre.setId(rs.getInt(1));
+                }
+            }
         }
     }
 
     @Override
     public void update(Oeuvre oeuvre) throws SQLException {
+        // ✅ CORRECTION: oeuvre → oeuvres
         String sql = "UPDATE oeuvres SET title = ?, type = ?, description = ?, date_publication = ?, image_url = ?, author = ?, updated_at = NOW() WHERE id = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, oeuvre.getTitle());
-        ps.setString(2, oeuvre.getType());
-        ps.setString(3, oeuvre.getDescription());
-        ps.setDate(4, oeuvre.getDatePublication() != null ? Date.valueOf(oeuvre.getDatePublication()) : null);
-        ps.setString(5, oeuvre.getImageUrl());
-        ps.setString(6, oeuvre.getAuthor());
-        ps.setInt(7, oeuvre.getId());
-        ps.executeUpdate();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, oeuvre.getTitle());
+            ps.setString(2, oeuvre.getType());
+            ps.setString(3, oeuvre.getDescription());
+            ps.setDate(4, oeuvre.getDatePublication() != null ? Date.valueOf(oeuvre.getDatePublication()) : null);
+            ps.setString(5, oeuvre.getImageUrl());
+            ps.setString(6, oeuvre.getAuthor());
+            ps.setInt(7, oeuvre.getId());
+            ps.executeUpdate();
+        }
     }
 
     @Override
     public void delete(int id) throws SQLException {
+        // ✅ CORRECTION: oeuvre → oeuvres
         String sql = "DELETE FROM oeuvres WHERE id = ?";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setInt(1, id);
-        ps.executeUpdate();
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
+        }
     }
 
     @Override
     public List<Oeuvre> select() throws SQLException {
         List<Oeuvre> list = new ArrayList<>();
+        // ✅ CORRECTION: oeuvre → oeuvres
         String sql = "SELECT * FROM oeuvres ORDER BY created_at DESC";
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(sql);
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
+
+        try (Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
         }
         return list;
     }
 
-    public List<Oeuvre> findByType(String type) throws SQLException {
+    public Oeuvre findById(int id) throws SQLException {
+        // ✅ CORRECTION: oeuvre → oeuvres
+        String sql = "SELECT * FROM oeuvres WHERE id = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return mapResultSet(rs);
+            }
+        }
+        return null;
+    }
+
+    public List<Oeuvre> searchOeuvres(String search, String type, Integer userId) throws SQLException {
         List<Oeuvre> list = new ArrayList<>();
-        String sql = "SELECT * FROM oeuvres WHERE type = ? ORDER BY created_at DESC";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, type);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
+        // ✅ CORRECTION: oeuvre → oeuvres
+        StringBuilder sql = new StringBuilder("SELECT * FROM oeuvres WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (search != null && !search.isEmpty()) {
+            sql.append(" AND (title LIKE ? OR author LIKE ?)");
+            params.add("%" + search + "%");
+            params.add("%" + search + "%");
+        }
+
+        if (type != null && !type.isEmpty() && !type.equals("Tous") && !type.equals("null")) {
+            sql.append(" AND type = ?");
+            params.add(type);
+        }
+
+        if (userId != null && userId > 0) {
+            sql.append(" AND created_by_id = ?");
+            params.add(userId);
+        }
+
+        sql.append(" ORDER BY created_at DESC");
+
+        try (PreparedStatement ps = connection.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                ps.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSet(rs));
+            }
         }
         return list;
     }
 
-    public List<Oeuvre> findByAuthor(String author) throws SQLException {
-        List<Oeuvre> list = new ArrayList<>();
-        String sql = "SELECT * FROM oeuvres WHERE author = ? ORDER BY created_at DESC";
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.setString(1, author);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            list.add(mapResultSet(rs));
+    public List<String> getAvailableTypes() throws SQLException {
+        List<String> types = new ArrayList<>();
+        // ✅ CORRECTION: oeuvre → oeuvres
+        String sql = "SELECT DISTINCT type FROM oeuvres WHERE type IS NOT NULL AND type != ''";
+
+        try (Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                types.add(rs.getString("type"));
+            }
         }
-        return list;
+        return types;
     }
 
     private Oeuvre mapResultSet(ResultSet rs) throws SQLException {
@@ -100,7 +157,25 @@ public class OeuvreDAO implements IDAO<Oeuvre> {
         oeuvre.setDescription(rs.getString("description"));
         oeuvre.setImageUrl(rs.getString("image_url"));
         oeuvre.setAuthor(rs.getString("author"));
-        oeuvre.setCreateurId(rs.getInt("created_by_id"));
+
+        try {
+            int createdById = rs.getInt("created_by_id");
+            if (!rs.wasNull()) {
+                oeuvre.setCreateurId(createdById);
+            } else {
+                oeuvre.setCreateurId(1);
+            }
+        } catch (SQLException e) {
+            oeuvre.setCreateurId(1);
+        }
+
+        Date datePub = rs.getDate("date_publication");
+        if (datePub != null) {
+            oeuvre.setDatePublication(datePub.toLocalDate());
+        } else {
+            oeuvre.setDatePublication(java.time.LocalDate.now());
+        }
+
         return oeuvre;
     }
 }

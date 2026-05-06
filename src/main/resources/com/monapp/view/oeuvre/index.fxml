@@ -5,80 +5,128 @@
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
-
+<?import javafx.scene.shape.Circle?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/17"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.app.controllers.OeuvreController"
-            style="-fx-background-color: #0d1117;">
+            stylesheets="@../accueil.css"
+            style="-fx-background-color: #0a0c10;">
 
-    <fx:include source="../partials/header.fxml" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"/>
+    <!-- HEADER FIXE -->
+    <VBox styleClass="header" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
 
-    <VBox spacing="15" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" AnchorPane.bottomAnchor="0">
+        <!-- Barre de navigation -->
+        <HBox styleClass="header-content" spacing="20" alignment="CENTER_LEFT">
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
 
-        <padding>
-            <Insets top="20" right="20" bottom="20" left="20"/>
-        </padding>
+            <!-- Logo -->
+            <HBox styleClass="logo" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 24px;" styleClass="float"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+            </HBox>
 
-        <Label text="MES ŒUVRES"
-               style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+            <!-- Navigation -->
+            <HBox styleClass="nav-menu" spacing="5" HBox.hgrow="ALWAYS">
+                <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                <Button text="Œuvre" styleClass="magic-btn, active" onAction="#goOeuvres"/>
+                <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                <Button text="Défis" styleClass="magic-btn" onAction="#goChallenges"/>
+            </HBox>
 
-        <!-- Barre de recherche -->
-        <HBox spacing="10">
-            <TextField fx:id="searchField" promptText="Rechercher une œuvre..." HBox.hgrow="ALWAYS"/>
-            <ComboBox fx:id="typeFilter" promptText="Type"/>
-            <CheckBox fx:id="myItemsCheckbox" text="Mes œuvres" style="-fx-text-fill: white;"/>
-            <Button text="Rechercher" onAction="#search"
-                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
-            <Button text="Réinitialiser" onAction="#resetFilters"
-                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 8 15;"/>
-            <Button text="Créer" onAction="#goToCreateOeuvre"
-                    style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
+            <!-- Auth buttons -->
+            <HBox fx:id="authContainer" spacing="10" alignment="CENTER_RIGHT"/>
         </HBox>
 
-        <!-- Liste et formulaire -->
-        <SplitPane dividerPositions="0.5" VBox.vgrow="ALWAYS">
-            <!-- Liste des œuvres -->
-            <ListView fx:id="oeuvreList" style="-fx-background-color: #1a1f1e; -fx-background-radius: 10;"/>
-
-            <!-- Formulaire d'édition -->
-            <VBox spacing="10" style="-fx-padding: 15; -fx-background-color: #1a1f1e; -fx-background-radius: 10;">
-                <Label text="DÉTAILS" style="-fx-text-fill: #18E3A4; -fx-font-size: 16px; -fx-font-weight: bold;"/>
-
-                <TextField fx:id="titleField" promptText="Titre" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
-                <TextField fx:id="typeField" promptText="Type" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
-                <TextField fx:id="authorField" promptText="Auteur" style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
-                <TextArea fx:id="descriptionArea" promptText="Description" prefHeight="100"
-                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
-                <DatePicker fx:id="datePublicationPicker" promptText="Date de publication"
-                            style="-fx-background-color: #2a3139; -fx-text-fill: white;"/>
-
-                <HBox spacing="10">
-                    <Button fx:id="selectImageBtn" text="Choisir image" onAction="#selectImage"
-                            style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 8 15;"/>
-                    <Button fx:id="saveBtn" text="Sauvegarder" onAction="#createOeuvre"
-                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15; -fx-font-weight: bold;"/>
-                    <Button fx:id="deleteBtn" text="Supprimer" onAction="#deleteOeuvre"
-                            style="-fx-background-color: #ff6b6b; -fx-text-fill: white; -fx-background-radius: 10; -fx-padding: 8 15;"/>
-                </HBox>
-
-                <ImageView fx:id="imageView" fitWidth="200" fitHeight="150" preserveRatio="true"
-                           style="-fx-background-color: #2a3139; -fx-background-radius: 10;"/>
-
-                <Separator style="-fx-background-color: rgba(24,227,164,0.2);"/>
-
-                <Label text="COMMENTAIRES" style="-fx-text-fill: #18E3A4; -fx-font-size: 14px; -fx-font-weight: bold;"/>
-                <TextArea fx:id="commentArea" promptText="Ajouter un commentaire..." prefHeight="60"
-                          style="-fx-background-color: #2a3139; -fx-text-fill: white; -fx-prompt-text-fill: #888;"/>
-                <Button fx:id="addCommentBtn" text="Ajouter commentaire" onAction="#addComment"
-                        style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-background-radius: 10; -fx-padding: 8 15;"/>
-                <ListView fx:id="commentList" prefHeight="100" style="-fx-background-color: #2a3139; -fx-background-radius: 10;"/>
-
-                <Button text="Retour à l'accueil" onAction="#goAccueil"
-                        style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 10; -fx-padding: 10;"/>
-            </VBox>
-        </SplitPane>
-
+        <!-- Barre de recherche -->
+        <VBox fx:id="searchBarContainer" styleClass="search-bar-container" visible="false">
+            <HBox styleClass="search-bar-wrapper" spacing="10" alignment="CENTER_LEFT">
+                <Label text="🔍" styleClass="search-icon"/>
+                <TextField fx:id="searchInput" promptText="Nom d'utilisateur, prénom ou nom..."
+                           styleClass="search-bar-input" HBox.hgrow="ALWAYS"/>
+                <Button text="✕" styleClass="search-close-btn" onAction="#toggleSearchBar"/>
+            </HBox>
+            <ListView fx:id="searchResults" styleClass="search-bar-results" visible="false" maxHeight="300"/>
+        </VBox>
     </VBox>
 
+    <!-- Contenu principal -->
+    <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox spacing="25" style="-fx-padding: 25 30;">
+            
+            <!-- Bannière -->
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-padding: 30; -fx-background-color: #0f212e; -fx-background-radius: 15; -fx-border-color: rgba(24,227,164,0.2); -fx-border-radius: 15;">
+                <VBox spacing="10">
+                    <Label text="Gestion des Œuvres" style="-fx-text-fill: #fff; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label text="Créez, modifiez et gérez toutes les œuvres de la plateforme" style="-fx-text-fill: #b0b9b6; -fx-font-size: 14px;"/>
+                    <HBox spacing="15" style="-fx-padding: 15 0 0 0;">
+                        <Button text="+ Créer une œuvre" onAction="#goToCreateOeuvre" 
+                                style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-padding: 10 25; -fx-background-radius: 25; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label text="📚" style="-fx-font-size: 80px; -fx-opacity: 0.3;"/>
+            </HBox>
+            
+            <!-- Statistiques -->
+            <HBox spacing="20">
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="📖" style="-fx-font-size: 28px;"/>
+                    <Label text="Total Œuvres" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalOeuvresLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="✍️" style="-fx-font-size: 28px;"/>
+                    <Label text="Auteurs" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalAuteursLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+                <VBox spacing="5" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12; -fx-alignment: CENTER; -fx-min-width: 150;">
+                    <Label text="⭐" style="-fx-font-size: 28px;"/>
+                    <Label text="Types" style="-fx-text-fill: #b0b9b6; -fx-font-size: 12px;"/>
+                    <Label fx:id="totalTypesLabel" text="0" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                </VBox>
+            </HBox>
+            
+            <!-- Filtres -->
+            <VBox spacing="15" style="-fx-padding: 20; -fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;">
+                <Label text="🔍 Filtrer les œuvres" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                <HBox spacing="15">
+                    <TextField fx:id="searchField" promptText="Chercher par titre ou auteur..." 
+                               style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 25; -fx-padding: 12 20; -fx-border-color: #2a3540; -fx-border-radius: 25;"
+                               HBox.hgrow="ALWAYS"/>
+                    <ComboBox fx:id="typeFilter" promptText="Type" 
+                              style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-background-radius: 25; -fx-padding: 5 15; -fx-min-width: 150;"/>
+                    <Button text="Rechercher" onAction="#search" 
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 10 25; -fx-cursor: hand;"/>
+                    <Button text="Réinitialiser" onAction="#resetFilters" 
+                            style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-background-radius: 25; -fx-border-radius: 25; -fx-padding: 10 25; -fx-cursor: hand;"/>
+                    <CheckBox fx:id="myItemsCheckbox" text="Mes œuvres" style="-fx-text-fill: #fff;" onAction="#toggleMyItems"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Grille des œuvres -->
+            <VBox spacing="15">
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="📚 Toutes les œuvres" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="resultCountLabel" text="0 œuvre(s)" style="-fx-text-fill: #6a7a8a; -fx-font-size: 12px;"/>
+                </HBox>
+                
+                <TilePane fx:id="oeuvreGrid" 
+                          prefColumns="3" 
+                          hgap="20" 
+                          vgap="20"
+                          style="-fx-background-color: transparent;"/>
+            </VBox>
+            
+        </VBox>
+    </ScrollPane>
+    
 </AnchorPane>
