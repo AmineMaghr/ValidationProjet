@@ -17,8 +17,9 @@ public class DefiService implements IService<Defi> {
 
     @Override
     public void add(Defi defi) throws SQLException {
-        String sql = "INSERT INTO defi (titre, description, theme, image_cover, date_debut, date_fin, statut, createur_id, difficulte) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        PreparedStatement ps = connection.prepareStatement(sql);
+        String sql = "INSERT INTO defi (titre, description, theme, image_cover, date_debut, date_fin, date_limite, statut, createur_id, difficulte, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+
+        PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
         ps.setString(3, defi.getTheme());
@@ -27,16 +28,22 @@ public class DefiService implements IService<Defi> {
         // Conversion LocalDate -> java.sql.Date
         ps.setDate(5, defi.getDateDebut() != null ? Date.valueOf(defi.getDateDebut()) : null);
         ps.setDate(6, defi.getDateFin() != null ? Date.valueOf(defi.getDateFin()) : null);
+        ps.setDate(7, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
 
-        ps.setString(7, defi.getStatut());
-        ps.setInt(8, defi.getCreateurId());
-        ps.setString(9, defi.getDifficulte());
+        ps.setString(8, defi.getStatut());
+        ps.setInt(9, defi.getCreateurId());
+        ps.setString(10, defi.getDifficulte());
         ps.executeUpdate();
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            defi.setId(rs.getInt(1));
+        }
     }
 
     @Override
-    public void update(Defi defi) throws SQLException {
-        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, image_cover = ?, date_debut = ?, date_fin = ?, statut = ?, difficulte = ? WHERE id = ?";
+public void update(Defi defi) throws SQLException {
+        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, image_cover = ?, date_debut = ?, date_fin = ?, date_limite = ?, statut = ?, difficulte = ?, updated_at = NOW() WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
@@ -46,10 +53,11 @@ public class DefiService implements IService<Defi> {
         // Conversion LocalDate -> java.sql.Date
         ps.setDate(5, defi.getDateDebut() != null ? Date.valueOf(defi.getDateDebut()) : null);
         ps.setDate(6, defi.getDateFin() != null ? Date.valueOf(defi.getDateFin()) : null);
+        ps.setDate(7, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
 
-        ps.setString(7, defi.getStatut());
-        ps.setString(8, defi.getDifficulte());
-        ps.setInt(9, defi.getId());
+        ps.setString(8, defi.getStatut());
+        ps.setString(9, defi.getDifficulte());
+        ps.setInt(10, defi.getId());
         ps.executeUpdate();
     }
 

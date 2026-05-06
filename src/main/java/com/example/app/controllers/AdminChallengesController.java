@@ -3,6 +3,7 @@ package com.example.app.controllers;
 import com.example.app.entities.Defi;
 import com.example.app.entities.User;
 import com.example.app.services.DefiService;
+import com.example.app.utils.ConfigManager;
 import com.example.app.utils.UserSession;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -16,7 +17,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.scene.effect.DropShadow;
-
 import javafx.scene.effect.BlurType;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -392,7 +392,7 @@ public class AdminChallengesController extends BaseController {
                     data.getNode().setStyle("-fx-background-color: #18E3A4; -fx-background-radius: 4px;");
                     
                     // Add tooltip for better UX
-                    Tooltip tooltip = new Tooltip(String.format("%.0f participations", data.getYValue()));
+                    Tooltip tooltip = new Tooltip(String.format("%d participations", data.getYValue()));
                     Tooltip.install(data.getNode(), tooltip);
                 }
             }
@@ -534,7 +534,7 @@ public class AdminChallengesController extends BaseController {
     // ============================================
     private static final String GROK_API_KEY = "xai-i8xtxwVYQ1Is92OiF526YBljbgeKYbI2yY4dlRzkumVx9BM98ZWRRItXEo0vKXBKsnXYq9vGaJSMFkcb";
     private static final String GROK_API_URL = "https://api.x.ai/v1/chat/completions";
-    private static final String GROK_MODEL = "grok-2-latest";
+private static final String GROK_MODEL = "grok-3-fast";
 
     @FXML
     public void generateWithAI() {
@@ -864,15 +864,16 @@ public class AdminChallengesController extends BaseController {
         messages.put(messageUser);
 
         JSONObject requestBody = new JSONObject();
-        requestBody.put("model", GROK_MODEL);
+ConfigManager config = ConfigManager.getInstance();
+        requestBody.put("model", config.getString("ai.grok.model", "grok-3-fast"));
         requestBody.put("messages", messages);
         requestBody.put("temperature", 0.85);
         requestBody.put("max_tokens", 800);
         requestBody.put("stream", false);
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(GROK_API_URL))
-                .header("Authorization", "Bearer " + GROK_API_KEY)
+                .uri(URI.create(config.getString("ai.grok.api_url", "https://api.x.ai/v1/chat/completions")))
+                .header("Authorization", "Bearer " + config.getString("ai.grok.api_key"))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString(), StandardCharsets.UTF_8))
                 .build();

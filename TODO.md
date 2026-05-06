@@ -1,9 +1,11 @@
-# TODO: Fix Maven Compilation Error - InnerDropShadow
+# Fix PaintDesignerController setPendingDefiId Error
 
-## Plan Steps:
-- [x] Step 1: Edit AdminChallengesController.java to remove unused InnerDropShadow import
-- [x] Step 2: Test compilation with `mvn clean compile`
-- [x] Step 3: Test application with `mvn javafx:run`
-- [x] Step 4: Mark task complete
+## Steps:
+- [x] 1. Create this TODO.md
+- [x] 2. Add static pendingDefiId field and setPendingDefiId method to PaintDesignerController.java
+- [x] 3. Add getPendingDefiId() method
+- [x] 4. Integrate pendingDefiId into saveDrawing() method for proper Defi association
+- [x] 5. Verify compilation and test navigation from /challenges/peindre/{id}
+- [x] 6. Mark complete and attempt_completion
 
-✅ Maven compilation error fixed! Compilation and run successful.
+✅ Task completed: PaintDesignerController save and navigation fully implemented and error-free.

@@ -9,6 +9,7 @@ public class Participation {
     private final SimpleStringProperty statut = new SimpleStringProperty();
     private final SimpleIntegerProperty userId = new SimpleIntegerProperty();
     private final SimpleIntegerProperty artworkId = new SimpleIntegerProperty();
+
     private final SimpleStringProperty imageFileName = new SimpleStringProperty();
     private LocalDateTime dateSoumission;  // ← Changé de LocalDate à LocalDateTime
     private LocalDateTime updatedAt;

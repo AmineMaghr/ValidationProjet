@@ -20,7 +20,8 @@ public class ParticipationDAO implements IDAO<Participation> {
         String sql = "INSERT INTO participation (description, date_soumission, statut, user_id, artwork_id, image_file_name, defi_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, participation.getDescription());
-        ps.setDate(2, Date.valueOf(participation.getDateSoumission().toLocalDate()));        ps.setString(3, participation.getStatut());
+        ps.setTimestamp(2, Timestamp.valueOf(participation.getDateSoumission()));
+        ps.setString(3, participation.getStatut());
         ps.setInt(4, participation.getUserId());
         if (participation.getArtworkId() > 0) {
             ps.setInt(5, participation.getArtworkId());
@@ -166,6 +167,16 @@ public class ParticipationDAO implements IDAO<Participation> {
         participation.setUserId(rs.getInt("user_id"));
         participation.setArtworkId(rs.getInt("artwork_id"));
         participation.setImageFileName(rs.getString("image_file_name"));
+
+        Timestamp dateSoumission = rs.getTimestamp("date_soumission");
+        if (dateSoumission != null) {
+            participation.setDateSoumission(dateSoumission.toLocalDateTime());
+        }
+
+        Timestamp updatedAt = rs.getTimestamp("updated_at");
+        if (updatedAt != null) {
+            participation.setUpdatedAt(updatedAt.toLocalDateTime());
+        }
 
         Defi defi = new Defi();
         defi.setId(rs.getInt("defi_id"));

@@ -55,13 +55,38 @@ public class SceneManager {
         }
         
         // Handle dynamic routes like /challenges/participer/{id} or /challenges/{id}
-        if (route.startsWith("/challenges/participer/") || (parts.length == 3 && "challenges".equals(parts[1]))) {
-            com.midgar.controller.ParticiperController.setPendingDefiId(defiId);
+        if (route.startsWith("/challenges/participer/")) {
+            String[] routeParts = route.split("/");
+            if (routeParts.length >= 4) {
+                try {
+                    int parsedDefiId = Integer.parseInt(routeParts[3]);
+                    com.midgar.controller.ParticiperController.setPendingDefiId(parsedDefiId);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid defi ID in route: " + routeParts[3]);
+                }
+            }
+            return "/com/monapp/view/challenges/participer.fxml";
+        } else if (parts.length == 3 && "challenges".equals(parts[1])) {
+            // Handle /challenges/{id} where {id} is a number
+            try {
+                int routeDefiId = Integer.parseInt(parts[2]);
+                com.midgar.controller.ParticiperController.setPendingDefiId(routeDefiId);
+            } catch (NumberFormatException e) {
+                System.err.println("Invalid defi ID in route: " + parts[2]);
+            }
             return "/com/monapp/view/challenges/participer.fxml";
         }
         // Handle dynamic routes like /challenges/peindre/{id}
-        if (route.startsWith("/challenges/peindre/")) {
-            // PaintDesigner doesn't need pendingDefiId, it's for context only
+        if (route.startsWith("/challenges/peindre/") || "/challenges/paint_designer".equals(route)) {
+            String[] routeParts = route.split("/");
+            if (routeParts.length >= 4) {
+                try {
+                    int parsedDefiId = Integer.parseInt(routeParts[3]);
+                    com.monapp.view.challenges.PaintDesignerController.setPendingDefiId(parsedDefiId);
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid defi ID in route: " + routeParts[3]);
+                }
+            }
             return "/com/monapp/view/challenges/paint_designer.fxml";
         }
         

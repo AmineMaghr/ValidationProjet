@@ -17,17 +17,18 @@ public class DefiDAO implements IDAO<Defi> {
 
     @Override
     public void add(Defi defi) throws SQLException {
-        String sql = "INSERT INTO defi (titre, description, theme, image_cover, date_debut, date_fin, date_limite, statut, createur_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO defi (titre, description, theme, difficulte, image_cover, date_debut, date_fin, date_limite, statut, createur_id, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
         PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
         ps.setString(3, defi.getTheme());
-        ps.setString(4, defi.getImageCover());
-        ps.setDate(5, Date.valueOf(defi.getDateDebut()));
-        ps.setDate(6, Date.valueOf(defi.getDateFin()));
-        ps.setDate(7, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
-        ps.setString(8, defi.getStatut());
-        ps.setInt(9, defi.getCreateurId());
+        ps.setString(4, defi.getDifficulte());
+        ps.setString(5, defi.getImageCover());
+        ps.setDate(6, Date.valueOf(defi.getDateDebut()));
+        ps.setDate(7, Date.valueOf(defi.getDateFin()));
+        ps.setDate(8, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
+        ps.setString(9, defi.getStatut());
+        ps.setInt(10, defi.getCreateurId());
         ps.executeUpdate();
 
         ResultSet rs = ps.getGeneratedKeys();
@@ -38,17 +39,18 @@ public class DefiDAO implements IDAO<Defi> {
 
     @Override
     public void update(Defi defi) throws SQLException {
-        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, image_cover = ?, date_debut = ?, date_fin = ?, date_limite = ?, statut = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE defi SET titre = ?, description = ?, theme = ?, difficulte = ?, image_cover = ?, date_debut = ?, date_fin = ?, date_limite = ?, statut = ?, updated_at = NOW() WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, defi.getTitre());
         ps.setString(2, defi.getDescription());
         ps.setString(3, defi.getTheme());
-        ps.setString(4, defi.getImageCover());
-        ps.setDate(5, Date.valueOf(defi.getDateDebut()));
-        ps.setDate(6, Date.valueOf(defi.getDateFin()));
-        ps.setDate(7, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
-        ps.setString(8, defi.getStatut());
-        ps.setInt(9, defi.getId());
+        ps.setString(4, defi.getDifficulte());
+        ps.setString(5, defi.getImageCover());
+        ps.setDate(6, Date.valueOf(defi.getDateDebut()));
+        ps.setDate(7, Date.valueOf(defi.getDateFin()));
+        ps.setDate(8, defi.getDateLimite() != null ? Date.valueOf(defi.getDateLimite()) : null);
+        ps.setString(9, defi.getStatut());
+        ps.setInt(10, defi.getId());
         ps.executeUpdate();
     }
 
@@ -164,25 +166,26 @@ public class DefiDAO implements IDAO<Defi> {
         return list;
     }
 
-    private Defi mapResultSet(ResultSet rs) throws SQLException {
-        Defi defi = new Defi();
-        defi.setId(rs.getInt("id"));
-        defi.setTitre(rs.getString("titre"));
-        defi.setDescription(rs.getString("description"));
-        defi.setTheme(rs.getString("theme"));
-        defi.setImageCover(rs.getString("image_cover"));
+     private Defi mapResultSet(ResultSet rs) throws SQLException {
+         Defi defi = new Defi();
+         defi.setId(rs.getInt("id"));
+         defi.setTitre(rs.getString("titre"));
+         defi.setDescription(rs.getString("description"));
+         defi.setTheme(rs.getString("theme"));
+         defi.setImageCover(rs.getString("image_cover"));
 
-        Date dateDebut = rs.getDate("date_debut");
-        if (dateDebut != null) defi.setDateDebut(dateDebut.toLocalDate());
+         Date dateDebut = rs.getDate("date_debut");
+         if (dateDebut != null) defi.setDateDebut(dateDebut.toLocalDate());
 
-        Date dateFin = rs.getDate("date_fin");
-        if (dateFin != null) defi.setDateFin(dateFin.toLocalDate());
+         Date dateFin = rs.getDate("date_fin");
+         if (dateFin != null) defi.setDateFin(dateFin.toLocalDate());
 
-        Date dateLimite = rs.getDate("date_limite");
-        if (dateLimite != null) defi.setDateLimite(dateLimite.toLocalDate());
+         Date dateLimite = rs.getDate("date_limite");
+         if (dateLimite != null) defi.setDateLimite(dateLimite.toLocalDate());
 
-        defi.setStatut(rs.getString("statut"));
-        defi.setCreateurId(rs.getInt("createur_id"));
-        return defi;
-    }
+         defi.setStatut(rs.getString("statut"));
+         defi.setCreateurId(rs.getInt("createur_id"));
+         defi.setDifficulte(rs.getString("difficulte"));
+         return defi;
+     }
 }

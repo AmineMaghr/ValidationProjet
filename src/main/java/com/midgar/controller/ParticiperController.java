@@ -277,7 +277,9 @@ public class ParticiperController extends BaseController {
     @FXML
     private void goToPaintEditor() {
         System.out.println("Navigating to paint editor - Canvas prêt !");
-        navigateTo("/challenges/peindre");
+        // Set the pending defi ID for the paint editor
+        com.monapp.view.challenges.PaintDesignerController.setPendingDefiId(currentDefiId);
+        navigateTo("/challenges/peindre/" + currentDefiId);
     }
     
     @FXML

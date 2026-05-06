@@ -73,15 +73,19 @@ public class ConfigManager {
         properties.setProperty("ui.theme", "dark");
         
         // Database
-        properties.setProperty("db.type", "H2");
-        properties.setProperty("db.h2.mode", "MySQL");
-        properties.setProperty("db.persistent", "false");
+        properties.setProperty("db.type", "MySQL");
+        properties.setProperty("db.url", "jdbc:mysql://localhost:3306/midgar?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true");
+        properties.setProperty("db.user", "root");
+        properties.setProperty("db.password", "");
         
         // Debug
         properties.setProperty("debug.enabled", "true");
         properties.setProperty("debug.verbose", "false");
         
-        LogUtil.info("⚙️  Configuration par défaut appliquée");
+        // MySQL specific
+        properties.setProperty("db.persistent", "true");
+        
+        LogUtil.info("⚙️  Configuration par défaut appliquée (MySQL)");
     }
     
     /**
