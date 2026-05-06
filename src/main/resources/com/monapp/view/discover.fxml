@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.app.controllers.DiscoverController"
+            stylesheets="@discover.css"
+            styleClass="root-pane">
+
+    <fx:define>
+        <ToggleGroup fx:id="sortGroup"/>
+    </fx:define>
+
+    <!-- ===== HEADER ===== -->
+    <top>
+        <HBox styleClass="header" alignment="CENTER_LEFT" spacing="16">
+            <HBox styleClass="logo" alignment="CENTER_LEFT" spacing="8">
+                <Label text="⬡" styleClass="logo-icon"/>
+                <Label text="Midgar" styleClass="logo-text"/>
+            </HBox>
+
+            <HBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
+                <Button text="Accueil"      styleClass="nav-btn"             onAction="#goAccueil"/>
+                <Button text="Découvrir"    styleClass="nav-btn, nav-active" onAction="#goDiscover"/>
+                <Button text="Univers"      styleClass="nav-btn"             onAction="#goUniverses"/>
+                <Button text="Personnages"  styleClass="nav-btn"             onAction="#goPersonnages"/>
+                <Button text="Œuvre"        styleClass="nav-btn"             onAction="#goOeuvres"/>
+                <Button text="Artefacts"    styleClass="nav-btn"             onAction="#goArtefacts"/>
+                <Button text="Boutique"     styleClass="nav-btn"             onAction="#goShop"/>
+                <Button text="Défis"        styleClass="nav-btn"             onAction="#goChallenges"/>
+            </HBox>
+
+            <HBox alignment="CENTER_RIGHT" spacing="8">
+                <Button fx:id="btnLogin"    text="Connexion"   styleClass="btn-secondary" onAction="#goLogin"/>
+                <Button fx:id="btnRegister" text="S'inscrire"  styleClass="btn-primary"   onAction="#goRegister"/>
+                <!-- When logged in, this HBox is shown instead (toggled by controller) -->
+                <HBox fx:id="profileBox" alignment="CENTER" spacing="6" visible="false" managed="false">
+                    <ImageView fx:id="avatarImg" fitWidth="32" fitHeight="32" styleClass="avatar-img"/>
+                    <Label fx:id="userNameLabel" styleClass="user-label"/>
+                    <Button text="Déconnexion" styleClass="btn-secondary-sm" onAction="#onLogout"/>
+                </HBox>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <center>
+        <ScrollPane fitToWidth="true" styleClass="main-scroll" hbarPolicy="NEVER">
+            <VBox styleClass="main-vbox" spacing="24">
+                <padding><Insets top="24" right="24" bottom="24" left="24"/></padding>
+
+                <!-- Page Title -->
+                <HBox alignment="CENTER_LEFT">
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Découvrir" styleClass="page-title"/>
+                        <Label text="Explorez univers, personnages, œuvres et artefacts créés par notre communauté"
+                               styleClass="page-subtitle" wrapText="true"/>
+                    </VBox>
+                    <Button fx:id="btnCreateOeuvre" text="Créer Œuvre" styleClass="btn-primary" onAction="#handleCreateOeuvre"/>
+                </HBox>
+
+                <!-- Discover Container: Sidebar + Feed -->
+                <HBox spacing="24" alignment="TOP_LEFT">
+
+                    <!-- ===== FILTER SIDEBAR ===== -->
+                    <VBox styleClass="filter-sidebar" spacing="0" minWidth="230" maxWidth="230">
+
+                        <!-- Search -->
+                        <VBox styleClass="filter-group" spacing="8">
+                            <TextField fx:id="searchInput"
+                                       promptText="Chercher..."
+                                       styleClass="search-box"
+                                       onKeyReleased="#onSearch"/>
+                        </VBox>
+
+                        <!-- Genre -->
+                        <VBox styleClass="filter-group" spacing="8">
+                            <Label text="GENRE" styleClass="filter-group-title"/>
+                            <CheckBox fx:id="genreHighFantasy" text="Haute Fantaisie"
+                                      styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="genreDarkFantasy"  text="Sombre"
+                                      styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="genreScifi"        text="Sci-Fi"
+                                      styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="genreUrban"        text="Urban"
+                                      styleClass="filter-check" onAction="#onFilterChanged"/>
+                        </VBox>
+
+                        <!-- Themes -->
+                        <VBox styleClass="filter-group" spacing="8">
+                            <Label text="THÈMES" styleClass="filter-group-title"/>
+                            <CheckBox fx:id="themeMagie"     text="Magie"     styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="themeGuerre"    text="Guerre"    styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="themePolitique" text="Politique" styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="themeNature"    text="Nature"    styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="themeMystere"   text="Mystère"   styleClass="filter-check" onAction="#onFilterChanged"/>
+                            <CheckBox fx:id="themeAventure"  text="Aventure"  styleClass="filter-check" onAction="#onFilterChanged"/>
+                        </VBox>
+
+                        <!-- Sort -->
+                        <VBox styleClass="filter-group" spacing="8">
+                            <Label text="TRI" styleClass="filter-group-title"/>
+                            <RadioButton fx:id="sortNewest"   text="Récent"    toggleGroup="$sortGroup"
+                                         styleClass="filter-radio" selected="true" onAction="#onFilterChanged"/>
+                            <RadioButton fx:id="sortPopular"  text="Populaire" toggleGroup="$sortGroup"
+                                         styleClass="filter-radio" onAction="#onFilterChanged"/>
+                            <RadioButton fx:id="sortTrending" text="Tendance"  toggleGroup="$sortGroup"
+                                         styleClass="filter-radio" onAction="#onFilterChanged"/>
+                        </VBox>
+
+                        <!-- Reset Button -->
+                        <Button text="Réinitialiser" styleClass="filter-reset-btn"
+                                maxWidth="Infinity" onAction="#onResetFilters"/>
+                    </VBox>
+
+                    <!-- ===== FEED SECTION ===== -->
+                    <VBox HBox.hgrow="ALWAYS" spacing="16">
+
+                        <!-- Feed Header -->
+                        <HBox alignment="CENTER_LEFT" spacing="16">
+                            <Label text="Flux" styleClass="feed-title" HBox.hgrow="ALWAYS"/>
+                            <Button text="✨ Éditer mes préférences" styleClass="btn-pref"
+                                    onAction="#onEditPrefs"/>
+                            <Button text="🗑️ Réinitialiser" styleClass="btn-pref-outline"
+                                    onAction="#onResetPrefs"/>
+                            <Label fx:id="resultsCount" text="0 / 0" styleClass="results-count"/>
+                        </HBox>
+
+                        <!-- Cards Grid -->
+                        <FlowPane fx:id="feedGrid"
+                                  hgap="16" vgap="16"
+                                  styleClass="feed-grid"
+                                  prefWrapLength="800"/>
+
+                        <!-- Empty State -->
+                        <VBox fx:id="emptyState" alignment="CENTER" spacing="12"
+                              visible="false" managed="false" style="-fx-padding: 48;">
+                            <Label text="😔 Aucun résultat" styleClass="empty-label"/>
+                        </VBox>
+
+                        <!-- Load More -->
+                        <HBox fx:id="loadMoreContainer" alignment="CENTER"
+                              visible="false" managed="false">
+                            <Button text="Charger Plus" styleClass="load-more-btn"
+                                    onAction="#onLoadMore"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <!-- ===== FOOTER ===== -->
+    <bottom>
+        <VBox styleClass="footer" spacing="0">
+            <HBox styleClass="footer-inner" spacing="40" alignment="TOP_LEFT">
+                <padding><Insets top="32" right="32" bottom="16" left="32"/></padding>
+
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Midgar" styleClass="footer-heading"/>
+                    <Label text="Explorez des univers infinis et laissez parler votre créativité."
+                           styleClass="footer-text" wrapText="true" maxWidth="200"/>
+                </VBox>
+
+                <VBox spacing="8">
+                    <Label text="Liens Rapides" styleClass="footer-heading"/>
+                    <Hyperlink text="Accueil"    styleClass="footer-link" onAction="#goAccueil"/>
+                    <Hyperlink text="Découvrir"  styleClass="footer-link" onAction="#goDiscover"/>
+                    <Hyperlink text="Boutique"   styleClass="footer-link" onAction="#goShop"/>
+                    <Hyperlink text="Défis"      styleClass="footer-link" onAction="#goChallenges"/>
+                </VBox>
+
+                <VBox spacing="8">
+                    <Label text="Légal" styleClass="footer-heading"/>
+                    <Hyperlink text="Confidentialité" styleClass="footer-link"/>
+                    <Hyperlink text="CGU"              styleClass="footer-link"/>
+                </VBox>
+            </HBox>
+
+            <Separator styleClass="footer-sep"/>
+            <Label text="© 2024 Midgar. Tous droits réservés."
+                   styleClass="footer-copy" alignment="CENTER" maxWidth="Infinity"
+                   style="-fx-padding: 12 0 12 0;"/>
+        </VBox>
+    </bottom>
+</BorderPane>

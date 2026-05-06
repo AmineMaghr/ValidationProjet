@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.shape.Circle?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.LoginController"
+            style="-fx-background-color: #0a0c10;">
+
+    <!-- Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10); -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.5), 10, 0, 0, 2);"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <HBox spacing="30" style="-fx-padding: 15 30;" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goToHome" style="-fx-cursor: hand;">
+                <Label text="⚡" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="S'inscrire" onAction="#goToRegister"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Contenu principal -->
+    <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox alignment="TOP_CENTER" style="-fx-padding: 30;">
+
+            <!-- Carte de connexion -->
+            <VBox maxWidth="440" style="-fx-background-color: #11161c; -fx-background-radius: 24; -fx-border-color: #1a2530; -fx-border-radius: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 15, 0, 0, 5);">
+
+                <!-- En-tête -->
+                <VBox spacing="10" style="-fx-padding: 30 30 20 30; -fx-background-color: #0f212e; -fx-background-radius: 24 24 0 0;">
+                    <Label text="🔮 Connexion" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                    <Label text="Connectez-vous à votre compte Midgar" style="-fx-text-fill: #6a7a8a; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <Separator style="-fx-background-color: rgba(24,227,164,0.15);"/>
+
+                <!-- Formulaire -->
+                <VBox spacing="20" style="-fx-padding: 25 30 25 30;">
+
+                    <!-- Email -->
+                    <VBox spacing="8">
+                        <Label text="Email" style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <TextField fx:id="emailField" promptText="votre.email@exemple.com"
+                                   style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 12; -fx-padding: 14; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                    </VBox>
+
+                    <!-- Mot de passe -->
+                    <VBox spacing="8">
+                        <Label text="Mot de passe" style="-fx-text-fill: #fff; -fx-font-size: 14px; -fx-font-weight: bold;"/>
+                        <PasswordField fx:id="passwordField" promptText="••••••••"
+                                       style="-fx-background-color: #1a2530; -fx-text-fill: #fff; -fx-prompt-text-fill: #6a7a8a; -fx-background-radius: 12; -fx-padding: 14; -fx-border-color: #2a3540; -fx-border-radius: 12;"/>
+                    </VBox>
+
+                    <!-- Options (Se souvenir + Mot de passe oublié) -->
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <CheckBox fx:id="rememberMeCheckbox" text="Se souvenir de moi"
+                                  style="-fx-text-fill: #6a7a8a; -fx-font-size: 13px;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Hyperlink fx:id="forgotPasswordLink" text="Mot de passe oublié?" onAction="#handleForgotPassword"
+                                   style="-fx-text-fill: #18E3A4; -fx-font-size: 13px; -fx-underline: false;"/>
+                    </HBox>
+
+                    <!-- Message d'erreur -->
+                    <Label fx:id="errorLabel" wrapText="true" style="-fx-text-fill: #EF5350; -fx-font-size: 12px; -fx-background-color: rgba(239,83,80,0.1); -fx-padding: 12; -fx-background-radius: 8;" visible="false"/>
+
+                    <!-- Bouton de connexion -->
+                    <Button fx:id="loginBtn" text="Se Connecter" onAction="#handleLogin"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 14; -fx-font-size: 14px; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.3), 10, 0, 0, 2);"
+                            defaultButton="true"/>
+
+                    <Separator style="-fx-background-color: rgba(24,227,164,0.15);"/>
+
+                                        <!-- Connexion sociale -->
+                    <VBox spacing="12">
+                        <!-- Reconnaissance faciale -->
+                                                <!-- Connexion par visage -->
+                        <Button text="👤 Connexion par visage" onAction="#goToFaceLogin"
+                                    style="-fx-background-color: linear-gradient(135deg, #667eea, #764ba2); -fx-text-fill: #fff; 
+                                        -fx-font-weight: bold; -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
+                                    maxWidth="Infinity"/>
+
+                        <!-- Google -->
+                        <Button text="G Continuer avec Google" onAction="#googleLogin"
+                                style="-fx-background-color: #fff; -fx-text-fill: #333; -fx-font-weight: bold; 
+                                    -fx-background-radius: 30; -fx-padding: 12; -fx-cursor: hand; -fx-font-size: 14px;"
+                                maxWidth="Infinity"/>
+                    </VBox>
+
+                    <!-- Lien vers inscription -->
+                    <VBox spacing="10" alignment="CENTER">
+                        <Separator style="-fx-background-color: rgba(24,227,164,0.15);"/>
+                        <Label text="Pas encore de compte ?" style="-fx-text-fill: #6a7a8a; -fx-font-size: 13px;"/>
+                        <Button text="Créer un compte" onAction="#goToRegister"
+                                style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 30; -fx-padding: 10; -fx-cursor: hand; -fx-font-weight: bold; -fx-min-width: 200;"/>
+                    </VBox>
+
+                </VBox>
+
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</AnchorPane>

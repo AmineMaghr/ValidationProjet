@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.ShowArtefactController"
+            style="-fx-background-color: #0a0c10;">
+
+    <!-- Header -->
+    <VBox style="-fx-background-color: linear-gradient(to right, #0f212e, #0a0c10);"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <HBox spacing="30" style="-fx-padding: 15 30;" alignment="CENTER_LEFT">
+            <HBox spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil" style="-fx-cursor: hand;">
+                <Label text="⚡" style="-fx-text-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+                <Label text="MIDGAR" style="-fx-text-fill: #18E3A4; -fx-font-size: 22px; -fx-font-weight: bold;"/>
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="← Retour" onAction="#handleBack"
+                    style="-fx-background-color: transparent; -fx-border-color: #18E3A4; -fx-text-fill: #18E3A4; -fx-border-radius: 20; -fx-padding: 8 20; -fx-cursor: hand;"/>
+        </HBox>
+    </VBox>
+
+    <!-- Contenu -->
+    <ScrollPane style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="80" AnchorPane.bottomAnchor="0">
+        <VBox alignment="TOP_CENTER" style="-fx-padding: 30;">
+
+            <HBox spacing="40" maxWidth="1000">
+
+                <!-- Image -->
+                <VBox spacing="15" alignment="TOP_CENTER">
+                    <ImageView fx:id="imageView" fitWidth="350" fitHeight="350" preserveRatio="true"
+                               style="-fx-background-color: #1a2530; -fx-background-radius: 15; -fx-border-color: #2a3540; -fx-border-radius: 15;"/>
+                </VBox>
+
+                <!-- Informations -->
+                <VBox spacing="20" HBox.hgrow="ALWAYS">
+                    <Text fx:id="nameText" style="-fx-fill: #18E3A4; -fx-font-size: 28px; -fx-font-weight: bold;"/>
+
+                    <VBox spacing="10">
+                        <Text fx:id="typeText" style="-fx-fill: #b0b9b6; -fx-font-size: 16px;"/>
+                        <Text fx:id="universeText" style="-fx-fill: #b0b9b6; -fx-font-size: 14px;"/>
+                        <Text fx:id="rarityText" style="-fx-fill: #b0b9b6; -fx-font-size: 14px;"/>
+                        <Text fx:id="dateText" style="-fx-fill: #b0b9b6; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <Separator style="-fx-background-color: rgba(24,227,164,0.2);"/>
+
+                    <VBox spacing="10">
+                        <Label text="📜 Origines et histoires" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Text fx:id="originsText" style="-fx-fill: #b0b9b6; -fx-font-size: 14px;" wrappingWidth="500"/>
+                    </VBox>
+
+                    <VBox spacing="10">
+                        <Label text="⚡ Pouvoirs et propriétés" style="-fx-text-fill: #fff; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                        <Text fx:id="powersText" style="-fx-fill: #b0b9b6; -fx-font-size: 14px;" wrappingWidth="500"/>
+                    </VBox>
+
+                    <HBox spacing="20" style="-fx-padding: 20 0 0 0;">
+                        <Button fx:id="modifyBtn" text="✏️ Modifier" onAction="#handleModify"
+                                style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 12 30; -fx-cursor: hand;"/>
+                        <Button fx:id="deleteBtn" text="🗑️ Supprimer" onAction="#handleDelete"
+                                style="-fx-background-color: #c62828; -fx-text-fill: #fff; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 12 30; -fx-cursor: hand;"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ⭐ SECTION COMMENTAIRES CORRIGÉE -->
+            <VBox spacing="15" style="-fx-padding: 30 0 0 0;">
+                <Label text="💬 Commentaires" style="-fx-text-fill: #18E3A4; -fx-font-size: 18px; -fx-font-weight: bold;"/>
+                <Separator style="-fx-background-color: rgba(24,227,164,0.3);"/>
+
+                <!-- ⭐ CORRECTION: Texte du commentaire en noir -->
+                <HBox spacing="15">
+                    <TextArea fx:id="commentArea" promptText="Écrivez votre commentaire..." wrapText="true"
+                              style="-fx-background-color: #ffffff; -fx-text-fill: #000000; -fx-prompt-text-fill: #888888; -fx-background-radius: 12; -fx-padding: 10;"
+                              HBox.hgrow="ALWAYS" prefHeight="80"/>
+                    <Button fx:id="addCommentBtn" text="Envoyer" onAction="#addComment"
+                            style="-fx-background-color: #18E3A4; -fx-text-fill: #0a0c10; -fx-font-weight: bold; -fx-background-radius: 25; -fx-padding: 10 25; -fx-cursor: hand;"/>
+                </HBox>
+
+                <ListView fx:id="commentList" style="-fx-background-color: #11161c; -fx-background-radius: 12; -fx-border-color: #1a2530; -fx-border-radius: 12;" 
+                          prefHeight="200"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</AnchorPane>

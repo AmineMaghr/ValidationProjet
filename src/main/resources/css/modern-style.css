@@ -1,0 +1,188 @@
+/* modern-style.css - Style global pour l'interface moderne */
+
+.root {
+    -fx-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* Scrollbar personnalisée */
+.scroll-bar:vertical .track {
+    -fx-background-color: #1a2530;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: #18E3A4;
+    -fx-background-radius: 10;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #13c891;
+}
+
+/* Animation pour les cartes */
+.card {
+    -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Boutons */
+.button {
+    -fx-transition: all 0.2s ease;
+}
+
+.button:hover {
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/* Champs de texte */
+.text-field, .text-area, .combo-box {
+    -fx-focus-color: #18E3A4;
+    -fx-faint-focus-color: rgba(24,227,164,0.2);
+}
+
+/* TilePane */
+.tile-pane {
+    -fx-padding: 10;
+}
+
+/* Animation pour les champs de texte */
+.text-field:focused, .text-area:focused, .combo-box:focused {
+    -fx-border-color: #18E3A4;
+    -fx-effect: dropshadow(gaussian, rgba(24,227,164,0.3), 8, 0, 0, 0);
+}
+
+/* ScrollPane transparent */
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+/* Style pour les labels d'erreur */
+.error-label {
+    -fx-background-color: rgba(255,107,107,0.1);
+    -fx-border-color: #ff6b6b;
+    -fx-border-radius: 8;
+}
+
+/* ComboBox popup styling */
+.combo-box-popup .list-view {
+    -fx-background-color: #1a2530;
+    -fx-border-color: #2a3540;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #fff;
+    -fx-background-color: transparent;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #2a3540;
+}
+
+/* ===== STYLES DES TABLES - ÉCRITURE CLAIRE ===== */
+
+/* Style général des tables */
+.table-view {
+    -fx-background-color: #11161c;
+    -fx-background-radius: 12;
+    -fx-border-color: #1a2530;
+    -fx-border-radius: 12;
+    -fx-padding: 0;
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-font-size: 13px;
+}
+
+/* En-têtes des colonnes */
+.table-view .column-header-background {
+    -fx-background-color: #0f212e;
+    -fx-background-radius: 12 12 0 0;
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: #1a2530;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 12 0;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #18E3A4;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+}
+
+/* ⭐ Cellules des lignes - PLUS CLAIR ⭐ */
+.table-cell {
+    -fx-text-fill: #E6FFF6;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-padding: 10 12;
+    -fx-alignment: CENTER-LEFT;
+    -fx-font-weight: normal;
+}
+
+/* Lignes impaires */
+.table-row-cell:odd {
+    -fx-background-color: #0d1117;
+}
+
+/* Lignes paires */
+.table-row-cell:even {
+    -fx-background-color: #11161c;
+}
+
+/* ⭐ Survol des lignes - EFFET VERT ⭐ */
+.table-row-cell:hover {
+    -fx-background-color: #1a2530;
+}
+
+.table-row-cell:hover .table-cell {
+    -fx-text-fill: #18E3A4;
+    -fx-font-weight: bold;
+}
+
+/* ⭐ Lignes sélectionnées ⭐ */
+.table-row-cell:selected {
+    -fx-background-color: #0f212e;
+    -fx-border-color: #18E3A4;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+/* Style pour le placeholder quand il n'y a pas de données */
+.table-view .placeholder .label {
+    -fx-text-fill: #6a7a8a;
+    -fx-font-size: 14px;
+}
+
+/* Scrollbar des tables */
+.table-view .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar:vertical .track {
+    -fx-background-color: #1a2530;
+    -fx-background-radius: 10;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #18E3A4;
+    -fx-background-radius: 10;
+}
+
+.table-view .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #13c891;
+}
