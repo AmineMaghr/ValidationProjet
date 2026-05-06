@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fx:id="scrollPane"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="root-scroll"
+            stylesheets="@/com/monapp/view/why.css"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.WhyController">
+
+    <VBox styleClass="page-wrap" spacing="16">
+
+        <!-- ── ← Retour ─────────────────────────────────────────────── -->
+        <HBox styleClass="back-row">
+            <Button fx:id="btnBack" text="← Retour" styleClass="btn-secondary"
+                    onAction="#handleBack"/>
+        </HBox>
+
+        <!-- ── Header ───────────────────────────────────────────────── -->
+        <VBox styleClass="why-header" spacing="6">
+            <Label text="Pourquoi je vois ceci ?" styleClass="why-title"/>
+            <Label text="Explication hybride : signaux de recommandation + interprétation IA."
+                   styleClass="why-subtitle"/>
+        </VBox>
+
+        <!-- ── Top grid : post card | AI panel ──────────────────────── -->
+        <HBox styleClass="why-grid" spacing="12">
+
+            <!-- Post card -->
+            <VBox fx:id="postCard" styleClass="card, universe-card" spacing="10" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblTypeLabel" styleClass="card-type"/>
+                <Label fx:id="lblTitle"     styleClass="card-title" wrapText="true"/>
+                <HBox>
+                    <Label fx:id="lblTag" styleClass="chip"/>
+                </HBox>
+                <Label fx:id="lblDescription" styleClass="card-description" wrapText="true"/>
+            </VBox>
+
+            <!-- AI + signals panel -->
+            <VBox fx:id="aiPanel" styleClass="card, ai-panel" spacing="8" HBox.hgrow="ALWAYS">
+                <Label text="Explication IA" styleClass="section-title"/>
+                <Label fx:id="lblAiExplanation" styleClass="ai-text" wrapText="true"/>
+
+                <Label text="Signaux" styleClass="section-title" VBox.vgrow="NEVER">
+                    <VBox.margin><Insets top="10"/></VBox.margin>
+                </Label>
+
+                <!-- Tag Match -->
+                <VBox styleClass="signal-row" spacing="4">
+                    <Label text="Tag Match" styleClass="signal-label"/>
+                    <StackPane styleClass="signal-track">
+                        <HBox styleClass="signal-fill" fx:id="fillTagSimilarity"/>
+                    </StackPane>
+                    <Label text="Alignement avec vos intérêts" styleClass="signal-subtext"/>
+                </VBox>
+
+                <!-- Engagement -->
+                <VBox styleClass="signal-row" spacing="4">
+                    <Label text="Engagement" styleClass="signal-label"/>
+                    <StackPane styleClass="signal-track">
+                        <HBox styleClass="signal-fill" fx:id="fillEngagement"/>
+                    </StackPane>
+                    <Label text="Popularité du contenu" styleClass="signal-subtext"/>
+                </VBox>
+
+                <!-- Récence -->
+                <VBox styleClass="signal-row" spacing="4">
+                    <Label text="Récence" styleClass="signal-label"/>
+                    <StackPane styleClass="signal-track">
+                        <HBox styleClass="signal-fill" fx:id="fillRecency"/>
+                    </StackPane>
+                    <Label text="Publié récemment" styleClass="signal-subtext"/>
+                </VBox>
+
+                <!-- Comportement -->
+                <VBox styleClass="signal-row" spacing="4">
+                    <Label text="Comportement" styleClass="signal-label"/>
+                    <StackPane styleClass="signal-track">
+                        <HBox styleClass="signal-fill" fx:id="fillBehavior"/>
+                    </StackPane>
+                    <Label text="Basé sur vos interactions" styleClass="signal-subtext"/>
+                </VBox>
+            </VBox>
+
+        </HBox>
+
+        <!-- ── Bottom grid : profile signals ────────────────────────── -->
+        <HBox styleClass="why-grid" spacing="12">
+
+            <VBox styleClass="card" spacing="6" HBox.hgrow="ALWAYS">
+                <Label text="Vos signaux de profil" styleClass="section-title"/>
+
+                <Label text="Top tags de préférences" styleClass="signal-label"/>
+                <FlowPane fx:id="prefTagsPane" styleClass="chips" hgap="8" vgap="8"/>
+
+                <Label text="Top tags de comportement" styleClass="signal-label">
+                    <VBox.margin><Insets top="10"/></VBox.margin>
+                </Label>
+                <FlowPane fx:id="behaviorTagsPane" styleClass="chips" hgap="8" vgap="8"/>
+            </VBox>
+
+            <!-- empty right cell (mirrors the Twig <div></div>) -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+        </HBox>
+
+    </VBox>
+</ScrollPane>

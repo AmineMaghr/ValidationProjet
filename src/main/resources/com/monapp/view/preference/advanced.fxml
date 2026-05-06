@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.image.*?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="com.example.app.controllers.AdvancedPreferencesController"
+           stylesheets="@advanced.css">
+
+    <!-- ===== BACKGROUNDS ===== -->
+    <Pane styleClass="gradient-background" />
+    <Pane styleClass="video-overlay" />
+
+    <VBox styleClass="site-content">
+
+        <!-- ===== HEADER FIXE (From Accueil) ===== -->
+        <VBox styleClass="header">
+            <HBox styleClass="header-content" spacing="20" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="15" right="30" bottom="15" left="30"/>
+                </padding>
+
+                <!-- Logo -->
+                <HBox styleClass="logo" spacing="10" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                    <Label text="⚜" style="-fx-font-size: 24px; -fx-text-fill: #18E3A4;"/>
+                    <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+                </HBox>
+
+                <!-- Navigation -->
+                <HBox styleClass="nav-menu" spacing="5" alignment="CENTER" HBox.hgrow="ALWAYS">
+                    <Button text="Accueil" styleClass="magic-btn" onAction="#goAccueil"/>
+                    <Button text="Découvrir" styleClass="magic-btn" onAction="#goDiscover"/>
+                    <Button text="Univers" styleClass="magic-btn" onAction="#goUniverses"/>
+                    <Button text="Personnages" styleClass="magic-btn" onAction="#goPersonnages"/>
+                    <Button text="Œuvre" styleClass="magic-btn" onAction="#goOeuvres"/>
+                    <Button text="Artefacts" styleClass="magic-btn" onAction="#goArtefacts"/>
+                    <Button text="Boutique" styleClass="magic-btn" onAction="#goShop"/>
+                    <Button text="Défis" styleClass="magic-btn" onAction="#goChallenges"/>
+                </HBox>
+
+                <!-- Auth Buttons -->
+                <HBox fx:id="authButtons" spacing="10" alignment="CENTER_RIGHT">
+                    <HBox fx:id="profileBox" styleClass="profile-link magic-btn" alignment="CENTER" spacing="8"
+                          onMouseClicked="#goProfile" visible="false" managed="false">
+                        <StackPane styleClass="avatar">
+                            <ImageView fx:id="avatarImage" fitWidth="32" fitHeight="32" preserveRatio="true" />
+                        </StackPane>
+                        <Label fx:id="usernameLabel" styleClass="username-label" />
+                    </HBox>
+                    <Button fx:id="logoutBtn" text="Déconnexion" styleClass="btn,btn-secondary,btn-sm"
+                            onAction="#goAccueil" visible="false" managed="false" />
+
+                    <Button fx:id="loginBtn" text="Connexion" styleClass="btn,btn-secondary,btn-sm"
+                            onAction="#goLogin" />
+                    <Button fx:id="registerBtn" text="S'inscrire" styleClass="btn,btn-primary,btn-sm"
+                            onAction="#goRegister" />
+                </HBox>
+            </HBox>
+        </VBox>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <ScrollPane fx:id="mainScrollPane" fitToWidth="true" fitToHeight="true" styleClass="main-scroll" VBox.vgrow="ALWAYS">
+            <VBox alignment="TOP_CENTER" styleClass="main">
+                <padding><Insets top="30" bottom="40" /></padding>
+
+                <VBox styleClass="section" maxWidth="800" alignment="TOP_CENTER">
+                    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+                    <!-- Page Title -->
+                    <Label text="Personnaliser ton feed" styleClass="page-title" />
+                    <Label text="Dis-nous ce que tu aimes, on s'occupe du reste ✨"
+                           styleClass="page-subtitle" />
+
+                    <VBox styleClass="preference-form" spacing="0">
+                        <padding><Insets top="30" right="30" bottom="30" left="30"/></padding>
+
+                        <!-- ===== SUCCESS MSG ===== -->
+                        <VBox fx:id="successBox" styleClass="success-box" visible="false" managed="false" alignment="CENTER">
+                            <padding><Insets top="12" right="14" bottom="12" left="14"/></padding>
+                            <Label text="Enregistré avec succès" style="-fx-text-fill: #18E3A4; -fx-font-size: 16px; -fx-font-weight: bold;"/>
+                            <VBox.margin><Insets bottom="20"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== VALIDATION ERRORS ===== -->
+                        <VBox fx:id="errorsBox" styleClass="errors-box"
+                              visible="false" managed="false" spacing="4">
+                            <padding><Insets top="12" right="14" bottom="12" left="14"/></padding>
+                            <Label text="Erreurs de validation :" styleClass="errors-title" />
+                            <VBox fx:id="errorsList" spacing="2" />
+                            <VBox.margin><Insets bottom="20"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== FREE DESCRIPTION ===== -->
+                        <VBox styleClass="form-section" spacing="6">
+                            <Label text="Description libre" styleClass="section-title" />
+                            <Label text="Décris les univers, styles ou ambiances que tu préfères"
+                                   styleClass="section-hint" wrapText="true" />
+                            <TextArea fx:id="freeDescriptionArea"
+                                      promptText="Ex : mondes sombres, magie ancienne, royaumes oubliés..."
+                                      styleClass="form-textarea"
+                                      wrapText="true"
+                                      prefRowCount="4" />
+                            <VBox.margin><Insets bottom="24"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== FAVORITE GENRE (Radio cards) ===== -->
+                        <VBox styleClass="form-section" spacing="6">
+                            <Label text="Genre favori" styleClass="section-title" />
+                            <Label text="Choisis celui qui te représente le plus"
+                                   styleClass="section-hint" />
+
+                            <!--
+                                ToggleButtons share a ToggleGroup (defined in controller)
+                                for mutual exclusion — equivalent to radio inputs.
+                            -->
+                            <GridPane fx:id="genreGrid" hgap="12" vgap="12">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50" />
+                                    <ColumnConstraints percentWidth="50" />
+                                </columnConstraints>
+
+                                <ToggleButton fx:id="genreEpic"     text="Epic Fantasy"
+                                             styleClass="radio-card"
+                                             GridPane.columnIndex="0" GridPane.rowIndex="0"
+                                             maxWidth="Infinity" />
+                                <ToggleButton fx:id="genreDark"     text="Dark Fantasy"
+                                             styleClass="radio-card"
+                                             GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                             maxWidth="Infinity" />
+                                <ToggleButton fx:id="genreHeroic"   text="Heroic Fantasy"
+                                             styleClass="radio-card"
+                                             GridPane.columnIndex="0" GridPane.rowIndex="1"
+                                             maxWidth="Infinity" />
+                                <ToggleButton fx:id="genreMedieval" text="Medieval Fantasy"
+                                             styleClass="radio-card"
+                                             GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                             maxWidth="Infinity" />
+                                <ToggleButton fx:id="genreScifi"    text="Sci-Fi Fantasy"
+                                             styleClass="radio-card"
+                                             GridPane.columnIndex="0" GridPane.rowIndex="2"
+                                             maxWidth="Infinity" />
+                            </GridPane>
+                            <VBox.margin><Insets bottom="24"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== GENRE AFFINITY (Number 1–10) ===== -->
+                        <VBox styleClass="form-section" spacing="6">
+                            <Label text="Affinité avec ce genre" styleClass="section-title" />
+                            <Label text="Sur une échelle de 1 à 10" styleClass="section-hint" />
+                            <Spinner fx:id="affinitySpinner"
+                                     min="1" max="10" initialValue="5" editable="true"
+                                     styleClass="affinity-spinner"
+                                     maxWidth="Infinity" />
+                            <VBox.margin><Insets bottom="24"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== FAVORITE THEMES (Checkboxes) ===== -->
+                        <VBox styleClass="form-section" spacing="6">
+                            <Label text="Thèmes favoris" styleClass="section-title" />
+
+                            <GridPane hgap="10" vgap="10">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="50" />
+                                    <ColumnConstraints percentWidth="50" />
+                                </columnConstraints>
+
+                                <ToggleButton fx:id="themeMagie"    text="Magie"
+                                          styleClass="radio-card"
+                                          GridPane.columnIndex="0" GridPane.rowIndex="0"
+                                          maxWidth="Infinity" />
+                                <ToggleButton fx:id="themeGuerre"  text="Guerre"
+                                          styleClass="radio-card"
+                                          GridPane.columnIndex="1" GridPane.rowIndex="0"
+                                          maxWidth="Infinity" />
+                                <ToggleButton fx:id="themePolitique" text="Politique"
+                                          styleClass="radio-card"
+                                          GridPane.columnIndex="0" GridPane.rowIndex="1"
+                                          maxWidth="Infinity" />
+                                <ToggleButton fx:id="themeNature"  text="Nature"
+                                          styleClass="radio-card"
+                                          GridPane.columnIndex="1" GridPane.rowIndex="1"
+                                          maxWidth="Infinity" />
+                            </GridPane>
+                            <VBox.margin><Insets bottom="24"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== CUSTOM TAGS ===== -->
+                        <VBox styleClass="form-section" spacing="6">
+                            <Label text="Tags personnalisés" styleClass="section-title" />
+                            <Label text="Mots-clés séparés par des virgules"
+                                   styleClass="section-hint" />
+                            <TextField fx:id="customTagsField"
+                                       promptText="Ex : dragons, magie noire, civilisations anciennes"
+                                       styleClass="affinity-input" />
+                            <VBox.margin><Insets bottom="10"/></VBox.margin>
+                        </VBox>
+
+                        <!-- ===== SUBMIT ===== -->
+                        <HBox alignment="CENTER">
+                            <VBox.margin><Insets top="24"/></VBox.margin>
+                            <!--
+                                Label set dynamically by controller:
+                                "Enregistrer mes prfrences" (isCreating=true)
+                                "Mettre  jour mes prfrences" (isCreating=false)
+                            -->
+                            <Button fx:id="submitBtn"
+                                    text="Enregistrer mes préférences"
+                                    styleClass="btn,btn-primary,btn-lg"
+                                    onAction="#savePreferences" />
+                        </HBox>
+
+                    </VBox>
+                    <!-- end preference-form -->
+
+                </VBox>
+                <!-- end section -->
+
+            </VBox>
+        </ScrollPane>
+
+
+    </VBox>
+</StackPane>

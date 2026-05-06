@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/17"
+            stylesheets="@defis.css"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.ParticipationController"
+            style="-fx-background-color: #0d1117;">
+
+    <!-- ═══════════════════════ HEADER ═══════════════════════ -->
+    <VBox styleClass="header"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <HBox styleClass="header-content" spacing="20" alignment="CENTER_LEFT">
+            <padding><Insets top="15" right="30" bottom="15" left="30"/></padding>
+
+            <!-- Logo -->
+            <HBox styleClass="logo" spacing="8" alignment="CENTER_LEFT" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 22px;"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
+            </HBox>
+
+            <!-- Navigation -->
+            <HBox styleClass="nav-menu" spacing="2" HBox.hgrow="ALWAYS">
+                <Button text="Accueil"     styleClass="magic-btn"        onAction="#goAccueil"/>
+                <Button text="Découvrir"   styleClass="magic-btn"        onAction="#goDiscover"/>
+                <Button text="Univers"     styleClass="magic-btn"        onAction="#goUniverses"/>
+                <Button text="Personnages" styleClass="magic-btn"        onAction="#goPersonnages"/>
+                <Button text="Œuvre"       styleClass="magic-btn"        onAction="#goOeuvres"/>
+                <Button text="Artefacts"   styleClass="magic-btn"        onAction="#goArtefacts"/>
+                <Button text="Boutique"    styleClass="magic-btn"        onAction="#goShop"/>
+                <Button text="Défis"       styleClass="magic-btn active" onAction="#goChallenges"/>
+            </HBox>
+
+            <!-- Auth buttons -->
+            <HBox fx:id="authContainer" spacing="10" alignment="CENTER_RIGHT"/>
+        </HBox>
+    </VBox>
+
+    <!-- ═══════════════════════ BODY ═══════════════════════ -->
+    <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS" styleClass="main-scroll"
+                AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+                AnchorPane.topAnchor="60" AnchorPane.bottomAnchor="0">
+
+        <VBox spacing="30" styleClass="main-content">
+            <padding><Insets top="30" right="40" bottom="40" left="30"/></padding>
+
+            <!-- Back button -->
+            <Button text="← Retour aux défis" styleClass="btn-secondary magic-btn"
+                    onAction="#goBackToChallenges"/>
+
+            <!-- Success/Error messages -->
+            <VBox fx:id="messageContainer" spacing="10" visible="false" managed="false"/>
+
+            <!-- ── DÉFI DETAILS ── -->
+            <VBox styleClass="defi-card" spacing="20">
+                <VBox.margin><Insets top="0" right="0" bottom="20" left="0"/></VBox.margin>
+
+                <!-- Challenge image -->
+                <ImageView fx:id="defiImageView" fitWidth="400" fitHeight="200" preserveRatio="true"
+                          styleClass="defi-image" visible="false" managed="false"/>
+
+                <!-- Challenge info -->
+                <VBox spacing="15">
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Label fx:id="defiTitleLabel" text="Titre du défi" styleClass="defi-title"/>
+                        <Label fx:id="defiThemeLabel" text="Thème" styleClass="tag"/>
+                    </HBox>
+
+                    <Label fx:id="defiDescriptionLabel" text="Description du défi"
+                           styleClass="defi-description" wrapText="true"/>
+
+                    <HBox spacing="20" alignment="CENTER_LEFT">
+                        <Label fx:id="defiDatesLabel" text="📅 Dates"
+                               style="-fx-text-fill: #8b949e; -fx-font-size: 14px;"/>
+                        <Label fx:id="defiStatusLabel" text="Statut" styleClass="tag-status"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- ── PARTICIPATION FORM ── -->
+            <VBox styleClass="defi-card" spacing="20">
+                <VBox.margin><Insets top="0" right="0" bottom="20" left="0"/></VBox.margin>
+
+                <Label text="Participer à ce défi" styleClass="section-title"/>
+
+                <Label text="Indiquez l'ID d'une œuvre déjà en ligne ou peignez une œuvre dans l'éditeur."
+                       styleClass="form-hint" wrapText="true"/>
+
+                <!-- Description field -->
+                <VBox spacing="8">
+                    <Label text="📝 Description de votre participation" styleClass="form-label"/>
+                    <TextArea fx:id="descriptionArea" promptText="Décrivez votre participation..."
+                             styleClass="form-control" wrapText="true" prefRowCount="5"/>
+                    <Label fx:id="descriptionErrorLabel" text="" styleClass="error-label"
+                           visible="false" managed="false"/>
+                </VBox>
+
+                <!-- Options -->
+                <VBox spacing="15">
+                    <Label text="Vous avez deux options :" styleClass="form-hint"/>
+                    <VBox spacing="8" style="-fx-padding: 0 0 0 20;">
+                        <Label text="• Utiliser une œuvre déjà en ligne en indiquant son ID ci-dessous."
+                               styleClass="form-hint"/>
+                        <Label text="• Ou peindre une nouvelle œuvre dans l'éditeur en ligne."
+                               styleClass="form-hint"/>
+                    </VBox>
+                    <Button text="🎨 Peindre une œuvre" styleClass="btn-secondary magic-btn"
+                            onAction="#goToPaintEditor"/>
+                </VBox>
+
+                <!-- Artwork ID field -->
+                <VBox spacing="8">
+                    <Label text="🖼️ ID de l'œuvre (optionnel)" styleClass="form-label"/>
+                    <TextField fx:id="artworkIdField" promptText="Ex: 1"
+                              styleClass="form-control"/>
+                    <Label text="Laissez vide si vous n'avez pas d'œuvre existante"
+                           styleClass="form-hint"/>
+                    <Label fx:id="artworkIdErrorLabel" text="" styleClass="error-label"
+                           visible="false" managed="false"/>
+                </VBox>
+
+                <!-- Submit section -->
+                <VBox fx:id="submitSection" spacing="15" visible="false" managed="false">
+                    <Separator styleClass="content-sep"/>
+                    <HBox spacing="15" alignment="CENTER_LEFT">
+                        <Button text="✅ Envoyer ma participation" styleClass="btn-primary magic-btn"
+                                onAction="#submitParticipation"/>
+                        <Button text="Annuler" styleClass="btn-secondary magic-btn"
+                                onAction="#goBackToChallenges"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Validation hint -->
+                <VBox fx:id="validationHint" spacing="10">
+                    <Label text="💡 Remplissez tous les champs correctement pour activer le bouton de soumission"
+                           styleClass="form-hint"/>
+                </VBox>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</AnchorPane>
