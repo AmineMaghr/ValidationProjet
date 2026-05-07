@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.example.app.controllers.ShopCartController" style="-fx-background-color: #0d1117;">
+
+    <VBox spacing="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+
+        <!-- Header -->
+        <StackPane style="-fx-background-color: #0b0f10; -fx-min-height: 150;">
+            <VBox alignment="CENTER">
+                <Label text="MON PANIER" style="-fx-text-fill: #fff; -fx-font-size: 36; -fx-font-weight: bold;"/>
+            </VBox>
+        </StackPane>
+
+        <!-- Cart Content -->
+        <HBox style="-fx-padding: 40 100;" spacing="40">
+            <!-- Cart Items -->
+            <VBox fx:id="cartItemsContainer" spacing="20" HBox.hgrow="ALWAYS">
+                <Label fx:id="itemCountLabel" text="Articles (3)" style="-fx-text-fill: #fff; -fx-font-size: 18; -fx-font-weight: bold;"/>
+
+                <!-- Item 1 -->
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-padding: 15;" spacing="15">
+                    <HBox spacing="15">
+                        <ImageView fitWidth="100" fitHeight="100" style="-fx-background-color: #2a3139; -fx-background-radius: 5;"/>
+                        <VBox spacing="5">
+                            <Label text="Nom du produit" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                            <Label text="Catégorie" style="-fx-text-fill: #888;"/>
+                            <Label text="29.99€" style="-fx-text-fill: #18E3A4;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <VBox alignment="CENTER_RIGHT" spacing="10">
+                            <Button text="✕" style="-fx-background-color: transparent; -fx-text-fill: #ff6b6b;"/>
+                            <HBox spacing="5" alignment="CENTER">
+                                <Button text="-" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-min-width: 30;"/>
+                                <Label text="1" style="-fx-text-fill: #fff;"/>
+                                <Button text="+" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-min-width: 30;"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                
+                <!-- Item 2 -->
+                <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-padding: 15;" spacing="15">
+                    <HBox spacing="15">
+                        <ImageView fitWidth="100" fitHeight="100" style="-fx-background-color: #2a3139; -fx-background-radius: 5;"/>
+                        <VBox spacing="5">
+                            <Label text="Nom du produit" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                            <Label text="Catégorie" style="-fx-text-fill: #888;"/>
+                            <Label text="19.99€" style="-fx-text-fill: #18E3A4;"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <VBox alignment="CENTER_RIGHT" spacing="10">
+                            <Button text="✕" style="-fx-background-color: transparent; -fx-text-fill: #ff6b6b;"/>
+                            <HBox spacing="5" alignment="CENTER">
+                                <Button text="-" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-min-width: 30;"/>
+                                <Label text="2" style="-fx-text-fill: #fff;"/>
+                                <Button text="+" style="-fx-background-color: #2a3139; -fx-text-fill: #fff; -fx-min-width: 30;"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Summary -->
+            <VBox style="-fx-background-color: #1a1f1e; -fx-background-radius: 10; -fx-padding: 25; -fx-min-width: 300;" spacing="20">
+                <Label text="Récapitulatif" style="-fx-text-fill: #fff; -fx-font-size: 18; -fx-font-weight: bold;"/>
+                
+                <VBox spacing="10">
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Sous-total" style="-fx-text-fill: #888;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="subtotalLabel" text="69.97€" style="-fx-text-fill: #fff;"/>
+                    </HBox>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Frais de port" style="-fx-text-fill: #888;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="shippingLabel" text="5.00€" style="-fx-text-fill: #fff;"/>
+                    </HBox>
+                    <Line stroke="#2a3139"/>
+                    <HBox alignment="CENTER_LEFT">
+                        <Label text="Total" style="-fx-text-fill: #fff; -fx-font-weight: bold;"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="totalLabel" text="74.97€" style="-fx-text-fill: #18E3A4; -fx-font-size: 20; -fx-font-weight: bold;"/>
+                    </HBox>
+                </VBox>
+                
+                <Button fx:id="checkoutButton" text="Passer à la caisse" onAction="#checkout" style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-padding: 15; -fx-background-radius: 5;"/>
+                <Button text="Continuer les achats" onAction="#continueShopping" style="-fx-background-color: #333; -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-font-weight: bold; -fx-padding: 10; -fx-background-radius: 5;"/>
+            </VBox>
+        </HBox>
+
+    </VBox>
+
+</AnchorPane>

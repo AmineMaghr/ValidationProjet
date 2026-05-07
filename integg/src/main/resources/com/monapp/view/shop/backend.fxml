@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+
+<BorderPane fx:id="backendRoot" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.ShopBackendController"
+            styleClass="shop-shell" stylesheets="@shop-theme.css">
+
+    <top>
+                <HBox spacing="12" alignment="CENTER_LEFT" styleClass="shop-hero" style="-fx-padding: 16;">
+                                 <Label text="BACKEND SHOP - PRODUITS &amp; COMMANDES"
+                                     styleClass="shop-card-title" style="-fx-font-size: 20;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="← Retour boutique" onAction="#goBackShop" styleClass="shop-ghost-button"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="backendTabPane" tabClosingPolicy="UNAVAILABLE" style="-fx-padding: 14;">
+            <tabs>
+                <Tab text="Produits">
+                    <BorderPane styleClass="shop-card-soft" style="-fx-padding: 12;">
+                        <top>
+                            <VBox spacing="10" style="-fx-padding: 0 0 10 0;">
+                                <Label text="Gestion Produits" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Recherche" styleClass="shop-muted"/>
+                                <TextField fx:id="productSearchField" styleClass="dark-input" promptText="Nom ou type" onKeyReleased="#onProductFilterChanged" prefWidth="280"/>
+                                <Label text="Tri" styleClass="shop-muted"/>
+                                <ComboBox fx:id="productSortCombo" styleClass="dark-input" onAction="#onProductFilterChanged" prefWidth="180"/>
+                                </HBox>
+                            </VBox>
+                        </top>
+
+                        <center>
+                            <TableView fx:id="productTable" styleClass="dark-table" prefHeight="420" style="-fx-background-radius: 12; -fx-border-radius: 12;">
+                                <columns>
+                                    <TableColumn fx:id="colProductId" text="ID" prefWidth="60"/>
+                                    <TableColumn fx:id="colProductName" text="Nom" prefWidth="200"/>
+                                    <TableColumn fx:id="colProductType" text="Type" prefWidth="130"/>
+                                    <TableColumn fx:id="colProductPrice" text="Prix" prefWidth="110"/>
+                                    <TableColumn fx:id="colProductStock" text="Stock" prefWidth="90"/>
+                                    <TableColumn fx:id="colProductDesc" text="Description" prefWidth="320"/>
+                                </columns>
+                            </TableView>
+                        </center>
+
+                        <bottom>
+                            <VBox spacing="8" style="-fx-padding: 12 0 0 0;">
+                                <GridPane hgap="10" vgap="8" styleClass="shop-card" style="-fx-padding: 10;">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="90"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                        <ColumnConstraints minWidth="90"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <Label text="Nom" styleClass="shop-muted" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="productNameField" styleClass="dark-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                    <Label text="Type" styleClass="shop-muted" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                                    <TextField fx:id="productTypeField" styleClass="dark-input" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                                    <Label text="Prix" styleClass="shop-muted" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="productPriceField" styleClass="dark-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                    <Label text="Stock" styleClass="shop-muted" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                                    <TextField fx:id="productStockField" styleClass="dark-input" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                                    <Label text="Description" styleClass="shop-muted" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <TextArea fx:id="productDescField" styleClass="dark-area" prefRowCount="3" GridPane.rowIndex="2" GridPane.columnIndex="1" GridPane.columnSpan="3"/>
+                                </GridPane>
+
+                                <HBox spacing="10" alignment="CENTER_RIGHT">
+                                    <Button text="Nouveau" onAction="#clearProductForm" styleClass="shop-ghost-button"/>
+                                    <Button text="Ajouter" onAction="#createProduct" styleClass="shop-accent-button"/>
+                                    <Button text="Modifier" onAction="#updateProduct" styleClass="shop-outline-button"/>
+                                    <Button text="Supprimer" onAction="#deleteProduct" styleClass="shop-ghost-button"/>
+                                </HBox>
+                            </VBox>
+                        </bottom>
+                    </BorderPane>
+                </Tab>
+
+                <Tab text="Commandes">
+                    <BorderPane styleClass="shop-card-soft" style="-fx-padding: 12;">
+                        <top>
+                            <VBox spacing="10" style="-fx-padding: 0 0 10 0;">
+                                <Label text="Gestion Commandes" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                <HBox spacing="10" alignment="CENTER_LEFT">
+                                    <Label text="Recherche" styleClass="shop-muted"/>
+                                <TextField fx:id="orderSearchField" styleClass="dark-input" promptText="Référence, acheteur, état" onKeyReleased="#onOrderFilterChanged" prefWidth="280"/>
+                                <Label text="Tri" styleClass="shop-muted"/>
+                                <ComboBox fx:id="orderSortCombo" styleClass="dark-input" onAction="#onOrderFilterChanged" prefWidth="180"/>
+                                </HBox>
+                            </VBox>
+                        </top>
+
+                        <center>
+                            <TableView fx:id="orderTable" styleClass="dark-table" prefHeight="420" style="-fx-background-radius: 12; -fx-border-radius: 12;">
+                                <columns>
+                                    <TableColumn fx:id="colOrderId" text="ID" prefWidth="55"/>
+                                    <TableColumn fx:id="colOrderRef" text="Référence" prefWidth="140"/>
+                                    <TableColumn fx:id="colOrderBuyer" text="Acheteur" prefWidth="150"/>
+                                    <TableColumn fx:id="colOrderProduct" text="Produit" prefWidth="170"/>
+                                    <TableColumn fx:id="colOrderQty" text="Qté" prefWidth="70"/>
+                                    <TableColumn fx:id="colOrderTotal" text="Total" prefWidth="110"/>
+                                    <TableColumn fx:id="colOrderState" text="État" prefWidth="120"/>
+                                </columns>
+                            </TableView>
+                        </center>
+
+                        <bottom>
+                            <VBox spacing="8" style="-fx-padding: 12 0 0 0;">
+                                <GridPane hgap="10" vgap="8" styleClass="shop-card" style="-fx-padding: 10;">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="90"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                        <ColumnConstraints minWidth="90"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <Label text="Acheteur" styleClass="shop-muted" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="orderBuyerField" styleClass="dark-input" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+                                    <Label text="Produit" styleClass="shop-muted" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                                    <ComboBox fx:id="orderProductCombo" styleClass="dark-input" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                                    <Label text="Quantité" styleClass="shop-muted" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="orderQtyField" styleClass="dark-input" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+                                    <Label text="État" styleClass="shop-muted" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                                    <ComboBox fx:id="orderStateCombo" styleClass="dark-input" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                                    <Label text="Prix total" styleClass="shop-muted" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="orderTotalField" styleClass="dark-input" promptText="Auto si vide" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                </GridPane>
+
+                                <HBox spacing="10" alignment="CENTER_RIGHT">
+                                    <Button text="Nouveau" onAction="#clearOrderForm" styleClass="shop-ghost-button"/>
+                                    <Button text="Ajouter" onAction="#createOrder" styleClass="shop-accent-button"/>
+                                    <Button text="Modifier" onAction="#updateOrder" styleClass="shop-outline-button"/>
+                                    <Button text="Supprimer" onAction="#deleteOrder" styleClass="shop-ghost-button"/>
+                                </HBox>
+                            </VBox>
+                        </bottom>
+                    </BorderPane>
+                </Tab>
+
+                <Tab text="Analytics &amp; Automation">
+                    <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                        <VBox spacing="18" style="-fx-padding: 16;">
+                            <HBox spacing="10" alignment="CENTER_RIGHT">
+                                <Button text="Rafraîchir" onAction="#refreshInsights" styleClass="shop-ghost-button"/>
+                                <Button text="Calculer prédictions" onAction="#generatePredictions" styleClass="shop-accent-button"/>
+                                <Button text="Générer alertes" onAction="#generateAutomationAlerts" styleClass="shop-ghost-button"/>
+                                <Button text="Ouvrir assistant" onAction="#openChatbot" styleClass="shop-outline-button"/>
+                            </HBox>
+
+                            <GridPane hgap="12" vgap="12" styleClass="shop-card-soft" style="-fx-padding: 12;">
+                                <columnConstraints>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                    <ColumnConstraints percentWidth="25"/>
+                                </columnConstraints>
+                                <VBox styleClass="shop-card" style="-fx-padding: 16;">
+                                    <Label text="Ventes 30 jours" styleClass="shop-muted"/>
+                                    <Label fx:id="analyticsSalesLabel" text="0 €" style="-fx-text-fill: #18E3A4; -fx-font-size: 24; -fx-font-weight: bold;"/>
+                                </VBox>
+                                <VBox styleClass="shop-card" style="-fx-padding: 16;" GridPane.columnIndex="1">
+                                    <Label text="Commandes 30 jours" styleClass="shop-muted"/>
+                                    <Label fx:id="analyticsOrdersLabel" text="0" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+                                </VBox>
+                                <VBox styleClass="shop-card" style="-fx-padding: 16;" GridPane.columnIndex="2">
+                                    <Label text="Croissance" styleClass="shop-muted"/>
+                                    <Label fx:id="analyticsGrowthLabel" text="0%" style="-fx-text-fill: #18E3A4; -fx-font-size: 24; -fx-font-weight: bold;"/>
+                                </VBox>
+                                <VBox styleClass="shop-card" style="-fx-padding: 16;" GridPane.columnIndex="3">
+                                    <Label text="Panier moyen" styleClass="shop-muted"/>
+                                    <Label fx:id="analyticsAverageBasketLabel" text="0 €" style="-fx-text-fill: #fff; -fx-font-size: 24; -fx-font-weight: bold;"/>
+                                </VBox>
+                            </GridPane>
+
+                            <HBox spacing="12">
+                                <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;" HBox.hgrow="ALWAYS">
+                                    <Label text="Segmentation clients" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                    <HBox spacing="18">
+                                        <VBox>
+                                            <Label text="VIP" styleClass="shop-muted"/>
+                                            <Label fx:id="analyticsVipLabel" text="0" style="-fx-text-fill: #fff; -fx-font-size: 20; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                        <VBox>
+                                            <Label text="Réguliers" styleClass="shop-muted"/>
+                                            <Label fx:id="analyticsRegularLabel" text="0" style="-fx-text-fill: #fff; -fx-font-size: 20; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                        <VBox>
+                                            <Label text="Occasionnels" styleClass="shop-muted"/>
+                                            <Label fx:id="analyticsOccasionalLabel" text="0" style="-fx-text-fill: #fff; -fx-font-size: 20; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </HBox>
+
+                            <HBox spacing="12">
+                                <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;" HBox.hgrow="ALWAYS">
+                                    <Label text="Tendance ventes" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                    <LineChart fx:id="salesChart" createSymbols="false" prefHeight="260">
+                                        <xAxis>
+                                            <CategoryAxis label="Jour"/>
+                                        </xAxis>
+                                        <yAxis>
+                                            <NumberAxis label="Ventes"/>
+                                        </yAxis>
+                                    </LineChart>
+                                </VBox>
+                                <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;" HBox.hgrow="ALWAYS">
+                                    <Label text="Top produits" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                    <BarChart fx:id="topProductsChart" prefHeight="260">
+                                        <xAxis>
+                                            <CategoryAxis label="Produit"/>
+                                        </xAxis>
+                                        <yAxis>
+                                            <NumberAxis label="Demandes"/>
+                                        </yAxis>
+                                    </BarChart>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+
+                <Tab text="Rapports &amp; Automatisation">
+                    <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                        <VBox spacing="18" style="-fx-padding: 16;">
+                            <HBox spacing="10" alignment="CENTER_RIGHT">
+                                <Button text="Rafraîchir" onAction="#refreshInsights" styleClass="shop-ghost-button"/>
+                                <Button text="Calculer prédictions" onAction="#generatePredictions" styleClass="shop-accent-button"/>
+                                <Button text="Générer alertes" onAction="#generateAutomationAlerts" styleClass="shop-ghost-button"/>
+                            </HBox>
+
+                            <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;">
+                                <Label text="Performance produits" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                <TableView fx:id="performanceTable" styleClass="dark-table" prefHeight="280">
+                                    <columns>
+                                        <TableColumn fx:id="colPerformanceProduct" text="Produit" prefWidth="220"/>
+                                        <TableColumn fx:id="colPerformanceDemand" text="Demande" prefWidth="100"/>
+                                        <TableColumn fx:id="colPerformanceMargin" text="Marge estimée" prefWidth="140"/>
+                                        <TableColumn fx:id="colPerformanceRisk" text="Risque stock" prefWidth="120"/>
+                                        <TableColumn fx:id="colPerformanceStock" text="Stock actuel" prefWidth="110"/>
+                                    </columns>
+                                </TableView>
+                            </VBox>
+
+                            <HBox spacing="12">
+                                <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;" HBox.hgrow="ALWAYS">
+                                    <Label text="Prédictions de stock" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                    <ListView fx:id="predictionListView" prefHeight="300" styleClass="shop-list-view"/>
+                                </VBox>
+                                <VBox spacing="8" styleClass="shop-card" style="-fx-padding: 16;" HBox.hgrow="ALWAYS">
+                                    <Label text="Automatisation" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                    <ListView fx:id="automationListView" prefHeight="300" styleClass="shop-list-view"/>
+                                </VBox>
+                            </HBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+
+                <Tab text="Mailing">
+                    <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-background-color: transparent; -fx-background: transparent;">
+                        <VBox spacing="16" style="-fx-padding: 16;">
+                            <HBox spacing="10" alignment="CENTER_RIGHT">
+                                <Button text="Préparer alerte stock" onAction="#prepareStockAlertMail" styleClass="shop-accent-button"/>
+                                <Button text="Préparer relance client" onAction="#prepareClientFollowUpMail" styleClass="shop-ghost-button"/>
+                                <Button text="Envoyer mail" onAction="#sendMail" styleClass="shop-accent-button"/>
+                                <Button text="Ouvrir client mail" onAction="#openMailClient" styleClass="shop-outline-button"/>
+                            </HBox>
+
+                            <VBox spacing="10" styleClass="shop-card-soft" style="-fx-padding: 16;">
+                                <Label text="Composeur de mail" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                <GridPane hgap="10" vgap="10">
+                                    <columnConstraints>
+                                        <ColumnConstraints minWidth="120"/>
+                                        <ColumnConstraints hgrow="ALWAYS"/>
+                                    </columnConstraints>
+
+                                    <Label text="Destinataire" styleClass="shop-muted" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="mailRecipientField" styleClass="dark-input" promptText="client@example.com" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+
+                                    <Label text="Sujet" styleClass="shop-muted" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                                    <TextField fx:id="mailSubjectField" styleClass="dark-input" promptText="Sujet du mail" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                                    <Label text="Message" styleClass="shop-muted" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                                    <TextArea fx:id="mailBodyArea" styleClass="dark-area" prefRowCount="10" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+                                </GridPane>
+                            </VBox>
+
+                            <VBox spacing="10" styleClass="shop-card" style="-fx-padding: 16;">
+                                <Label text="Aperçu" styleClass="shop-section-title" style="-fx-font-size: 16;"/>
+                                <TextArea fx:id="mailPreviewArea" editable="false" wrapText="true" prefRowCount="10" styleClass="dark-area"/>
+                            </VBox>
+                        </VBox>
+                    </ScrollPane>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.app.controllers.HeaderController"
+      spacing="18" alignment="CENTER_LEFT"
+      style="-fx-background-color: #0f1318; -fx-padding: 14 18 14 18; -fx-border-color: #1d2a2b; -fx-border-width: 0 0 1 0;">
+
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-cursor: hand;" onMouseClicked="#goAccueil">
+    <Label text="⚔" style="-fx-text-fill: #18E3A4; -fx-font-size: 18;"/>
+    <Label text="Midgar" style="-fx-text-fill: #18E3A4; -fx-font-size: 32; -fx-font-weight: bold;"/>
+    </HBox>
+
+    <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 8;">
+    <Button text="Accueil" onAction="#goAccueil"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14; -fx-border-color: #18E3A4; -fx-border-radius: 12; -fx-background-radius: 12;"/>
+    <Button text="Découvrir" onAction="#goDiscover"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Univers" onAction="#goUniverses"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Personnages" onAction="#goPersonnages"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Œuvre" onAction="#goOeuvres"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Artefacts" onAction="#goArtefacts"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Boutique" onAction="#goShop"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    <Button text="Défis" onAction="#goChallenges"
+        style="-fx-background-color: transparent; -fx-text-fill: #E6FFF6; -fx-padding: 8 14 8 14;"/>
+    </HBox>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+    <Button text="Assistant" onAction="#openChatbot"
+        style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 18 8 18;"/>
+    <Button text="Connexion" onAction="#goLogin"
+        style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-radius: 12; -fx-background-radius: 12; -fx-padding: 8 18 8 18;"/>
+    <Button text="S'inscrire" onAction="#goRegister"
+        style="-fx-background-color: #18E3A4; -fx-text-fill: #0b0f10; -fx-font-weight: bold; -fx-background-radius: 12; -fx-padding: 8 18 8 18;"/>
+    </HBox>
+</HBox>
+

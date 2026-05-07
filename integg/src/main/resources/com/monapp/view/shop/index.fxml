@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.example.app.controllers.ShopController"
+            style="-fx-background-color: #0d1117;">
+
+    <VBox fx:id="siteContent" spacing="0"
+          AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0"
+          AnchorPane.topAnchor="0" AnchorPane.bottomAnchor="0">
+
+        <fx:include source="../partials/header.fxml" />
+
+        <!-- MAIN CONTENT -->
+        <VBox fx:id="main" VBox.vgrow="ALWAYS"
+              style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #0d1117 0%, #1a1f1e 100%);">
+
+
+            <VBox fx:id="shopSection" VBox.vgrow="ALWAYS"
+                  style="-fx-padding: 48 0; -fx-border-color: rgba(24,227,164,0.1); -fx-border-width: 1 0 0 0;">
+
+                <VBox fx:id="container" style="-fx-padding: 0 32;">
+
+                    <!-- HEADER ROW -->
+                    <HBox alignment="CENTER_LEFT" spacing="32" style="-fx-padding: 0 0 32 0;">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="BOUTIQUE"
+                                   style="-fx-text-fill: white; -fx-font-size: 42; -fx-font-weight: bold;"/>
+                            <Label text="Découvrez nos produits fantastiques"
+                                   style="-fx-text-fill: #999; -fx-font-size: 16;"/>
+                        </VBox>
+                        <HBox spacing="12" alignment="CENTER">
+                            <Button fx:id="addProductButton" text="+ Ajouter un produit"
+                                    style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-padding: 10 18; -fx-background-radius: 8;"
+                                    onAction="#addProduct"/>
+                            <Button fx:id="quickBackendButton" text="Accès Backend"
+                                    style="-fx-background-color: #374151; -fx-text-fill: #fff; -fx-padding: 10 18; -fx-background-radius: 8;"
+                                    onAction="#accessBackendQuick"/>
+                            <Button fx:id="supportButton" text="Support Chat"
+                                    style="-fx-background-color: #0ea5e9; -fx-text-fill: #fff; -fx-padding: 10 18; -fx-background-radius: 8;"
+                                    onAction="#openSupportChat"/>
+                            <Button text="Panier"
+                                    style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-padding: 10 18; -fx-background-radius: 8;"
+                                    onAction="#goCart"/>
+                            <Button text="Mes commandes"
+                                    style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-width: 2; -fx-padding: 10 18; -fx-background-radius: 8;"
+                                    onAction="#goOrders"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- CONTENT ROW: sidebar + product grid -->
+                    <HBox spacing="32" alignment="TOP_LEFT" VBox.vgrow="ALWAYS">
+
+                        <!-- SIDEBAR -->
+                        <VBox fx:id="sidebar" prefWidth="260"
+                              style="-fx-background-color: #1a1f1e; -fx-padding: 20; -fx-border-radius: 8; -fx-border-color: #333; -fx-border-width: 1;">
+                            <VBox spacing="14">
+
+                                <TextField fx:id="searchField" promptText="Chercher..."
+                                           style="-fx-background-color: #2a2f2e; -fx-text-fill: white; -fx-border-color: #444; -fx-padding: 10;"/>
+
+                                <Label text="TYPE DE PRODUIT"
+                                       style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                                <ComboBox fx:id="typeFilter" maxWidth="Infinity"/>
+
+                                <Label text="TRI"
+                                       style="-fx-text-fill: #18E3A4; -fx-font-weight: bold;"/>
+                                <ComboBox fx:id="sortFilter" maxWidth="Infinity"/>
+
+                                <Button text="Rechercher" maxWidth="Infinity"
+                                        style="-fx-background-color: #18E3A4; -fx-text-fill: #000; -fx-padding: 10 0; -fx-background-radius: 4;"
+                                        onAction="#handleSearch"/>
+                                <Button text="Reinitialiser" maxWidth="Infinity"
+                                        style="-fx-background-color: transparent; -fx-text-fill: #18E3A4; -fx-border-color: #18E3A4; -fx-border-width: 2; -fx-padding: 10 0; -fx-background-radius: 4;"
+                                        onAction="#resetFilters"/>
+                            </VBox>
+                        </VBox>
+
+                        <!-- PRODUCTS AREA -->
+                        <VBox fx:id="productsArea" spacing="16" HBox.hgrow="ALWAYS">
+                            <Label text="PRODUITS"
+                                   style="-fx-text-fill: white; -fx-font-size: 22; -fx-font-weight: bold;"/>
+                            <ScrollPane fx:id="productsScroll"
+                                        style="-fx-background-color: transparent; -fx-border-color: transparent;"
+                                        fitToWidth="true" VBox.vgrow="ALWAYS">
+                                <FlowPane fx:id="productsGrid" hgap="24" vgap="24"
+                                          style="-fx-padding: 8; -fx-background-color: transparent;"/>
+                            </ScrollPane>
+                        </VBox>
+
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <!-- FOOTER -->
+        <VBox style="-fx-background-color: rgba(13,15,15,0.7); -fx-padding: 24 32;">
+            <Label text="2026 Midgar Fantasy Platform. Creez, partagez, vivez la magie."
+                   style="-fx-text-fill: #B0B9B6;"/>
+        </VBox>
+
+    </VBox>
+
+</AnchorPane>

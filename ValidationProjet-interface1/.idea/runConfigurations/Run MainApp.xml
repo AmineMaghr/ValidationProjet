@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RunManager" selected="Run MainApp">
+    <configuration default="false" name="Run MainApp" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="com.example.app.MainApp" />
+      <option name="PROGRAM_PARAMETERS" value="" />
+      <option name="VM_PARAMETERS" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <module name="midgarpd" />
+      <envs>
+      </envs>
+      <method v="2" />
+    </configuration>
+  </component>
+</project>
