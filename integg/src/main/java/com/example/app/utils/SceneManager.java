@@ -75,7 +75,9 @@ public class SceneManager {
                 primaryStage.show();
             } else {
                 primaryStage.getScene().setRoot(root);
+                primaryStage.setMaximized(true);
             }
+
 
         } catch (IOException e) {
             System.err.println("Erreur lors du chargement de " + path + ": " + e.getMessage());
