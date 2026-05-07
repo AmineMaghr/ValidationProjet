@@ -39,7 +39,7 @@ public class PersonnageListView extends BorderPane {
 
     public PersonnageListView() {
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
-        this.setTop(new HeaderView());
+        this.setTop(new HeaderView("/personnages"));
         setupHeader();
         setupLeft();
         setupCenter();

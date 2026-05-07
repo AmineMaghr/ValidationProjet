@@ -123,7 +123,7 @@ public class BattleSimulatorView extends VBox {
     // ── Constructor ───────────────────────────────────────────────────────────
     public BattleSimulatorView() {
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
-        this.getChildren().add(new HeaderView());
+        this.getChildren().add(new HeaderView("/battle"));
         allPersonnages = load();
 
         VBox content = new VBox();

@@ -14,20 +14,32 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
 public class HeaderView extends HBox {
-
+ 
     private static final String PRIMARY_COLOR = "#18E3A4";
     private static final String BG_MAIN = "#1A1F1E";
     private static final String TEXT_PRIMARY = "#E6FFF6";
-
+    
+    private String currentRoute;
+ 
     public HeaderView() {
-        this.setStyle("-fx-background-color: " + BG_MAIN + "; -fx-padding: 15 30;");
+        this("/");
+    }
+ 
+    public HeaderView(String activeRoute) {
+        this.currentRoute = activeRoute;
+        
+        // Use the CSS class from accueil.css
+        this.getStyleClass().add("header");
+        this.getStyleClass().add("header-content");
+        
         this.setAlignment(Pos.CENTER_LEFT);
         this.setSpacing(20);
-
+        this.setPadding(new Insets(15, 30, 15, 30));
+ 
         // Left: Logo
         HBox logoBox = new HBox(10);
+        logoBox.getStyleClass().add("logo");
         logoBox.setAlignment(Pos.CENTER_LEFT);
-        logoBox.setStyle("-fx-cursor: hand;");
         logoBox.setOnMouseClicked(e -> SceneManager.getInstance().loadScene("/"));
         
         Label icon = new Label("⚔️");
@@ -38,71 +50,65 @@ public class HeaderView extends HBox {
         logo.setStyle("-fx-text-fill: " + PRIMARY_COLOR + ";");
         
         logoBox.getChildren().addAll(icon, logo);
-
+ 
         // Center: Magic Buttons Navigation
         HBox navBox = new HBox(5);
         navBox.setAlignment(Pos.CENTER_LEFT);
         
-        Button btnAccueil = createMagicButton("Accueil", "/");
-        Button btnDiscover = createMagicButton("Découvrir", "/discover");
-        Button btnUnivers = createMagicButton("Univers", "/universes");
-        Button btnPersonnages = createMagicButton("Personnages", "/personnages");
-        Button btnOeuvre = createMagicButton("Œuvre", "/oeuvre");
-        Button btnArtefacts = createMagicButton("Artefacts", "/artefact");
-        Button btnBoutique = createMagicButton("Boutique", "/shop");
-        Button btnDefis = createMagicButton("Défis", "/challenges");
-        
-        navBox.getChildren().addAll(btnAccueil, btnDiscover, btnUnivers, btnPersonnages, btnOeuvre, btnArtefacts, btnBoutique, btnDefis);
-
+        navBox.getChildren().addAll(
+            createMagicButton("Accueil", "/"),
+            createMagicButton("Découvrir", "/discover"),
+            createMagicButton("Univers", "/universes"),
+            createMagicButton("Personnages", "/personnages"),
+            createMagicButton("Œuvre", "/oeuvre"),
+            createMagicButton("Artefacts", "/artefact"),
+            createMagicButton("Boutique", "/shop"),
+            createMagicButton("Défis", "/challenges")
+        );
+ 
         // Spacer pushes Auth Buttons to the right
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         HBox.setHgrow(navBox, Priority.ALWAYS);
-
+ 
         // Right: Auth Buttons (session-aware)
         HBox authBox = new HBox(10);
         authBox.setAlignment(Pos.CENTER_RIGHT);
-
+ 
         if (com.example.app.utils.UserSession.isLoggedIn()) {
             if (com.example.app.utils.UserSession.isAdmin()) {
                 Button btnAdmin = createMagicButton("Back-Office", "/admin");
-                btnAdmin.setStyle("-fx-background-color: transparent; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-border-color: " + PRIMARY_COLOR + "; -fx-border-radius: 12px; -fx-padding: 8 20; -fx-font-weight: bold;");
+                btnAdmin.getStyleClass().setAll("btn-secondary"); // Use secondary style for admin
+                btnAdmin.setStyle("-fx-padding: 8 20; -fx-font-size: 14px;");
                 authBox.getChildren().add(btnAdmin);
             }
             Button btnProfile = createMagicButton("👤 " + com.example.app.utils.UserSession.getUsername(), "/profile");
-            btnProfile.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_MAIN + "; -fx-background-radius: 12px; -fx-padding: 8 20; -fx-font-weight: bold;");
+            btnProfile.getStyleClass().setAll("btn-primary");
+            btnProfile.setStyle("-fx-padding: 8 20; -fx-font-size: 14px;");
             authBox.getChildren().add(btnProfile);
         } else {
             Button btnLogin = createMagicButton("Connexion", "/login");
             Button btnRegister = createMagicButton("S'inscrire", "/register");
-            btnRegister.setStyle("-fx-background-color: " + PRIMARY_COLOR + "; -fx-text-fill: " + BG_MAIN + "; -fx-background-radius: 12px; -fx-padding: 8 20; -fx-font-weight: bold;");
+            btnRegister.getStyleClass().setAll("btn-primary");
+            btnRegister.setStyle("-fx-padding: 8 20; -fx-font-size: 14px;");
             authBox.getChildren().addAll(btnLogin, btnRegister);
         }
-
+ 
         this.getChildren().addAll(logoBox, navBox, spacer, authBox);
     }
-
+ 
     private Button createMagicButton(String text, String route) {
         Button btn = new Button(text);
-        btn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-size: 14px; -fx-cursor: hand;");
+        btn.getStyleClass().add("magic-btn");
+        
+        // Highlight if active
+        if (route.equals(currentRoute)) {
+            btn.getStyleClass().add("active");
+        }
         
         btn.setOnAction(e -> SceneManager.getInstance().loadScene(route));
-
-        btn.setOnMouseEntered(e -> {
-            btn.setScaleX(1.05);
-            btn.setScaleY(1.05);
-            btn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + PRIMARY_COLOR + "; -fx-font-size: 14px; -fx-cursor: hand;");
-            DropShadow shadow = new DropShadow(15, Color.web(PRIMARY_COLOR));
-            btn.setEffect(shadow);
-        });
-
-        btn.setOnMouseExited(e -> {
-            btn.setScaleX(1.0);
-            btn.setScaleY(1.0);
-            btn.setStyle("-fx-background-color: transparent; -fx-text-fill: " + TEXT_PRIMARY + "; -fx-font-size: 14px; -fx-cursor: hand;");
-            btn.setEffect(null);
-        });
-
+ 
         return btn;
     }
 }
+

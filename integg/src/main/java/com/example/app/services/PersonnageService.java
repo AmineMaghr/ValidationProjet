@@ -221,4 +221,37 @@ public class PersonnageService implements IService<Personnage> {
             throw new SQLException("Erreur lors de la lecture du fichier image", e);
         }
     }
-}
+
+    public Personnage getById(int id) throws SQLException {
+        String sql = "SELECT p.*, u.name as universe_name, u.id as u_id FROM personnage p LEFT JOIN universe u ON p.universe_id = u.id WHERE p.id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Personnage p = new Personnage();
+            p.setId(rs.getInt("id"));
+            p.setName(rs.getString("name"));
+            p.setClassRole(rs.getString("class_role"));
+            p.setHistoryContext(rs.getString("history_context"));
+            p.setAbilitiesPowers(rs.getString("abilities_powers"));
+            p.setStrength(rs.getInt("strength"));
+            p.setAgility(rs.getInt("agility"));
+            p.setMagic(rs.getInt("magic"));
+            p.setDefense(rs.getInt("defense"));
+            
+            String uname = rs.getString("universe_name");
+            if (uname != null) {
+                Universe u = new Universe();
+                u.setId(rs.getInt("u_id"));
+                u.setName(uname);
+                p.setUniverse(u);
+            }
+            
+            byte[] portraitBytes = rs.getBytes("portrait_image");
+            if (portraitBytes != null) p.setPortraitImage(portraitBytes);
+            
+            return p;
+        }
+        return null;
+    }
+}

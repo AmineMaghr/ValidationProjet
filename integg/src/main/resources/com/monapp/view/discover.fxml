@@ -18,35 +18,40 @@
 
     <!-- ===== HEADER ===== -->
     <top>
-        <HBox styleClass="header" alignment="CENTER_LEFT" spacing="16">
-            <HBox styleClass="logo" alignment="CENTER_LEFT" spacing="8">
-                <Label text="⬡" styleClass="logo-icon"/>
-                <Label text="Midgar" styleClass="logo-text"/>
+        <HBox styleClass="header, header-content" alignment="CENTER_LEFT" spacing="20">
+            <padding>
+                <Insets top="15" right="30" bottom="15" left="30"/>
+            </padding>
+
+            <HBox styleClass="logo" alignment="CENTER_LEFT" spacing="10" onMouseClicked="#goAccueil">
+                <Label text="⚔️" style="-fx-font-size: 24px;"/>
+                <Label text="Midgar" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #18E3A4;"/>
             </HBox>
 
-            <HBox HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
-                <Button text="Accueil"      styleClass="nav-btn"             onAction="#goAccueil"/>
-                <Button text="Découvrir"    styleClass="nav-btn, nav-active" onAction="#goDiscover"/>
-                <Button text="Univers"      styleClass="nav-btn"             onAction="#goUniverses"/>
-                <Button text="Personnages"  styleClass="nav-btn"             onAction="#goPersonnages"/>
-                <Button text="Œuvre"        styleClass="nav-btn"             onAction="#goOeuvres"/>
-                <Button text="Artefacts"    styleClass="nav-btn"             onAction="#goArtefacts"/>
-                <Button text="Boutique"     styleClass="nav-btn"             onAction="#goShop"/>
-                <Button text="Défis"        styleClass="nav-btn"             onAction="#goChallenges"/>
+            <HBox HBox.hgrow="ALWAYS" alignment="CENTER_LEFT" spacing="5">
+                <Button text="Accueil"      styleClass="magic-btn"          onAction="#goAccueil"/>
+                <Button text="Découvrir"    styleClass="magic-btn, active"  onAction="#goDiscover"/>
+                <Button text="Univers"      styleClass="magic-btn"          onAction="#goUniverses"/>
+                <Button text="Personnages"  styleClass="magic-btn"          onAction="#goPersonnages"/>
+                <Button text="Œuvre"        styleClass="magic-btn"          onAction="#goOeuvres"/>
+                <Button text="Artefacts"    styleClass="magic-btn"          onAction="#goArtefacts"/>
+                <Button text="Boutique"     styleClass="magic-btn"          onAction="#goShop"/>
+                <Button text="Défis"        styleClass="magic-btn"          onAction="#goChallenges"/>
             </HBox>
 
-            <HBox alignment="CENTER_RIGHT" spacing="8">
-                <Button fx:id="btnLogin"    text="Connexion"   styleClass="btn-secondary" onAction="#goLogin"/>
-                <Button fx:id="btnRegister" text="S'inscrire"  styleClass="btn-primary"   onAction="#goRegister"/>
+            <HBox alignment="CENTER_RIGHT" spacing="10">
+                <Button fx:id="btnLogin"    text="Connexion"   styleClass="btn-secondary" onAction="#goLogin" style="-fx-padding: 8 18;"/>
+                <Button fx:id="btnRegister" text="S'inscrire"  styleClass="btn-primary"   onAction="#goRegister" style="-fx-padding: 8 18;"/>
                 <!-- When logged in, this HBox is shown instead (toggled by controller) -->
-                <HBox fx:id="profileBox" alignment="CENTER" spacing="6" visible="false" managed="false">
+                <HBox fx:id="profileBox" alignment="CENTER" spacing="10" visible="false" managed="false">
                     <ImageView fx:id="avatarImg" fitWidth="32" fitHeight="32" styleClass="avatar-img"/>
-                    <Label fx:id="userNameLabel" styleClass="user-label"/>
-                    <Button text="Déconnexion" styleClass="btn-secondary-sm" onAction="#onLogout"/>
+                    <Label fx:id="userNameLabel" styleClass="user-label" style="-fx-text-fill: white;"/>
+                    <Button text="Déconnexion" styleClass="btn-secondary" onAction="#onLogout" style="-fx-padding: 5 12;"/>
                 </HBox>
             </HBox>
         </HBox>
     </top>
+
 
     <!-- ===== MAIN CONTENT ===== -->
     <center>

@@ -39,7 +39,8 @@ public class UniverseListView extends BorderPane {
         this.setStyle("-fx-background-color: " + BG_DARK + ";");
 
         // Header View at the very top (NavBar)
-        this.setTop(new HeaderView());
+        this.setTop(new HeaderView("/universes"));
+
 
         // Setup Internal Layout
         setupHeader();

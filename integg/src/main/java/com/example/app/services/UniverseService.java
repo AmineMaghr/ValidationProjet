@@ -195,4 +195,24 @@ public class UniverseService implements IService<Universe> {
         }
         return univers;
     }
-}
+    public Universe getById(int id) throws SQLException {
+        String sql = "SELECT * FROM universe WHERE id = ?";
+        PreparedStatement ps = connection.prepareStatement(sql);
+        ps.setInt(1, id);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            Universe u = new Universe();
+            u.setId(rs.getInt("id"));
+            u.setName(rs.getString("name"));
+            u.setGenre(rs.getString("genre"));
+            u.setShortDescription(rs.getString("short_description"));
+            u.setStoryContext(rs.getString("story_context"));
+            u.setThemesFromString(rs.getString("themes"));
+            u.setBannerImage(rs.getBytes("banner_image"));
+            u.setVideoUrl(rs.getString("youtubeurl"));
+            u.setCreatorId(rs.getInt("creator_id"));
+            return u;
+        }
+        return null;
+    }
+}

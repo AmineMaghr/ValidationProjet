@@ -3,9 +3,12 @@ package com.example.app.controllers;
 import com.example.app.entities.User;
 import com.example.app.utils.SceneManager;
 import com.example.app.utils.UserSession;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.Parent;
+
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import java.io.IOException;
@@ -104,7 +107,8 @@ public abstract class BaseController {
         }
 
         try {
-            String fxmlPath;
+            String fxmlPath = "";
+            Parent root = null;
 
             switch (view) {
                 case "/admin":
@@ -161,47 +165,87 @@ public abstract class BaseController {
                     } else if (view.startsWith("/challenges/")) {
                          // Some other challenge route? Fallback to participation or index
                         fxmlPath = "/com/monapp/view/challenges/participer.fxml";
+                    } else if (view.startsWith("/personnage/")) {
+                        try {
+                            int id = Integer.parseInt(view.substring(view.lastIndexOf("/") + 1));
+                            com.example.app.entities.Personnage p = new com.example.app.services.PersonnageService().getById(id);
+                            if (p != null) {
+                                root = new com.example.app.views.PersonnageDetailView(p);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    } else if (view.startsWith("/universe/")) {
+                        try {
+                            int id = Integer.parseInt(view.substring(view.lastIndexOf("/") + 1));
+                            com.example.app.entities.Universe u = new com.example.app.services.UniverseService().getById(id);
+                            if (u != null) {
+                                root = new com.example.app.views.UniverseDetailView(u);
+                            }
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     } else {
-                        fxmlPath = "/com/monapp/view" + view + ".fxml";
+                        String cleanView = view.startsWith("/") ? view.substring(1) : view;
+                        fxmlPath = "/com/monapp/view/" + cleanView + ".fxml";
                     }
                     break;
 
             }
 
-            System.out.println("Tentative de chargement: " + fxmlPath);
+            Stage stage = SceneManager.getInstance().getPrimaryStage();
+            FXMLLoader loader = null;
 
-            URL resource = getClass().getResource(fxmlPath);
-            if (resource == null) {
-                System.err.println("Fichier non trouvé: " + fxmlPath);
-                showAlert("Erreur", "Fichier non trouvé: " + fxmlPath);
-                return;
+            if (root == null) {
+                System.out.println("Tentative de chargement FXML: " + fxmlPath);
+                URL resource = getClass().getResource(fxmlPath);
+                if (resource == null) {
+                    System.err.println("Fichier non trouvé: " + fxmlPath);
+                    showAlert("Erreur", "Fichier non trouvé: " + fxmlPath);
+                    return;
+                }
+                loader = new FXMLLoader(resource);
+                root = loader.load();
             }
 
-            FXMLLoader loader = new FXMLLoader(resource);
-            Scene scene = new Scene(loader.load());
-            
             // Passer l'utilisateur au contrôleur si c'est FaceRegisterController
-            if (user != null) {
+            if (user != null && loader != null) {
                 Object controller = loader.getController();
                 if (controller instanceof FaceRegisterController) {
-                    ((FaceRegisterController) controller).setCurrentUser(user);
-                    System.out.println("✅ Utilisateur transmis à FaceRegisterController: " + user.getUsername());
+                    ((FaceRegisterController) controller).setCurrentUser((com.example.app.entities.User) user);
+                    System.out.println("✅ Utilisateur transmis à FaceRegisterController: " + ((com.example.app.entities.User)user).getUsername());
                 }
             }
 
-            try {
-                URL cssResource = getClass().getResource("/css/modern-style.css");
-                if (cssResource != null) {
-                    scene.getStylesheets().add(cssResource.toExternalForm());
-                }
-            } catch (Exception e) {
-                System.out.println("CSS non chargé");
+            
+            if (stage.getScene() == null) {
+                Scene scene = new Scene(root, 1280, 800);
+                stage.setScene(scene);
+            } else {
+                stage.getScene().setRoot(root);
             }
 
-            Stage stage = SceneManager.getInstance().getPrimaryStage();
-            stage.setScene(scene);
-            stage.setMaximized(true);
+            // Ensure stylesheets are loaded on the current scene
+            Scene currentScene = stage.getScene();
+            if (currentScene != null) {
+                try {
+                    String modernStyle = getClass().getResource("/css/modern-style.css").toExternalForm();
+                    if (!currentScene.getStylesheets().contains(modernStyle)) {
+                        currentScene.getStylesheets().add(modernStyle);
+                    }
+                    String accueilStyle = getClass().getResource("/com/monapp/view/accueil.css").toExternalForm();
+                    if (!currentScene.getStylesheets().contains(accueilStyle)) {
+                        currentScene.getStylesheets().add(accueilStyle);
+                    }
+                } catch (Exception e) {
+                    System.out.println("CSS non chargé: " + e.getMessage());
+                }
+            }
+
+            
+            Platform.runLater(() -> stage.setMaximized(true));
             stage.show();
+
 
 
         } catch (IOException e) {

@@ -1,5 +1,6 @@
 package com.example.app.utils;
 
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -71,12 +72,13 @@ public class SceneManager {
                 Scene scene = new Scene(root, 1280, 800);
                 primaryStage.setScene(scene);
                 primaryStage.setTitle("Midgar");
-                primaryStage.setMaximized(true);
+                Platform.runLater(() -> primaryStage.setMaximized(true));
                 primaryStage.show();
             } else {
                 primaryStage.getScene().setRoot(root);
-                primaryStage.setMaximized(true);
+                Platform.runLater(() -> primaryStage.setMaximized(true));
             }
+
 
 
         } catch (IOException e) {
