@@ -247,10 +247,12 @@ CREATE TABLE IF NOT EXISTS notifications_envoyees (
 
 
 
-INSERT INTO user (username, email, password, role) VALUES
-('admin', 'admin@midgar.com', '123456', 'admin'),
-('user', 'user@midgar.com', 'password', 'user')
+INSERT INTO user (username, email, password, role, nom, prenom) VALUES
+('admin', 'admin@midgar.com', '123456', 'admin', 'Admin', 'System'),
+('salah_admin', 'salah_admin@midgar.com', 'admin123', 'admin', 'Salah', 'Admin'),
+('user', 'user@midgar.com', 'password', 'user', 'User', 'Demo')
 ON DUPLICATE KEY UPDATE username=username;
+
 
 INSERT INTO universe (name, genre, short_description, story_context, themes, creator_id) VALUES
 ('Fantasy Realm', 'Fantasy', 'A magical world filled with adventures', 'This universe contains fantasy elements with magic', 'Fantasy, Magic, Adventure', 1),
