@@ -19,7 +19,7 @@ public class PersonnageService implements IService<Personnage> {
 
     @Override
     public void add(Personnage personnage) throws SQLException {
-        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, universe_id, portrait_image, creator_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO personnage (name, class_role, history_context, abilities_powers, strength, agility, magic, defense, universe_id, portrait_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, personnage.getName());
         ps.setString(2, personnage.getClassRole());
@@ -42,14 +42,9 @@ public class PersonnageService implements IService<Personnage> {
             ps.setNull(10, java.sql.Types.BLOB);
         }
 
-        if (personnage.getCreatorId() > 0) {
-            ps.setInt(11, personnage.getCreatorId());
-        } else {
-            ps.setNull(11, java.sql.Types.INTEGER);
-        }
-
         ps.executeUpdate();
     }
+
 
     @Override
     public void update(Personnage personnage) throws SQLException {
