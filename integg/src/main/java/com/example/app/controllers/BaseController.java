@@ -200,7 +200,9 @@ public abstract class BaseController {
 
             Stage stage = SceneManager.getInstance().getPrimaryStage();
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
+
 
         } catch (IOException e) {
             e.printStackTrace();
