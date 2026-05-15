@@ -101,10 +101,12 @@ public class SceneManager {
 
             case "/artefact" -> "/com/monapp/view/artefact/index.fxml";
             case "/shop" -> "/com/monapp/view/shop/index.fxml";
+            case "/shop/orders" -> "/com/monapp/view/shop/orders.fxml";
             case "/challenges" -> "/com/monapp/view/challenges.fxml";
             case "/quiz" -> "/com/monapp/view/quiz.fxml";
 
              case "/admin", "/admin/users" -> "/com/monapp/view/admin/users.fxml";
+             case "/admin/commandes" -> "/com/monapp/view/admin/commandes.fxml";
              case "/admin/challenges" -> "/com/monapp/view/admin_challenges.fxml";
             case "/login" -> "/com/monapp/view/login-view.fxml";
             case "/register" -> "/com/monapp/view/register-view.fxml";

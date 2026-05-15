@@ -62,25 +62,33 @@ public class ShowOeuvreController extends BaseController {
         }
     }
 
-    private void displayOeuvreDetails() {
-        titleText.setText(oeuvre.getTitle());
-        authorText.setText("✍️ " + oeuvre.getAuthor());
-        typeText.setText("🏷️ " + oeuvre.getType());
-        dateText.setText("📅 " + (oeuvre.getDatePublication() != null ? oeuvre.getDatePublication().toString() : "Date inconnue"));
-        descriptionText.setText(oeuvre.getDescription() != null ? oeuvre.getDescription() : "Aucune description");
+   // Dans displayOeuvreDetails(), remplacez la partie image par :
+private void displayOeuvreDetails() {
+    titleText.setText(oeuvre.getTitle());
+    authorText.setText("✍️ " + oeuvre.getAuthor());
+    typeText.setText("🏷️ " + oeuvre.getType());
+    dateText.setText("📅 " + (oeuvre.getDatePublication() != null ? oeuvre.getDatePublication().toString() : "Date inconnue"));
+    descriptionText.setText(oeuvre.getDescription() != null ? oeuvre.getDescription() : "Aucune description");
 
-        if (oeuvre.getImageUrl() != null && !oeuvre.getImageUrl().isEmpty()) {
-            try {
-                File imageFile = new File(oeuvre.getImageUrl());
-                if (imageFile.exists()) {
-                    Image image = new Image(imageFile.toURI().toString(), 400, 400, true, true);
-                    imageView.setImage(image);
-                }
-            } catch (Exception e) {
-                System.err.println("Erreur chargement image: " + e.getMessage());
+    // Charger l'image avec la nouvelle méthode
+    if (oeuvre.hasImage()) {
+        Task<Image> loadImageTask = new Task<>() {
+            @Override
+            protected Image call() {
+                return oeuvre.getImage();
             }
-        }
+        };
+        loadImageTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                Image img = loadImageTask.getValue();
+                if (img != null) {
+                    imageView.setImage(img);
+                }
+            });
+        });
+        new Thread(loadImageTask).start();
     }
+}
 
     private void loadComments() {
         Task<List<Commentaire>> task = new Task<>() {

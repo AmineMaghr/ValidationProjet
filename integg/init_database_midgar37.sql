@@ -52,15 +52,15 @@ CREATE TABLE IF NOT EXISTS universe (
     story_context TEXT,
     themes VARCHAR(500),
     banner_image LONGBLOB,
-    youtubeurl VARCHAR(500),
+    youtube_url VARCHAR(500),
     creator_id INT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_universe_creator FOREIGN KEY (creator_id) REFERENCES user(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
--- Add youtubeurl if it doesn't exist yet (for databases already created without it)
-ALTER TABLE universe ADD COLUMN IF NOT EXISTS youtubeurl VARCHAR(500);
+-- Add youtube_url if it doesn't exist yet (for databases already created without it)
+ALTER TABLE universe ADD COLUMN IF NOT EXISTS youtube_url VARCHAR(500);
 
 CREATE TABLE IF NOT EXISTS oeuvres (
     id INT AUTO_INCREMENT PRIMARY KEY,

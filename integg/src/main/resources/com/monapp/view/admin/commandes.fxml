@@ -17,7 +17,7 @@
 
         <!-- Orders Table -->
         <VBox style="-fx-padding: 20;" spacing="15">
-            <TableView style="-fx-background-color: #1a1f1e;">
+            <TableView fx:id="ordersTable" style="-fx-background-color: #1a1f1e;">
                 <columns>
                     <TableColumn text="N° Commande" prefWidth="120"/>
                     <TableColumn text="Client" prefWidth="150"/>

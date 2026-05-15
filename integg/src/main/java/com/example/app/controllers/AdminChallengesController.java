@@ -16,10 +16,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.effect.BlurType;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 

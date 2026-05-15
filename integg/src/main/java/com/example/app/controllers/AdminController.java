@@ -3,7 +3,6 @@ package com.example.app.controllers;
 import com.example.app.entities.*;
 import com.example.app.services.*;
 import com.example.app.utils.UserSession;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -13,7 +12,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -43,17 +42,21 @@ public class AdminController extends BaseController {
     @FXML private VBox searchBarContainer;
     @FXML private HBox authContainer;
 
+    @FXML private TableView<Commande> ordersTable;
+
     private UserService userService = new UserService();
     private OeuvreService oeuvreService = new OeuvreService();
     private ArtefactService artefactService = new ArtefactService();
     private UniverseService universeService = new UniverseService();
     private PersonnageService personnageService = new PersonnageService();
+    private CommandeService commandeService = new CommandeService();
 
     private ObservableList<User> users = FXCollections.observableArrayList();
     private ObservableList<Oeuvre> oeuvres = FXCollections.observableArrayList();
     private ObservableList<Artefact> artefacts = FXCollections.observableArrayList();
     private ObservableList<Universe> universes = FXCollections.observableArrayList();
     private ObservableList<Personnage> personnages = FXCollections.observableArrayList();
+    private ObservableList<Commande> commandes = FXCollections.observableArrayList();
 
     private DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -71,11 +74,18 @@ public class AdminController extends BaseController {
         setupUniverseTable();
         setupPersonnageTable();
 
+        if (ordersTable != null) {
+            setupOrdersTable();
+        }
+
         loadUsers();
         loadOeuvres();
         loadArtefacts();
         loadUniverses();
         loadPersonnages();
+        if (ordersTable != null) {
+            loadOrders();
+        }
         updateStats();
 
         sortCombo.setItems(FXCollections.observableArrayList("username", "nom", "prenom", "createdAt"));
@@ -409,6 +419,26 @@ public class AdminController extends BaseController {
         new Thread(task).start();
     }
 
+    private void loadOrders() {
+        Task<List<Commande>> task = new Task<>() {
+            @Override
+            protected List<Commande> call() throws SQLException {
+                return commandeService.select();
+            }
+        };
+        task.setOnSucceeded(e -> {
+            commandes.setAll(task.getValue());
+            if (ordersTable != null) {
+                ordersTable.setItems(commandes);
+                ordersTable.refresh();
+            }
+        });
+        task.setOnFailed(e -> {
+            System.err.println("Erreur loadOrders: " + task.getException());
+        });
+        new Thread(task).start();
+    }
+
     private void updateStats() {
         if (totalUsersLabel != null) {
             totalUsersLabel.setText(String.valueOf(users.size()));
@@ -705,6 +735,82 @@ private void setupOeuvreTable() {
         personnageTable.getColumns().setAll(idCol, nameCol, classCol, actionsCol);
     }
 
+    @SuppressWarnings("unchecked")
+    private void setupOrdersTable() {
+        if (ordersTable == null) return;
+
+        TableColumn<Commande, Integer> idCol = new TableColumn<>("N° Commande");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        idCol.setPrefWidth(120);
+
+        TableColumn<Commande, String> clientCol = new TableColumn<>("Client");
+        clientCol.setCellValueFactory(new PropertyValueFactory<>("acheteur"));
+        clientCol.setPrefWidth(150);
+
+        TableColumn<Commande, String> dateCol = new TableColumn<>("Date");
+        dateCol.setCellValueFactory(cellData -> {
+            LocalDateTime date = cellData.getValue().getDateCommande();
+            if (date != null) {
+                return new javafx.beans.property.SimpleStringProperty(date.format(dateFormatter));
+            }
+            return new javafx.beans.property.SimpleStringProperty("-");
+        });
+        dateCol.setPrefWidth(120);
+        dateCol.setStyle("-fx-alignment: CENTER;");
+
+        TableColumn<Commande, Double> montantCol = new TableColumn<>("Montant");
+        montantCol.setCellValueFactory(new PropertyValueFactory<>("prixTotal"));
+        montantCol.setPrefWidth(100);
+        montantCol.setStyle("-fx-alignment: CENTER;");
+
+        TableColumn<Commande, String> statutCol = new TableColumn<>("Statut");
+        statutCol.setCellValueFactory(new PropertyValueFactory<>("etat"));
+        statutCol.setPrefWidth(120);
+        statutCol.setCellFactory(col -> new TableCell<Commande, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    switch (item.toLowerCase()) {
+                        case "pending":
+                            setStyle("-fx-text-fill: #FFA726;");
+                            break;
+                        case "completed":
+                            setStyle("-fx-text-fill: #18E3A4;");
+                            break;
+                        case "cancelled":
+                            setStyle("-fx-text-fill: #EF5350;");
+                            break;
+                        default:
+                            setStyle("-fx-text-fill: #fff;");
+                            break;
+                    }
+                }
+            }
+        });
+
+        TableColumn<Commande, Void> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setPrefWidth(100);
+        actionsCol.setCellFactory(col -> new TableCell<>() {
+            private final Button deleteBtn = new Button("🗑️");
+            {
+                deleteBtn.setStyle("-fx-background-color: #EF5350; -fx-text-fill: #fff; -fx-background-radius: 5; -fx-padding: 5 10; -fx-cursor: hand;");
+                deleteBtn.setOnAction(e -> deleteCommande(getTableView().getItems().get(getIndex())));
+            }
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : deleteBtn);
+            }
+        });
+
+        ordersTable.getColumns().setAll(idCol, clientCol, dateCol, montantCol, statutCol, actionsCol);
+        ordersTable.setItems(commandes);
+    }
+
     //  ACTIONS SUR LES UTILISATEURS ⭐
     
     @FXML
@@ -848,6 +954,24 @@ private void setupOeuvreTable() {
                     }
                 };
                 task.setOnSucceeded(e -> loadPersonnages());
+                new Thread(task).start();
+            }
+        });
+    }
+
+    public void deleteCommande(Commande commande) {
+        if (commande == null) return;
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setContentText("Supprimer la commande N°" + commande.getId() + " ?");
+        confirm.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                Task<Void> task = new Task<>() {
+                    protected Void call() throws SQLException {
+                        commandeService.delete(commande.getId());
+                        return null;
+                    }
+                };
+                task.setOnSucceeded(e -> loadOrders());
                 new Thread(task).start();
             }
         });

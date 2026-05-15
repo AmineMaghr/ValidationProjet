@@ -19,8 +19,8 @@ public class UserDAO implements IDAO<User> {
     
     @Override
     public void add(User user) throws SQLException {
-        String sql = "INSERT INTO user (prenom, nom, username, email, password, role, avatar, bio, is_blocked, is_verified, phone_number, auth_provider, face_enabled, google_id, created_at) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        String sql = "INSERT INTO user (prenom, nom, username, email, password, role, avatar, avatar_local_path, avatar_web_url, bio, is_blocked, is_verified, phone_number, auth_provider, face_enabled, google_id, created_at) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getPrenom());
@@ -30,13 +30,15 @@ public class UserDAO implements IDAO<User> {
             ps.setString(5, user.getPassword());
             ps.setString(6, user.getRole() != null ? user.getRole() : "user");
             ps.setString(7, user.getAvatar());
-            ps.setString(8, user.getBio());
-            ps.setBoolean(9, user.isBlocked());
-            ps.setBoolean(10, user.isVerified());
-            ps.setString(11, user.getPhoneNumber());
-            ps.setString(12, user.getAuthProvider() != null ? user.getAuthProvider() : "local");
-            ps.setBoolean(13, user.isFaceEnabled());
-            ps.setString(14, user.getGoogleId());
+            ps.setString(8, user.getAvatarLocalPath());
+            ps.setString(9, user.getAvatarWebUrl());
+            ps.setString(10, user.getBio());
+            ps.setBoolean(11, user.isBlocked());
+            ps.setBoolean(12, user.isVerified());
+            ps.setString(13, user.getPhoneNumber());
+            ps.setString(14, user.getAuthProvider() != null ? user.getAuthProvider() : "local");
+            ps.setBoolean(15, user.isFaceEnabled());
+            ps.setString(16, user.getGoogleId());
             ps.executeUpdate();
 
             try (ResultSet rs = ps.getGeneratedKeys()) {
@@ -49,7 +51,7 @@ public class UserDAO implements IDAO<User> {
 
     @Override
     public void update(User user) throws SQLException {
-        String sql = "UPDATE user SET prenom = ?, nom = ?, username = ?, email = ?, password = ?, role = ?, avatar = ?, bio = ?, is_blocked = ?, is_verified = ?, phone_number = ?, auth_provider = ?, face_enabled = ?, google_id = ? WHERE id = ?";
+        String sql = "UPDATE user SET prenom = ?, nom = ?, username = ?, email = ?, password = ?, role = ?, avatar = ?, avatar_local_path = ?, avatar_web_url = ?, bio = ?, is_blocked = ?, is_verified = ?, phone_number = ?, auth_provider = ?, face_enabled = ?, google_id = ? WHERE id = ?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getPrenom());
@@ -59,14 +61,16 @@ public class UserDAO implements IDAO<User> {
             ps.setString(5, user.getPassword());
             ps.setString(6, user.getRole());
             ps.setString(7, user.getAvatar());
-            ps.setString(8, user.getBio());
-            ps.setBoolean(9, user.isBlocked());
-            ps.setBoolean(10, user.isVerified());
-            ps.setString(11, user.getPhoneNumber());
-            ps.setString(12, user.getAuthProvider());
-            ps.setBoolean(13, user.isFaceEnabled());
-            ps.setString(14, user.getGoogleId());
-            ps.setInt(15, user.getId());
+            ps.setString(8, user.getAvatarLocalPath());
+            ps.setString(9, user.getAvatarWebUrl());
+            ps.setString(10, user.getBio());
+            ps.setBoolean(11, user.isBlocked());
+            ps.setBoolean(12, user.isVerified());
+            ps.setString(13, user.getPhoneNumber());
+            ps.setString(14, user.getAuthProvider());
+            ps.setBoolean(15, user.isFaceEnabled());
+            ps.setString(16, user.getGoogleId());
+            ps.setInt(17, user.getId());
             ps.executeUpdate();
         }
     }
@@ -411,6 +415,8 @@ public class UserDAO implements IDAO<User> {
         user.setPassword(rs.getString("password"));
         user.setRole(rs.getString("role"));
         user.setAvatar(rs.getString("avatar"));
+        user.setAvatarLocalPath(rs.getString("avatar_local_path"));
+        user.setAvatarWebUrl(rs.getString("avatar_web_url"));
         user.setBio(rs.getString("bio"));
         user.setBlocked(rs.getBoolean("is_blocked"));
         user.setVerified(rs.getBoolean("is_verified"));
@@ -429,10 +435,12 @@ public class UserDAO implements IDAO<User> {
 
         return user;
     }
+
     public Connection getConnection() {
-    return connection;
-}
-// ==================== RECONNAISSANCE FACIALE ====================
+        return connection;
+    }
+
+    // ==================== RECONNAISSANCE FACIALE ====================
 
 /**
  * Sauvegarder le descripteur facial d'un utilisateur

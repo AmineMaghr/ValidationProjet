@@ -193,6 +193,48 @@ public class OeuvreFormController extends BaseController {
         return cleanPath;
     }
 
+    private boolean validateForm() {
+        StringBuilder errors = new StringBuilder();
+
+        if (titleField.getText() == null || titleField.getText().trim().isEmpty()) {
+            errors.append("- Le titre est requis\n");
+            titleField.setStyle("-fx-border-color: #ff6b6b;");
+        } else {
+            titleField.setStyle("");
+        }
+
+        if (typeComboBox.getValue() == null) {
+            errors.append("- Le type est requis\n");
+            typeComboBox.setStyle("-fx-border-color: #ff6b6b;");
+        } else {
+            typeComboBox.setStyle("");
+        }
+
+        if (authorField.getText() == null || authorField.getText().trim().isEmpty()) {
+            errors.append("- L'auteur est requis\n");
+            authorField.setStyle("-fx-border-color: #ff6b6b;");
+        } else {
+            authorField.setStyle("");
+        }
+
+        String description = descriptionArea.getText();
+        if (description == null || description.trim().isEmpty()) {
+            errors.append("- La description est requise\n");
+            descriptionArea.setStyle("-fx-border-color: #ff6b6b;");
+        } else if (description.length() < 10) {
+            errors.append("- La description doit contenir au moins 10 caractères\n");
+            descriptionArea.setStyle("-fx-border-color: #ff6b6b;");
+        } else {
+            descriptionArea.setStyle("");
+        }
+
+        if (errors.length() > 0) {
+            showAlert("Erreur de validation", errors.toString());
+            return false;
+        }
+        return true;
+    }
+
     @FXML
     private void handleSave() {
         if (!UserSession.isLoggedIn()) {
@@ -201,17 +243,29 @@ public class OeuvreFormController extends BaseController {
             return;
         }
 
+        if (!validateForm()) return;
+
         try {
-            Oeuvre oeuvre = new Oeuvre();
+            Oeuvre oeuvre = (editingOeuvre != null) ? editingOeuvre : new Oeuvre();
             oeuvre.setTitle(titleField.getText().trim());
             oeuvre.setAuthor(authorField.getText().trim());
             oeuvre.setDescription(descriptionArea.getText().trim());
             oeuvre.setType(typeComboBox.getValue());
-            oeuvre.setImageUrl(imageUrlField.getText().trim());
             oeuvre.setCreateurId(UserSession.getCurrentUser().getId());
 
+            // Gestion de l'image sélectionnée
+            String imagePath = imageUrlField.getText().trim();
+            if (imagePath != null && !imagePath.isEmpty()) {
+                File imageFile = new File(imagePath);
+                if (imageFile.exists()) {
+                    // Utilise la méthode saveImage qui stocke les 3 chemins
+                    oeuvre.saveImage(imageFile);
+                } else {
+                    oeuvre.setImageUrl(imagePath);
+                }
+            }
+
             if (editingOeuvre != null) {
-                oeuvre.setId(editingOeuvre.getId());
                 oeuvreDAO.update(oeuvre);
                 showAlert("Succès", "L'œuvre a été mise à jour avec succès.");
             } else {
@@ -225,7 +279,7 @@ public class OeuvreFormController extends BaseController {
             showAlert("Erreur", "Erreur lors de la sauvegarde : " + e.getMessage());
         }
     }
-
+    
     @FXML
     private void handleCancel() {
         navigateTo("/oeuvre");

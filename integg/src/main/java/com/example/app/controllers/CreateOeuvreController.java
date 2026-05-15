@@ -9,11 +9,9 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import javafx.stage.Stage;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.regex.Pattern;
 
 public class CreateOeuvreController extends BaseController {
 
@@ -29,6 +27,7 @@ public class CreateOeuvreController extends BaseController {
 
     private OeuvreService oeuvreService = new OeuvreService();
     private File selectedImageFile;
+    private Oeuvre currentOeuvre;
 
     @FXML
     public void initialize() {
@@ -36,6 +35,26 @@ public class CreateOeuvreController extends BaseController {
             "roman", "nouvelle", "poesie", "artwork", "musique", "autre"
         ));
         dateLabel.setText(LocalDate.now().toString());
+        
+        // Vérifier si on est en mode édition
+        currentOeuvre = OeuvreController.getSelectedOeuvreForShow();
+        if (currentOeuvre != null) {
+            loadOeuvreForEdit();
+        }
+    }
+
+    private void loadOeuvreForEdit() {
+        titleField.setText(currentOeuvre.getTitle());
+        typeCombo.setValue(currentOeuvre.getType());
+        descriptionArea.setText(currentOeuvre.getDescription());
+        authorField.setText(currentOeuvre.getAuthor());
+        
+        // Charger l'image si elle existe
+        if (currentOeuvre.hasImage()) {
+            imagePreview.setImage(currentOeuvre.getImage());
+            imageStatus.setText("✓ Image existante");
+            imageStatus.setStyle("-fx-text-fill: #18E3A4;");
+        }
     }
 
     @FXML
@@ -62,32 +81,39 @@ public class CreateOeuvreController extends BaseController {
             return;
         }
 
-        Oeuvre oeuvre = new Oeuvre();
+        Oeuvre oeuvre = (currentOeuvre != null) ? currentOeuvre : new Oeuvre();
         oeuvre.setTitle(titleField.getText().trim());
         oeuvre.setType(typeCombo.getValue());
         oeuvre.setDescription(descriptionArea.getText().trim());
         oeuvre.setAuthor(authorField.getText().trim());
         oeuvre.setDatePublication(LocalDate.now());
-        oeuvre.setCreatedAt(LocalDateTime.now());
-        oeuvre.setUpdatedAt(LocalDateTime.now());
-
-        if (selectedImageFile != null) {
-            oeuvre.setImageUrl(selectedImageFile.getAbsolutePath());
-        }
 
         if (UserSession.isLoggedIn()) {
             oeuvre.setCreateurId(UserSession.getCurrentUser().getId());
         }
 
         try {
-            oeuvreService.add(oeuvre);
-            if (selectedImageFile != null) {
-                oeuvreService.saveImage(oeuvre.getId(), selectedImageFile);
+            if (currentOeuvre == null) {
+                // Création
+                oeuvreService.add(oeuvre);
+                if (selectedImageFile != null) {
+                    // Sauvegarde avec les 3 chemins
+                    String fileName = oeuvre.saveImage(selectedImageFile);
+                    oeuvre.setImageUrl(fileName);
+                    oeuvreService.update(oeuvre);
+                }
+                showAlert("Succès", "Œuvre créée avec succès !");
+            } else {
+                // Modification
+                if (selectedImageFile != null) {
+                    oeuvre.saveImage(selectedImageFile);
+                }
+                oeuvreService.update(oeuvre);
+                showAlert("Succès", "Œuvre modifiée avec succès !");
             }
-            showAlert("Succès", "Œuvre créée avec succès !");
             navigateTo("/oeuvre");
         } catch (Exception e) {
-            showAlert("Erreur", "Erreur lors de la création: " + e.getMessage());
+            showAlert("Erreur", "Erreur: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -97,21 +123,21 @@ public class CreateOeuvreController extends BaseController {
 
         if (titleField.getText() == null || titleField.getText().trim().isEmpty()) {
             errors.append("- Le titre est requis\n");
-            titleField.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
+            titleField.setStyle("-fx-border-color: #ff6b6b;");
         } else {
             titleField.setStyle("");
         }
 
         if (typeCombo.getValue() == null) {
             errors.append("- Le type est requis\n");
-            typeCombo.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
+            typeCombo.setStyle("-fx-border-color: #ff6b6b;");
         } else {
             typeCombo.setStyle("");
         }
 
         if (authorField.getText() == null || authorField.getText().trim().isEmpty()) {
             errors.append("- L'auteur est requis\n");
-            authorField.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
+            authorField.setStyle("-fx-border-color: #ff6b6b;");
         } else {
             authorField.setStyle("");
         }
@@ -119,18 +145,16 @@ public class CreateOeuvreController extends BaseController {
         String description = descriptionArea.getText();
         if (description == null || description.trim().isEmpty()) {
             errors.append("- La description est requise\n");
-            descriptionArea.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
+            descriptionArea.setStyle("-fx-border-color: #ff6b6b;");
         } else if (description.length() < 10) {
             errors.append("- La description doit contenir au moins 10 caractères\n");
-            descriptionArea.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
-        } else if (!Pattern.compile("^[a-zA-Z]").matcher(description).find()) {
-            errors.append("- La description doit commencer par une lettre\n");
-            descriptionArea.setStyle("-fx-border-color: #ff6b6b; -fx-border-width: 2;");
+            descriptionArea.setStyle("-fx-border-color: #ff6b6b;");
         } else {
             descriptionArea.setStyle("");
         }
 
-        if (selectedImageFile == null) {
+        // L'image n'est obligatoire que pour une nouvelle création
+        if (currentOeuvre == null && selectedImageFile == null) {
             errors.append("- L'image est requise\n");
         }
 
@@ -145,11 +169,6 @@ public class CreateOeuvreController extends BaseController {
 
     @FXML
     private void handleCancel() {
-        navigateTo("/oeuvre");
-    }
-
-    @FXML
-    private void handleBack() {
         navigateTo("/oeuvre");
     }
 }

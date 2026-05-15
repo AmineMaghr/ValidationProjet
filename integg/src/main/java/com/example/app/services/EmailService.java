@@ -1,117 +1,21 @@
 package com.example.app.services;
- 
+
 import com.example.app.utils.EnvLoader;
-import jakarta.mail.*;
-import jakarta.mail.internet.*;
- 
+import javax.mail.*;
+import javax.mail.internet.*;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
- 
+
 public class EmailService {
- 
-    private static final Logger LOG = Logger.getLogger(EmailService.class.getName());
- 
-    // ── Configuration (loaded from EnvLoader) ────────────────────
-    private String FROM_EMAIL;
-    private String APP_PASSWORD;
- 
+
     private static final String SMTP_HOST = "smtp.gmail.com";
-    private static final int    SMTP_PORT = 587;
- 
-    // ── SMTP session (created once, reused) ──────────────────────────────
-    private Session session;
- 
-    public EmailService() {
-        System.out.println("EmailService initialized");
-        
-        // Use EnvLoader instead of config.properties
-        FROM_EMAIL   = EnvLoader.get("MAIL_USERNAME");
-        APP_PASSWORD = EnvLoader.get("MAIL_PASSWORD");
- 
-        if (FROM_EMAIL == null || FROM_EMAIL.isBlank()) {
-            LOG.severe("MAIL_USERNAME is missing in environment variables — emails will not send.");
-        }
-        if (APP_PASSWORD == null || APP_PASSWORD.isBlank()) {
-            LOG.severe("MAIL_PASSWORD is missing in environment variables — emails will not send.");
-        }
+    private static final String SMTP_PORT = "587";
 
+    private static final String EMAIL_FROM = EnvLoader.get("EMAIL_FROM");
+    private static final String EMAIL_PASSWORD = EnvLoader.get("EMAIL_PASSWORD");
 
-        // Capture into finals so the anonymous Authenticator closes over
-        // the already-loaded values (not over 'this', which causes a null bug).
-        final String user = FROM_EMAIL;
-        final String pass = APP_PASSWORD;
-
-        Properties props = new Properties();
-        props.put("mail.smtp.host",            SMTP_HOST);
-        props.put("mail.smtp.port",            String.valueOf(SMTP_PORT));
-        props.put("mail.smtp.auth",            "true");
-        props.put("mail.smtp.starttls.enable", "true");
-
-        session = Session.getInstance(props, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(user, pass);
-            }
-        });
-    }
-
-    /**
-     * Sends a plain-text email.
-     * Never throws — all failures are logged and swallowed so the caller is never crashed.
-     */
-    public void sendText(String toEmail, String subject, String textBody) {
-        System.out.println("[DEBUG] 5. sendText() called for recipient: " + toEmail + " | Subject: " + subject);
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(FROM_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject(subject);
-            message.setText(textBody);
-
-            Transport.send(message);
-
-            System.out.println("[DEBUG] 6. SUCCESS: Email successfully sent to -> " + toEmail);
-            LOG.info(String.format("Email sent to %s | subject: %s", toEmail, subject));
-
-        } catch (MessagingException e) {
-            System.err.println("[DEBUG] 7. FAILURE: Email failed to send to -> " + toEmail);
-            e.printStackTrace();
-            LOG.log(Level.SEVERE,
-                    String.format("Failed to send email to %s | subject: %s", toEmail, subject), e);
-        }
-    }
-
-    /**
-     * Sends an HTML-formatted email.
-     * Never throws — all failures are logged and swallowed so the caller is never crashed.
-     */
-    public void sendHtml(String toEmail, String subject, String htmlBody) {
-        System.out.println("[DEBUG] 5. sendHtml() called for recipient: " + toEmail + " | Subject: " + subject);
-        try {
-            Message message = new MimeMessage(session);
-            message.setFrom(new InternetAddress(FROM_EMAIL));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(toEmail));
-            message.setSubject(subject);
-            message.setContent(htmlBody, "text/html; charset=utf-8");
-
-            Transport.send(message);
-
-            System.out.println("[DEBUG] 6. SUCCESS: HTML Email successfully sent to -> " + toEmail);
-            LOG.info(String.format("HTML Email sent to %s | subject: %s", toEmail, subject));
-
-        } catch (MessagingException e) {
-            System.err.println("[DEBUG] 7. FAILURE: HTML Email failed to send to -> " + toEmail);
-            e.printStackTrace();
-            LOG.log(Level.SEVERE,
-                    String.format("Failed to send HTML email to %s | subject: %s", toEmail, subject), e);
-        }
-    }
-
-    /**
-     * Validates an email address using Jakarta Mail's InternetAddress parser.
-     * Mirrors PHP's filter_var($email, FILTER_VALIDATE_EMAIL).
-     */
+    // =========================
+    // EMAIL VALIDATION
+    // =========================
     public boolean isValidEmail(String email) {
         if (email == null || email.isBlank()) {
             return false;
@@ -125,41 +29,333 @@ public class EmailService {
         }
     }
 
-    public void sendResetPasswordEmail(String toEmail, String username, String token) {
-        String subject = "Midgar - Réinitialisation de votre mot de passe";
-        String body = "Bonjour " + username + ",\n\n" +
-                "Vous avez demandé la réinitialisation de votre mot de passe.\n" +
-                "Voici votre code de sécurité : " + token + "\n\n" +
-                "Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer ce message.\n\n" +
-                "L'équipe Midgar";
-        sendText(toEmail, subject, body);
+    // =========================
+    // PLAIN TEXT EMAIL (sendText)
+    // =========================
+    public void sendText(String toEmail, String subject, String textBody) {
+        String htmlContent = buildPlainTextEmail(textBody);
+        sendEmail(toEmail, subject, htmlContent);
     }
 
-    public void envoyerNotificationCommentaire(String toEmail, String proprietaireNom, String contenu, String titreElement, String typeElement, String auteurNom) {
-        String subject = "Nouveau commentaire sur votre " + typeElement + " : " + titreElement;
-        String body = "Bonjour " + proprietaireNom + ",\n\n" +
-                "L'utilisateur " + auteurNom + " a laissé un commentaire sur votre " + typeElement + " \"" + titreElement + "\".\n\n" +
-                "\"" + contenu + "\"\n\n" +
-                "Connectez-vous à Midgar pour lui répondre.\n\n" +
-                "L'équipe Midgar";
-        sendText(toEmail, subject, body);
-    }
-
-    public void envoyerNotificationNouvelElementSimilaire(String toEmail, String userName, String titreElement, String typeElement, String category) {
-        String subject = "Nouveau contenu qui pourrait vous intéresser : " + titreElement;
-        String body = "Bonjour " + userName + ",\n\n" +
-                "Un nouveau contenu (" + category + " - " + typeElement + ") vient d'être publié sur Midgar : \"" + titreElement + "\".\n\n" +
-                "Puisque ce type de contenu figure parmi vos favoris, nous avons pensé qu'il pourrait vous plaire.\n\n" +
-                "L'équipe Midgar";
-        sendText(toEmail, subject, body);
-    }
-
-    public void sendWelcomeEmail(String toEmail, String username) {
+    // =========================
+    // WELCOME EMAIL
+    // =========================
+    public void sendWelcomeEmail(String to, String username) {
         String subject = "Bienvenue sur Midgar !";
-        String body = "Bonjour " + username + ",\n\n" +
-                "Nous sommes ravis de vous compter parmi nous.\n" +
-                "Votre compte a été créé avec succès.\n\n" +
-                "L'équipe Midgar\n";
-        sendText(toEmail, subject, body);
+        String content = buildWelcomeEmail(username);
+        sendEmail(to, subject, content);
+    }
+
+    // =========================
+    // RESET PASSWORD
+    // =========================
+    public void sendResetPasswordEmail(String to, String username, String token) {
+        String subject = "Réinitialisation de votre mot de passe - Midgar";
+        String resetLink = "http://localhost:8080/reset?token=" + token;
+        String content = buildResetEmail(username, resetLink, token);
+        sendEmail(to, subject, content);
+        System.out.println("📧 Reset email envoyé avec token: " + token);
+    }
+
+    // =========================
+    // COMMENT NOTIFICATION - VERSION AVEC TEXTE BLANC
+    // =========================
+    public void envoyerNotificationCommentaire(
+            String emailProprietaire,
+            String nomProprietaire,
+            String contenuCommentaire,
+            String titreElement,
+            String typeElement,
+            String auteurCommentaire
+    ) {
+        String subject = "📝 Nouveau commentaire sur votre " + typeElement + " : " + titreElement;
+        String content = buildCommentEmail(
+                nomProprietaire,
+                auteurCommentaire,
+                titreElement,
+                typeElement,
+                contenuCommentaire
+        );
+        sendEmail(emailProprietaire, subject, content);
+    }
+
+    // =========================
+    // RECOMMENDATION EMAIL
+    // =========================
+    public void envoyerNotificationNouvelElementSimilaire(
+            String emailDestinataire,
+            String nomDestinataire,
+            String nomElement,
+            String typeElement,
+            String typeElementCapitalized
+    ) {
+        String subject = "✨ Nouvelle " + typeElementCapitalized + " qui pourrait vous plaire !";
+        String content = buildRecommendationEmail(
+                nomDestinataire,
+                nomElement,
+                typeElement,
+                typeElementCapitalized
+        );
+        sendEmail(emailDestinataire, subject, content);
+    }
+
+    // =========================
+    // WELCOME TEMPLATE (Midgar Style)
+    // =========================
+    private String buildWelcomeEmail(String username) {
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background: #0a0c10; color: #ffffff !important; padding: 40px; }
+                .container { max-width: 600px; margin: auto; background: #11161c; padding: 30px; border-radius: 20px; border: 1px solid #18E3A4; }
+                h1 { color: #18E3A4; text-align: center; }
+                p { color: #ffffff !important; }
+                b { color: #ffffff !important; }
+                .logo { text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+                .logo span:first-child { color: #ffffff; }
+                .logo span:last-child { color: #18E3A4; }
+                .footer { text-align: center; margin-top: 30px; font-size: 12px; color: #aaa; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <span>Mid</span><span>gar</span>
+                </div>
+                <h1>Bienvenue sur Midgar !</h1>
+                <p>Bonjour <b>%s</b>,</p>
+                <p>Nous sommes ravis de vous compter parmi nous.</p>
+                <p>Votre compte a été créé avec succès.</p>
+                <div class="footer">
+                    <p>© 2025 Midgar - Tous droits réservés</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """.formatted(username);
+    }
+
+    // =========================
+    // RESET TEMPLATE (Midgar Style)
+    // =========================
+    private String buildResetEmail(String username, String resetLink, String token) {
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background: #0a0c10; color: #ffffff !important; padding: 40px; }
+                .container { max-width: 600px; margin: auto; background: #11161c; padding: 30px; border-radius: 20px; border: 1px solid #18E3A4; }
+                h2 { color: #18E3A4; text-align: center; }
+                p { color: #ffffff !important; }
+                b { color: #ffffff !important; }
+                .btn { display: inline-block; background: #18E3A4; color: black; padding: 12px 25px; border-radius: 25px; text-decoration: none; font-weight: bold; margin: 20px 0; }
+                .btn:hover { background: #13c48a; }
+                .token { font-size: 12px; color: #aaa; word-break: break-all; }
+                .logo { text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+                .logo span:first-child { color: #ffffff; }
+                .logo span:last-child { color: #18E3A4; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <span>Mid</span><span>gar</span>
+                </div>
+                <h2>Réinitialisation du mot de passe</h2>
+                <p>Bonjour <b>%s</b>,</p>
+                <p>Vous avez demandé la réinitialisation de votre mot de passe.</p>
+                <div style="text-align:center;">
+                    <a href="%s" class="btn">Réinitialiser mon mot de passe</a>
+                </div>
+                <p class="token">Ou utilisez ce token : <b>%s</b></p>
+                <p style="font-size:12px;color:#aaa;">Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</p>
+            </div>
+        </body>
+        </html>
+        """.formatted(username, resetLink, token);
+    }
+
+    // =========================
+    // COMMENT TEMPLATE (Midgar Style - TEXTE BLANC)
+    // =========================
+    private String buildCommentEmail(
+            String nomProprietaire,
+            String auteur,
+            String titre,
+            String type,
+            String commentaire
+    ) {
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    background: #0a0c10; 
+                    color: #ffffff !important; 
+                    padding: 40px; 
+                }
+                .container { 
+                    max-width: 600px; 
+                    margin: auto; 
+                    background: #11161c; 
+                    padding: 30px; 
+                    border-radius: 20px; 
+                    border: 1px solid #18E3A4; 
+                }
+                h2 { color: #18E3A4; }
+                h3 { color: #18E3A4; }
+                p { color: #ffffff !important; }
+                b { color: #ffffff !important; }
+                .comment-box { 
+                    background: #1a1f2a; 
+                    padding: 15px; 
+                    border-radius: 12px; 
+                    margin: 15px 0; 
+                    border-left: 4px solid #18E3A4; 
+                }
+                .comment-box p { 
+                    color: #ffffff !important; 
+                    font-style: italic; 
+                }
+                .logo { 
+                    text-align: center; 
+                    font-size: 28px; 
+                    font-weight: bold; 
+                    margin-bottom: 20px; 
+                }
+                .logo span:first-child { color: #ffffff; }
+                .logo span:last-child { color: #18E3A4; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <span>Mid</span><span>gar</span>
+                </div>
+                <h2>📝 Nouveau commentaire</h2>
+                <p>Bonjour <b>%s</b>,</p>
+                <p><b>%s</b> a commenté votre %s :</p>
+                <h3>%s</h3>
+                <div class="comment-box">
+                    <p>"%s"</p>
+                </div>
+                <p>Connectez-vous à Midgar pour lui répondre.</p>
+            </div>
+        </body>
+        </html>
+        """.formatted(nomProprietaire, auteur, type, titre, commentaire);
+    }
+
+    // =========================
+    // RECOMMENDATION TEMPLATE (Midgar Style)
+    // =========================
+    private String buildRecommendationEmail(
+            String nom,
+            String element,
+            String type,
+            String typeCap
+    ) {
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background: #0a0c10; color: #ffffff !important; padding: 40px; }
+                .container { max-width: 600px; margin: auto; background: #11161c; padding: 30px; border-radius: 20px; border: 1px solid #18E3A4; }
+                h2 { color: #18E3A4; }
+                p { color: #ffffff !important; }
+                b { color: #ffffff !important; }
+                .card { background: #1a1f2a; padding: 20px; border-radius: 12px; text-align: center; margin: 15px 0; }
+                .logo { text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+                .logo span:first-child { color: #ffffff; }
+                .logo span:last-child { color: #18E3A4; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <span>Mid</span><span>gar</span>
+                </div>
+                <h2>✨ Nouvelle recommandation</h2>
+                <p>Bonjour <b>%s</b>,</p>
+                <p>Une nouvelle %s qui pourrait vous plaire :</p>
+                <div class="card">
+                    <h3 style="color:#18E3A4; margin:0;">%s</h3>
+                    <p style="margin-top:10px;">Type: %s</p>
+                </div>
+                <p>Connectez-vous à Midgar pour découvrir ce contenu !</p>
+            </div>
+        </body>
+        </html>
+        """.formatted(nom, typeCap, element, type);
+    }
+
+    // =========================
+    // PLAIN TEXT TEMPLATE (Midgar Style)
+    // =========================
+    private String buildPlainTextEmail(String textBody) {
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; background: #0a0c10; color: #ffffff !important; padding: 40px; }
+                .container { max-width: 600px; margin: auto; background: #11161c; padding: 30px; border-radius: 20px; border: 1px solid #18E3A4; }
+                .logo { text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 20px; }
+                .logo span:first-child { color: #ffffff; }
+                .logo span:last-child { color: #18E3A4; }
+                p { color: #ffffff !important; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="logo">
+                    <span>Mid</span><span>gar</span>
+                </div>
+                <p>%s</p>
+            </div>
+        </body>
+        </html>
+        """.formatted(textBody.replace("\n", "<br>"));
+    }
+
+    // =========================
+    // CORE EMAIL SENDER
+    // =========================
+    private void sendEmail(String to, String subject, String htmlContent) {
+        Properties props = new Properties();
+        props.put("mail.smtp.auth", "true");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", SMTP_HOST);
+        props.put("mail.smtp.port", SMTP_PORT);
+        props.put("mail.smtp.ssl.trust", SMTP_HOST);
+
+        Session session = Session.getInstance(props, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(EMAIL_FROM, EMAIL_PASSWORD);
+            }
+        });
+
+        try {
+            Message message = new MimeMessage(session);
+            message.setFrom(new InternetAddress(EMAIL_FROM, "Midgar Platform"));
+            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
+            message.setSubject(subject);
+            message.setContent(htmlContent, "text/html; charset=utf-8");
+
+            Transport.send(message);
+
+            System.out.println("✅ Email envoyé à: " + to);
+
+        } catch (Exception e) {
+            System.err.println("❌ Erreur envoi email: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

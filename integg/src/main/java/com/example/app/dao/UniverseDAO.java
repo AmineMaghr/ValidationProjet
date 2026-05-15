@@ -15,12 +15,12 @@ public class UniverseDAO implements IDAO<Universe> {
         migrateVideoUrl();
     }
 
-    /** No-op — youtubeurl column already exists in the universe table. */
+    /** No-op — youtube_url column already exists in the universe table. */
     private void migrateVideoUrl() {}
 
     @Override
     public void add(Universe universe) throws SQLException {
-        String sql = "INSERT INTO universe (name, genre, short_description, story_context, themes, banner_image, youtubeurl, creator_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
+        String sql = "INSERT INTO universe (name, genre, short_description, story_context, themes, banner_image, youtube_url, creator_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())";
         PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
         ps.setString(1, universe.getName());
         ps.setString(2, universe.getGenre());
@@ -40,7 +40,7 @@ public class UniverseDAO implements IDAO<Universe> {
 
     @Override
     public void update(Universe universe) throws SQLException {
-        String sql = "UPDATE universe SET name = ?, genre = ?, short_description = ?, story_context = ?, themes = ?, banner_image = ?, youtubeurl = ?, updated_at = NOW() WHERE id = ?";
+        String sql = "UPDATE universe SET name = ?, genre = ?, short_description = ?, story_context = ?, themes = ?, banner_image = ?, youtube_url = ?, updated_at = NOW() WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, universe.getName());
         ps.setString(2, universe.getGenre());
@@ -128,7 +128,7 @@ public class UniverseDAO implements IDAO<Universe> {
         universe.setStoryContext(rs.getString("story_context"));
         universe.setThemesFromString(rs.getString("themes"));
         universe.setBannerImage(rs.getBytes("banner_image"));
-        universe.setVideoUrl(rs.getString("youtubeurl"));
+        universe.setVideoUrl(rs.getString("youtube_url"));
         
         try {
             universe.setCreatorId(rs.getInt("creator_id"));

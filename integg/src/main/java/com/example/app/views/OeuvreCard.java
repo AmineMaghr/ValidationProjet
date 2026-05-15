@@ -3,6 +3,8 @@ package com.example.app.views;
 import com.example.app.entities.Oeuvre;
 import com.example.app.services.FavorisService;
 import com.example.app.utils.UserSession;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Alert;
@@ -13,10 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import java.io.File;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
 public class OeuvreCard extends VBox {
@@ -64,10 +62,10 @@ public class OeuvreCard extends VBox {
         imageView.setPreserveRatio(false);
         imageView.setStyle("-fx-background-color: #1a2530; -fx-background-radius: 8;");
 
-        // Chargement de l'image
-        loadImage(imageView);
+        // Chargement asynchrone de l'image
+        loadImageAsync(imageView);
 
-        // Si pas d'image, afficher un placeholder
+        // Ajouter un placeholder pendant le chargement
         if (imageView.getImage() == null) {
             VBox placeholder = new VBox();
             placeholder.setStyle("-fx-background-color: #1a2530; -fx-background-radius: 8;");
@@ -142,21 +140,35 @@ public class OeuvreCard extends VBox {
         }
     }
 
-    private void loadImage(ImageView imageView) {
-        if (oeuvre.getImageUrl() != null && !oeuvre.getImageUrl().isEmpty()) {
-            try {
-                File imageFile = new File(oeuvre.getImageUrl());
-                if (imageFile.exists()) {
-                    Image img = new Image(imageFile.toURI().toString(), 250, 160, false, true);
-                    imageView.setImage(img);
-                }
-            } catch (Exception e) {
-                imageView.setImage(null);
+    private void loadImageAsync(ImageView imageView) {
+        Task<Image> loadImageTask = new Task<>() {
+            @Override
+            protected Image call() {
+                return oeuvre.getImage();
             }
-        }
+        };
+        
+        loadImageTask.setOnSucceeded(e -> {
+            Platform.runLater(() -> {
+                Image img = loadImageTask.getValue();
+                if (img != null) {
+                    imageView.setImage(img);
+                    // Remplacer le placeholder par l'image réelle
+                    if (getChildren().get(0) instanceof VBox) {
+                        getChildren().set(0, imageView);
+                    }
+                }
+            });
+        });
+        
+        loadImageTask.setOnFailed(e -> {
+            Platform.runLater(() -> {
+                System.err.println("Erreur chargement image: " + loadImageTask.getException().getMessage());
+            });
+        });
+        
+        new Thread(loadImageTask).start();
     }
-
-
 
     private void loadFavoriteStatus() {
         if (favorisService == null) {
@@ -167,7 +179,6 @@ public class OeuvreCard extends VBox {
         try {
             isFavorite = favorisService.isOeuvreFavorite(oeuvre.getId());
             updateFavoriteIcon();
-            System.out.println("❤️ Statut favori pour " + oeuvre.getTitle() + ": " + isFavorite);
         } catch (Exception e) {
             System.err.println("Erreur chargement statut favori: " + e.getMessage());
             isFavorite = false;
@@ -192,12 +203,10 @@ public class OeuvreCard extends VBox {
             if (isFavorite) {
                 favorisService.removeFavoriteOeuvre(oeuvre.getId());
                 isFavorite = false;
-                System.out.println("❤️ Œuvre retirée des favoris: " + oeuvre.getTitle());
                 showAlert("Succès", "Œuvre retirée des favoris");
             } else {
                 favorisService.addFavoriteOeuvre(oeuvre.getId());
                 isFavorite = true;
-                System.out.println("❤️ Œuvre ajoutée aux favoris: " + oeuvre.getTitle());
                 showAlert("Succès", "Œuvre ajoutée aux favoris");
             }
             updateFavoriteIcon();

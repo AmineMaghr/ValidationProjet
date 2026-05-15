@@ -109,10 +109,14 @@ public class CommandeDAO implements IDAO<Commande> {
         commande.setPrixTotal(rs.getDouble("prix_total"));
         commande.setReferenceCommande(rs.getString("reference_commande"));
 
-        Produit produit = new Produit();
-        produit.setId(rs.getInt("produit_id"));
-        produit.setNom(rs.getString("nom_produit"));
-        commande.setProduit(produit);
+        if (rs.getObject("produit_id") != null) {
+            Produit produit = new Produit();
+            produit.setId(rs.getInt("produit_id"));
+            produit.setNom(rs.getString("nom_produit"));
+            commande.setProduit(produit);
+        } else {
+            commande.setProduit(null);
+        }
 
         return commande;
     }

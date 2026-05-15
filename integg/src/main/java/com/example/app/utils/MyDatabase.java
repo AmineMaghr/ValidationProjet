@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 public class MyDatabase {
     // Configuration MySQL (correspond à votre DATABASE_URL)
-    private static final String URL = "jdbc:mysql://127.0.0.1:3306/midgar37?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+    private static final String URL = "jdbc:mysql://127.0.0.1:3306/midgar?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
     private static final String USER = "root";
     private static final String PASSWORD = "";
 
@@ -18,7 +18,7 @@ public class MyDatabase {
             // Charger le driver MySQL
             Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("✅ Connexion à la base MySQL 'midgar37' réussie !");
+            System.out.println("✅ Connexion à la base MySQL 'midgar' réussie !");
         } catch (ClassNotFoundException e) {
             System.err.println("❌ Driver MySQL non trouvé !");
             System.err.println("Vérifiez que mysql-connector-j est dans votre pom.xml");
@@ -27,7 +27,7 @@ public class MyDatabase {
             System.err.println("❌ Erreur de connexion à MySQL : " + e.getMessage());
             System.err.println("Vérifiez que :");
             System.err.println("1. MySQL est démarré");
-            System.err.println("2. La base 'midgar37' existe");
+            System.err.println("2. La base 'midgar' existe");
             System.err.println("3. L'utilisateur 'root' a les droits");
             e.printStackTrace();
         }

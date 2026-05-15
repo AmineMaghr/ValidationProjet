@@ -1,5 +1,8 @@
 package com.example.app.entities;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +22,8 @@ public class Universe {
     private LocalDateTime updatedAt;
     private List<Personnage> personnages = new ArrayList<>();
     private int creatorId;
+
+    private static final Gson gson = new Gson();
 
     public Universe() {
         this.createdAt = LocalDateTime.now();
@@ -45,17 +50,51 @@ public class Universe {
     public List<String> getThemes() { return themes; }
     public void setThemes(List<String> themes) { this.themes = themes; }
 
+    /**
+     * Convertit la liste de thèmes en JSON valide pour la base de données
+     */
     public String getThemesAsString() {
-        return themes == null ? "" : String.join(", ", themes);
+        if (themes == null || themes.isEmpty()) {
+            return "[]";
+        }
+        return gson.toJson(themes);
     }
 
+    /**
+     * Convertit un JSON de thèmes en liste Java
+     * Exemple: "[\"Fantasy\",\"Aventure\"]" → ["Fantasy", "Aventure"]
+     */
     public void setThemesFromString(String themesStr) {
         this.themes = new ArrayList<>();
-        if (themesStr != null && !themesStr.isEmpty()) {
-            for (String theme : themesStr.split(",")) {
-                this.themes.add(theme.trim());
+        
+        System.out.println("📥 setThemesFromString reçoit: " + themesStr);
+        
+        if (themesStr == null || themesStr.isEmpty()) {
+            return;
+        }
+        
+        try {
+            // Essayer de parser comme JSON
+            Type listType = new TypeToken<List<String>>() {}.getType();
+            List<String> parsed = gson.fromJson(themesStr, listType);
+            if (parsed != null) {
+                this.themes = parsed;
+                System.out.println("✅ JSON parsé avec succès: " + this.themes);
+                return;
+            }
+        } catch (Exception e) {
+            System.err.println("Erreur parsing JSON: " + e.getMessage());
+        }
+        
+        // Fallback: ancien format avec virgules (pour compatibilité)
+        String clean = themesStr.replace("[", "").replace("]", "").replace("\"", "");
+        for (String theme : clean.split(",")) {
+            String trimmed = theme.trim();
+            if (!trimmed.isEmpty()) {
+                this.themes.add(trimmed);
             }
         }
+        System.out.println("⚠️ Fallback utilisé: " + this.themes);
     }
 
     public byte[] getBannerImage() { return bannerImage; }

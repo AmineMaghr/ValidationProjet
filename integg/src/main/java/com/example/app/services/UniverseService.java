@@ -18,7 +18,7 @@ public class UniverseService implements IService<Universe> {
 
     @Override
     public void add(Universe universe) throws SQLException {
-        String sql = "INSERT INTO universe (name, genre, short_description, story_context, themes, banner_image, youtubeurl, creator_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO universe (name, genre, short_description, story_context, themes, banner_image, youtube_url, creator_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, universe.getName());
         ps.setString(2, universe.getGenre());
@@ -41,7 +41,7 @@ public class UniverseService implements IService<Universe> {
 
     @Override
     public void update(Universe universe) throws SQLException {
-        String sql = "UPDATE universe SET name = ?, genre = ?, short_description = ?, story_context = ?, themes = ?, banner_image = ?, youtubeurl = ? WHERE id = ?";
+        String sql = "UPDATE universe SET name = ?, genre = ?, short_description = ?, story_context = ?, themes = ?, banner_image = ?, youtube_url = ? WHERE id = ?";
         PreparedStatement ps = connection.prepareStatement(sql);
         ps.setString(1, universe.getName());
         ps.setString(2, universe.getGenre());
@@ -80,7 +80,7 @@ public class UniverseService implements IService<Universe> {
             u.setShortDescription(rs.getString("short_description"));
             u.setStoryContext(rs.getString("story_context"));
             u.setThemesFromString(rs.getString("themes"));
-            u.setVideoUrl(rs.getString("youtubeurl"));
+            u.setVideoUrl(rs.getString("youtube_url"));
             byte[] bannerBytes = rs.getBytes("banner_image");
             if (bannerBytes != null) {
                 u.setBannerImage(bannerBytes);
@@ -139,10 +139,10 @@ public class UniverseService implements IService<Universe> {
             u.setShortDescription(rs.getString("short_description"));
             u.setThemesFromString(rs.getString("themes"));
             try {
-                u.setVideoUrl(rs.getString("youtubeurl"));
+                u.setVideoUrl(rs.getString("youtube_url"));
             } catch (SQLException e) {
                 // Column might be missing in older database versions
-                System.err.println("Warning: youtubeurl column missing in universe table.");
+                System.err.println("Warning: youtube_url column missing in universe table.");
             }
 
             
@@ -209,7 +209,7 @@ public class UniverseService implements IService<Universe> {
             u.setStoryContext(rs.getString("story_context"));
             u.setThemesFromString(rs.getString("themes"));
             u.setBannerImage(rs.getBytes("banner_image"));
-            u.setVideoUrl(rs.getString("youtubeurl"));
+            u.setVideoUrl(rs.getString("youtube_url"));
             u.setCreatorId(rs.getInt("creator_id"));
             return u;
         }

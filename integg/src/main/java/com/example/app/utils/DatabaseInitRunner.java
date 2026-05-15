@@ -14,12 +14,12 @@ public class DatabaseInitRunner {
         String user = "root";
         String password = "";
 
-        System.out.println("Attempting to connect to MySQL and create 'midgar37'...");
+        System.out.println("Attempting to connect to MySQL and create 'midgar'...");
 
         try (Connection conn = DriverManager.getConnection(url, user, password);
              Statement stmt = conn.createStatement()) {
 
-            String sqlPath = "init_database_midgar37.sql";
+            String sqlPath = "init_database_midgar.sql";
             String sqlContent = Files.readString(Paths.get(sqlPath));
 
             String[] commands = sqlContent.split(";");
@@ -36,7 +36,7 @@ public class DatabaseInitRunner {
                 }
             }
 
-            System.out.println("✅ Database 'midgar37' fully created and populated from init_database_midgar37.sql!");
+            System.out.println("✅ Database 'midgar' fully created and populated from init_database_midgar.sql!");
         } catch (SQLException | IOException e) {
             System.err.println("❌ Critical Error: " + e.getMessage());
             e.printStackTrace();

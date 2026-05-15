@@ -3,6 +3,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.text.*?>
 <?import javafx.scene.effect.*?>

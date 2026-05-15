@@ -1,63 +1,70 @@
 package com.example.app.utils;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.Base64;
+import org.mindrot.jbcrypt.BCrypt;
+import java.util.regex.Pattern;
 
+/**
+ * Hashage compatible avec Symfony (bcrypt)
+ * Symfony utilise l'algorithme "auto" qui est bcrypt par défaut
+ */
 public class PasswordHasher {
-
-    private static final int SALT_LENGTH = 16;
-    private static final int ITERATIONS = 10000;
-    private static final int KEY_LENGTH = 256;
-
-    public String hash(String password) {
-        try {
-            // Générer un sel aléatoire
-            byte[] salt = new byte[SALT_LENGTH];
-            new SecureRandom().nextBytes(salt);
-
-            // Hasher le mot de passe
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt);
-            byte[] hashedPassword = md.digest(password.getBytes());
-
-            // Concaténer sel + hash et encoder en Base64
-            byte[] combined = new byte[salt.length + hashedPassword.length];
-            System.arraycopy(salt, 0, combined, 0, salt.length);
-            System.arraycopy(hashedPassword, 0, combined, salt.length, hashedPassword.length);
-
-            return Base64.getEncoder().encodeToString(combined);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Erreur de hashage", e);
+    
+    private static final int BCRYPT_COST = 13; // Même coût que Symfony par défaut
+    
+    /**
+     * Hash un mot de passe avec bcrypt (compatible Symfony)
+     * @param plainPassword Mot de passe en clair
+     * @return Hash bcrypt (ex: $2y$13$...)
+     */
+    public String hash(String plainPassword) {
+        if (plainPassword == null || plainPassword.isEmpty()) {
+            throw new IllegalArgumentException("Le mot de passe ne peut pas être vide");
         }
+        return BCrypt.hashpw(plainPassword, BCrypt.gensalt(BCRYPT_COST));
     }
-
+    
+    /**
+     * Vérifie un mot de passe contre un hash bcrypt
+     * Compatible avec les hashs générés par Symfony
+     * @param plainPassword Mot de passe en clair
+     * @param hashedPassword Hash bcrypt (peut venir de Symfony ou JavaFX)
+     * @return true si le mot de passe correspond
+     */
     public boolean verify(String plainPassword, String hashedPassword) {
-        try {
-            // Décoder le hash stocké
-            byte[] combined = Base64.getDecoder().decode(hashedPassword);
-
-            if (combined.length < SALT_LENGTH + 32) { // Minimum pour SHA-256 hash
-                return false; // Pas un hash valide
-            }
-
-            // Extraire le sel et le hash original
-            byte[] salt = new byte[SALT_LENGTH];
-            byte[] originalHash = new byte[combined.length - SALT_LENGTH];
-            System.arraycopy(combined, 0, salt, 0, salt.length);
-            System.arraycopy(combined, salt.length, originalHash, 0, originalHash.length);
-
-            // Hasher le mot de passe fourni avec le même sel
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(salt);
-            byte[] newHash = md.digest(plainPassword.getBytes());
-
-            // Comparer les hash
-            return MessageDigest.isEqual(originalHash, newHash);
-        } catch (Exception e) {
-            // Si le hash n'est pas au format attendu (ex: mot de passe en clair), retourner false
+        if (plainPassword == null || hashedPassword == null || hashedPassword.isEmpty()) {
             return false;
         }
+        
+        try {
+            // Vérifier si c'est un hash bcrypt valide
+            if (!isBcryptHash(hashedPassword)) {
+                // Si c'est un ancien hash SHA-256 (migration), on peut essayer de le convertir
+                return false;
+            }
+            return BCrypt.checkpw(plainPassword, hashedPassword);
+        } catch (Exception e) {
+            LogUtil.error("Erreur lors de la vérification du mot de passe", e);
+            return false;
+        }
+    }
+    
+    /**
+     * Vérifie si un hash est au format bcrypt
+     * Format bcrypt: $2a$, $2b$, $2y$ + coût (2 chiffres) + $ + 53 caractères
+     */
+    private boolean isBcryptHash(String hash) {
+        Pattern bcryptPattern = Pattern.compile("^\\$2[aby]\\$\\d{2}\\$[.\\/A-Za-z0-9]{53}$");
+        return bcryptPattern.matcher(hash).matches();
+    }
+    
+    /**
+     * Méthode utilitaire pour vérifier la force du mot de passe
+     */
+    public boolean isPasswordStrong(String password) {
+        if (password == null || password.length() < 8) {
+            return false;
+        }
+        // Au moins une majuscule, une minuscule, un chiffre
+        return password.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$");
     }
 }

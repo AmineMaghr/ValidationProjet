@@ -17,17 +17,17 @@ import java.util.logging.Logger;
  * matches one of their saved preference tags.
  *
  * Simulated user:
- *   For now, only user_id = 1 is checked.
- *   The static TEST_USER_EMAIL is used as the recipient.
+ * For now, only user_id = 1 is checked.
+ * The static TEST_USER_EMAIL is used as the recipient.
  *
  * TODO (when multi-user email is needed):
- *   Replace the TEST_USER_EMAIL constant and the fetchRecipientsForTag() stub
- *   with a real query:
- *     SELECT u.email
- *     FROM users u
- *     INNER JOIN user_preferences up ON up.user_id = u.id
- *     WHERE up.user_id = 1   -- or loop all matching users
- *   and remove the static fallback.
+ * Replace the TEST_USER_EMAIL constant and the fetchRecipientsForTag() stub
+ * with a real query:
+ * SELECT u.email
+ * FROM users u
+ * INNER JOIN user_preferences up ON up.user_id = u.id
+ * WHERE up.user_id = 1 -- or loop all matching users
+ * and remove the static fallback.
  */
 public class PostNotificationService {
 
@@ -40,16 +40,16 @@ public class PostNotificationService {
     // ── Simulated user ───────────────────────────────────────────────────
     private static final int SIMULATED_USER_ID = 1;
 
-    private final Connection    connection;
-    private final EmailService  emailService;
+    private final Connection connection;
+    private final EmailService emailService;
 
     public PostNotificationService(Connection connection, EmailService emailService) {
-        this.connection   = connection;
+        this.connection = connection;
         this.emailService = emailService;
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // Public API  (mirrors notifyContentCreated in the PHP service)
+    // Public API (mirrors notifyContentCreated in the PHP service)
     // ═══════════════════════════════════════════════════════════════════════
 
     /**
@@ -58,12 +58,13 @@ public class PostNotificationService {
      *
      * This method never throws — all failures are caught and logged.
      *
-     * @param typeLabel  human-readable content type, e.g. "Oeuvre", "Artefact"
-     * @param title      content title (or "#id" fallback)
-     * @param tag        the raw tag on the content, e.g. "#fantasy"
+     * @param typeLabel human-readable content type, e.g. "Oeuvre", "Artefact"
+     * @param title     content title (or "#id" fallback)
+     * @param tag       the raw tag on the content, e.g. "#fantasy"
      */
     public void notifyContentCreated(String typeLabel, String title, String tag) {
-        System.out.println(String.format("[DEBUG] 4. notifyContentCreated() called | Type: %s | Title: %s | Tag: %s", typeLabel, title, tag));
+        System.out.println(String.format("[DEBUG] 4. notifyContentCreated() called | Type: %s | Title: %s | Tag: %s",
+                typeLabel, title, tag));
         try {
             // ── 1. Guard: empty tag ──────────────────────────────────────
             String normalizedTag = normalizeTag(tag);
@@ -93,16 +94,15 @@ public class PostNotificationService {
             String subject = "Nouveau contenu sur Midgar : Quelque chose qui pourrait vous plaire !";
             String body = String.format(
                     "Bonjour,%n%n" +
-                    "Quelque chose qui pourrait vous plaire vient d'être publié sur Midgar !%n" +
-                    "Un nouveau contenu correspondant à vos préférences a été ajouté.%n%n" +
-                    "--- Détails du contenu ---%n" +
-                    "- Type  : %s%n" +
-                    "- Titre : %s%n" +
-                    "- Tag   : %s%n%n" +
-                    "Connectez-vous sur l'application pour le découvrir.%n%n" +
-                    "L'équipe Midgar",
-                    typeLabel, title, normalizedTag
-            );
+                            "Quelque chose qui pourrait vous plaire vient d'être publié sur Midgar !%n" +
+                            "Un nouveau contenu correspondant à vos préférences a été ajouté.%n%n" +
+                            "--- Détails du contenu ---%n" +
+                            "- Type  : %s%n" +
+                            "- Titre : %s%n" +
+                            "- Tag   : %s%n%n" +
+                            "Connectez-vous sur l'application pour le découvrir.%n%n" +
+                            "L'équipe Midgar",
+                    typeLabel, title, normalizedTag);
 
             // ── 6. Send Plain Text Email ──────────────────────────────────
             emailService.sendText(recipient, subject, body);
@@ -122,10 +122,10 @@ public class PostNotificationService {
      * {@code normalizedTag}.
      *
      * SQL used:
-     *   SELECT tags FROM user_preferences WHERE user_id = ?
+     * SELECT tags FROM user_preferences WHERE user_id = ?
      *
      * Each row's "tags" column may contain comma-separated values like:
-     *   #dark,#magic,#fantasy
+     * #dark,#magic,#fantasy
      */
     private boolean userHasMatchingTag(int userId, String normalizedTag) throws SQLException {
         String sql = "SELECT tags FROM user_preferences WHERE user_id = ?";
@@ -147,7 +147,7 @@ public class PostNotificationService {
     }
 
     // ═══════════════════════════════════════════════════════════════════════
-    // Tag helpers  (mirrors normalizeTag / splitTags from DiscoverService)
+    // Tag helpers (mirrors normalizeTag / splitTags from DiscoverService)
     // ═══════════════════════════════════════════════════════════════════════
 
     /**
@@ -155,10 +155,13 @@ public class PostNotificationService {
      * Returns an empty string if the input is blank.
      */
     private String normalizeTag(String tag) {
-        if (tag == null) return "";
+        if (tag == null)
+            return "";
         String normalized = tag.trim().toLowerCase(Locale.ROOT);
-        if (normalized.isEmpty()) return "";
-        if (!normalized.startsWith("#")) normalized = "#" + normalized;
+        if (normalized.isEmpty())
+            return "";
+        if (!normalized.startsWith("#"))
+            normalized = "#" + normalized;
         return normalized;
     }
 
@@ -168,7 +171,8 @@ public class PostNotificationService {
      */
     private List<String> splitAndNormalizeTags(String raw) {
         List<String> result = new ArrayList<>();
-        if (raw == null || raw.isBlank()) return result;
+        if (raw == null || raw.isBlank())
+            return result;
 
         for (String part : raw.split(",")) {
             String normalized = normalizeTag(part);

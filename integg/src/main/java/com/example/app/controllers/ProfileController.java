@@ -113,36 +113,23 @@ public class ProfileController extends BaseController {
      * Charge la photo de profil de l'utilisateur
      */
     private void loadAvatar() {
-        String avatarPath = currentUser.getAvatar();
-        System.out.println("🔍 Chargement avatar - Chemin: " + avatarPath);
+        try {
+            Image avatar = currentUser.getAvatarImage();
+            if (avatar != null && !avatar.isError()) {
+                avatarImage.setImage(avatar);
 
-        if (avatarPath != null && !avatarPath.isEmpty()) {
-            String fileName = new File(avatarPath).getName();
-            File avatarFile = new File("uploads/avatars/" + fileName);
-            
-            if (!avatarFile.exists()) {
-                avatarFile = new File(avatarPath);
+                Circle clip = new Circle(60);
+                clip.setCenterX(60);
+                clip.setCenterY(60);
+                avatarImage.setClip(clip);
+
+                System.out.println("✅ Avatar chargé via User.getAvatarImage()");
+                return;
             }
-            
-            if (avatarFile.exists()) {
-                try {
-                    Image avatar = new Image(avatarFile.toURI().toString(), 120, 120, true, true);
-                    avatarImage.setImage(avatar);
-                    
-                    // Appliquer le clip cercle
-                    Circle clip = new Circle(60);
-                    clip.setCenterX(60);
-                    clip.setCenterY(60);
-                    avatarImage.setClip(clip);
-                    
-                    System.out.println("✅ Avatar chargé");
-                    return;
-                } catch (Exception e) {
-                    System.err.println("Erreur: " + e.getMessage());
-                }
-            }
+        } catch (Exception e) {
+            System.err.println("Erreur chargement avatar : " + e.getMessage());
         }
-        
+
         setPlaceholderAvatar();
     }
 
@@ -199,18 +186,7 @@ public class ProfileController extends BaseController {
      * Sauvegarde l'image avatar sélectionnée
      */
     private String saveAvatarImage(File sourceFile) throws Exception {
-        File uploadsDir = new File("uploads/avatars");
-        if (!uploadsDir.exists()) {
-            uploadsDir.mkdirs();
-        }
-
-        String extension = getFileExtension(sourceFile);
-        String fileName = "avatar_" + currentUser.getId() + "_" + System.currentTimeMillis() + "." + extension;
-        File destFile = new File(uploadsDir, fileName);
-
-        Files.copy(sourceFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-        return destFile.getAbsolutePath();
+        return currentUser.saveAvatar(sourceFile);
     }
 
     /**
